@@ -5,12 +5,12 @@ import { plugins } from 'mostly-feathers-mongoose';
  * process instance structure
  */
 const fields = {
-  process: { type: 'String' },               // path to the process or sub-process
-  state: [{ type: 'String', enum: [          // state of the process instance
+  process: { type: 'ObjectId' },             // id of the process definition
+  state: { type: 'String', enum: [           // state of the process instance
     'ready',                                 // task can be performed
     'completed',                             // task being finished
     'active'                                 // task being performed but not completed
-  ]}],
+  ]},
   loop: { type: 'Number' },                  // number of times the player has perfomed this task
   perfomers: [{                              // players within this task who have performed this task at least once
     id: { type: 'ObjectId' },                // id of the performer
@@ -19,6 +19,7 @@ const fields = {
       role: { type: 'String' },
     }]
   }],
+  owner: { type: 'ObjectId' },               // owner of the process
 };
 
 export default function model (app, name) {
