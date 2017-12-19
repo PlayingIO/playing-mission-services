@@ -32,6 +32,7 @@ const activity = {
   rewards: actions.rule.rewards,             // rewards which the player can earn upon completing this task
   requires: actions.rule.requires,           // requirements for performing the task
   probabilty: { type: 'Number' },            // chance [0, 1] that the player will get any of the rewards on completing the task
+  activities: { type: 'Mixed' },             // nested subprocess structure
 };
 
 // gateway structure
