@@ -1,7 +1,7 @@
 import timestamps from 'mongoose-timestamp';
 import { plugins } from 'mostly-feathers-mongoose';
 import { models as contents } from 'playing-content-services';
-import { models as actions } from 'playing-actions-services';
+import { models as actions } from 'playing-action-services';
 
 const settings = {
   access: [{ type: 'String', enum: [         // access settings with which the process instance can be created
