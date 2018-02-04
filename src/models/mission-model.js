@@ -4,7 +4,7 @@ import { models as contents } from 'playing-content-services';
 import { models as actions } from 'playing-action-services';
 
 const settings = {
-  access: [{ type: 'String', enum: [         // access settings with which the process instance can be created
+  access: [{ type: 'String', enum: [         // access settings with which the mission instance can be created
     'public',
     'protected',
     'private'
@@ -25,14 +25,14 @@ const lane = {
 const activity = {
   name: { type: 'String', required: true },  // name for the activity
   type: { type: 'String', enum: [            // type of the activity
-    'task', 'subprocess'
+    'task', 'submission'
   ]},
   lane: { type: 'String' },                  // lane in which the activity belongs to
   loop: { type: 'Number' },                  // number of times a player can perform this task
   rewards: actions.rule.rewards,             // rewards which the player can earn upon completing this task
   requires: actions.rule.requires,           // requirements for performing the task
   probabilty: { type: 'Number' },            // chance [0, 1] that the player will get any of the rewards on completing the task
-  activities: { type: 'Mixed' },             // nested subprocess structure
+  activities: { type: 'Mixed' },             // nested submission structure
 };
 
 // gateway structure
@@ -53,16 +53,16 @@ const sequenceflow = {
 };
 
 /*
- * Definition of the process to structure the player activities
+ * Definition of the mission to structure the player activities
  */
 const fields = {
-  name: { type: 'String', required: true },  // name for the process
-  description: { type: 'String' },           // brief description of the process
-  image: contents.blob.schema,               // image which represents the process
-  settings: settings,                        // settings for the whole process
+  name: { type: 'String', required: true },  // name for the mission
+  description: { type: 'String' },           // brief description of the mission
+  image: contents.blob.schema,               // image which represents the mission
+  settings: settings,                        // settings for the whole mission
   lanes: [lane],                             // lanes for retricting players
-  activities: [activity],                    // tasks or sub-processes within a process
-  gateways: [gateway],                       // gateway for retricting the access to tasks and sub-processes based on the process state
+  activities: [activity],                    // tasks or sub-missions within a mission
+  gateways: [gateway],                       // gateway for retricting the access to tasks and sub-mission based on the mission state
   sequenceflows: [sequenceflow],             // lightweight objects which connect other nodes (activities, gateways) to each other
 };
 

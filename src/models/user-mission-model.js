@@ -2,11 +2,11 @@ import timestamps from 'mongoose-timestamp';
 import { plugins } from 'mostly-feathers-mongoose';
 
 /*
- * process instance structure
+ * mission instance structure
  */
 const fields = {
-  process: { type: 'ObjectId' },             // id of the process definition
-  state: { type: 'String', enum: [           // state of the process instance
+  mission: { type: 'ObjectId' },             // id of the mission definition
+  state: { type: 'String', enum: [           // state of the mission instance
     'ready',                                 // task can be performed
     'completed',                             // task being finished
     'active'                                 // task being performed but not completed
@@ -19,7 +19,7 @@ const fields = {
       role: { type: 'String' },
     }]
   }],
-  owner: { type: 'ObjectId' },               // owner of the process
+  owner: { type: 'ObjectId' },               // owner of the mission
 };
 
 export default function model (app, name) {

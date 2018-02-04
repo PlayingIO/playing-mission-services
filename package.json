@@ -1,7 +1,7 @@
 {
-  "name": "playing-process-services",
+  "name": "playing-mission-services",
   "version": "1.0.0",
-  "description": "Game process management microservices for playful applications",
+  "description": "Game mission management microservices for playful applications",
   "author": "Forafish",
   "license": "MIT",
   "main": "index.js",
