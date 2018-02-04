@@ -1,7 +1,7 @@
 import timestamps from 'mongoose-timestamp';
 import { plugins } from 'mostly-feathers-mongoose';
 import { models as contents } from 'playing-content-services';
-import { models as actions } from 'playing-action-services';
+import { models as rules } from 'playing-rule-services';
 
 const settings = {
   access: [{ type: 'String', enum: [         // access settings with which the mission instance can be created
@@ -13,7 +13,7 @@ const settings = {
   maxActive: { type: 'Number' },             // maximun number of active instances can be created
   maxPlayer: { type: 'Number' },             // maximun number of instances can be created by a player
   maxActivePlayer: { type: 'Number' },       // maximun number of active instances can be created by a player
-  requires: actions.rule.requires,           // creation requirements
+  requires: rules.rule.requires,           // creation requirements
 };
 
 const lane = {
@@ -29,8 +29,8 @@ const activity = {
   ]},
   lane: { type: 'String' },                  // lane in which the activity belongs to
   loop: { type: 'Number' },                  // number of times a player can perform this task
-  rewards: actions.rule.rewards,             // rewards which the player can earn upon completing this task
-  requires: actions.rule.requires,           // requirements for performing the task
+  rewards: rules.rule.rewards,             // rewards which the player can earn upon completing this task
+  requires: rules.rule.requires,           // requirements for performing the task
   probabilty: { type: 'Number' },            // chance [0, 1] that the player will get any of the rewards on completing the task
   activities: { type: 'Mixed' },             // nested submission structure
 };
