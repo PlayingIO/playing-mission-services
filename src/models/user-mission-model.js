@@ -6,17 +6,17 @@ import { plugins } from 'mostly-feathers-mongoose';
  */
 const fields = {
   mission: { type: 'ObjectId' },             // id of the mission definition
-  state: { type: 'String', enum: [           // state of the mission instance
+  state: { type: String, enum: [             // state of the mission instance
     'ready',                                 // task can be performed
     'completed',                             // task being finished
     'active'                                 // task being performed but not completed
   ]},
-  loop: { type: 'Number' },                  // number of times the player has perfomed this task
+  loop: { type: Number },                    // number of times the player has perfomed this task
   perfomers: [{                              // players within this task who have performed this task at least once
     id: { type: 'ObjectId' },                // id of the performer
     lanes: [{
-      name: { type: 'String' },
-      role: { type: 'String' },
+      name: { type: String },
+      role: { type: String },
     }]
   }],
   owner: { type: 'ObjectId' },               // owner of the mission
