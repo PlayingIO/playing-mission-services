@@ -4,15 +4,10 @@ import { models as contents } from 'playing-content-services';
 import { models as rules } from 'playing-rule-services';
 
 const settings = {
-  access: [{ type: String, enum: [         // access settings with which the mission instance can be created
-    'public',
-    'protected',
-    'private'
-  ]}],
-  maxGlobal: { type: Number },             // maximun number of instances can be created
+  maxMissions: { type: Number },           // maximun number of instances can be created
   maxActive: { type: Number },             // maximun number of active instances can be created
-  maxPlayer: { type: Number },             // maximun number of instances can be created by a player
-  maxActivePlayer: { type: Number },       // maximun number of active instances can be created by a player
+  maxPlayerMissions: { type: Number },     // maximun number of instances can be created by a player
+  maxPlayerActive: { type: Number },       // maximun number of active instances can be created by a player
   requires: rules.rule.requires,           // creation requirements
 };
 
@@ -59,6 +54,9 @@ const fields = {
   name: { type: String, required: true },  // name for the mission
   description: { type: String },           // brief description of the mission
   image: contents.blob.schema,             // image which represents the mission
+  access: [{ type: String, enum: [         // access settings with which the mission instance can be created
+    'public', 'protected', 'private'
+  ]}],
   settings: settings,                      // settings for the whole mission
   lanes: [lane],                           // lanes for retricting players
   activities: [activity],                  // tasks or sub-missions within a mission
