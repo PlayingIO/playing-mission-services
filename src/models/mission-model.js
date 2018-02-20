@@ -2,6 +2,7 @@ import timestamps from 'mongoose-timestamp';
 import { plugins } from 'mostly-feathers-mongoose';
 import { models as contents } from 'playing-content-services';
 import { models as rules } from 'playing-rule-services';
+import { models as actions } from 'playing-action-services';
 
 const settings = {
   maxMissions: { type: Number },           // maximun number of instances can be created
@@ -16,6 +17,24 @@ const lane = {
   default: { type: Boolean },              // automatically join this lane when join the instance
 };
 
+const notification = {
+  mail: {                                  // notification email when task is completed
+    subject: { type: String },
+    message: { type: String }
+  },
+  message: { type: String },               // in-app notification message
+  target: {                                // notification target
+    type: { type: String, enum: [          // target type
+      'self', 'team_mates', 'process_members', 'all'
+    ]},
+    requires: rules.rule.requires,         // target requirements
+    roles: [{                              // target roles
+      lane: { type: String },
+      role: { type: String }
+    }]
+  }
+};
+
 // activity structure
 const activity = {
   name: { type: String, required: true },  // name for the activity
@@ -24,10 +43,11 @@ const activity = {
   ]},
   lane: { type: String },                  // lane in which the activity belongs to
   loop: { type: Number },                  // number of times a player can perform this task
+  activities: { type: Array, default: undefined }, // nested submission structure
   rewards: rules.rule.rewards,             // rewards which the player can earn upon completing this task
   requires: rules.rule.requires,           // requirements for performing the task
-  probabilty: { type: Number },            // chance [0, 1] that the player will get any of the rewards on completing the task
-  activities: { type: 'Mixed' },           // nested submission structure
+  notification: notification,              // notify selected player(s) members when complete task is completed!
+  rate: actions.action.rate,               // rate limit of the activity
 };
 
 // gateway structure
