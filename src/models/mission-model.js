@@ -25,7 +25,7 @@ const notification = {
   message: { type: String },               // in-app notification message
   target: {                                // notification target
     type: { type: String, enum: [          // target type
-      'self', 'team_mates', 'process_members', 'all'
+      'self', 'team_mates', 'mission_members', 'all'
     ]},
     requires: rules.rule.requires,         // target requirements
     roles: [{                              // target roles
@@ -35,36 +35,20 @@ const notification = {
   }
 };
 
-// activity structure
-const activity = {
-  name: { type: String, required: true },  // name for the activity
-  type: { type: String, enum: [            // type of the activity
-    'task', 'submission'
+// node structure
+const node = {
+  name: { type: String, required: true },  // name for the node
+  description: { type: String },           // brief description of the node
+  type: { type: String, enum: [            // type of the node
+    'single', 'sequential', 'parallel', 'exclusive'
   ]},
-  lane: { type: String },                  // lane in which the activity belongs to
+  lane: { type: String },                  // lane in which the node belongs to
   loop: { type: Number },                  // number of times a player can perform this task
   activities: { type: Array, default: undefined }, // nested submission structure
   rewards: rules.rule.rewards,             // rewards which the player can earn upon completing this task
   requires: rules.rule.requires,           // requirements for performing the task
   notification: notification,              // notify selected player(s) members when complete task is completed!
-  rate: actions.action.rate,               // rate limit of the activity
-};
-
-// gateway structure
-const gateway = {
-  name: { type: String, required: true },  // name for the gateway
-  type: { type: String, enum: [            // type of the gateway
-    'parallel', 'exclusive'
-  ]},
-  lane: { type: String },                  // lane in which the activity belongs to
-};
-
-// Sequence flows structure
-const sequenceflow = {
-  from: { type: String, required: true },  // node from which the sequence flow originates
-  to: { type: String, required: true },    // node to which the sequence flow originates
-  retry: { type: Boolean },                // whether the player can retry a task if he fails
-  lane: { type: String },                  // lane in which the activity belongs to
+  rate: actions.action.rate,               // rate limit of the node
 };
 
 /*
@@ -79,9 +63,7 @@ const fields = {
   ]}],
   settings: settings,                      // settings for the whole mission
   lanes: [lane],                           // lanes for retricting players
-  activities: [activity],                  // tasks or sub-missions within a mission
-  gateways: [gateway],                     // gateway for retricting the access to tasks and sub-mission based on the mission state
-  sequenceflows: [sequenceflow],           // lightweight objects which connect other nodes (activities, gateways) to each other
+  activities: [node],                      // tasks/sub-missions/gateways within a mission
   tags: [{ type: String }],                // tags of the mission
 };
 
