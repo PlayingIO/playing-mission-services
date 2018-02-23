@@ -13,6 +13,7 @@ const settings = {
 };
 
 const lane = {
+  _id: false,
   name: { type: String },                  // name for the lane
   default: { type: Boolean },              // automatically join this lane when join the instance
 };
@@ -37,6 +38,7 @@ const notification = {
 
 // node structure
 const node = {
+  _id: false,
   name: { type: String, required: true },  // name for the node
   description: { type: String },           // brief description of the node
   type: { type: String, enum: [            // type of the node
