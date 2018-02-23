@@ -51,6 +51,7 @@ const node = {
   requires: rules.rule.requires,           // requirements for performing the task
   notification: notification,              // notify selected player(s) members when complete task is completed!
   rate: actions.action.rate,               // rate limit of the node
+  retry: { type: Boolean, default: false } // whether the player can retry a task if he fails
 };
 
 /*
