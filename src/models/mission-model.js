@@ -18,20 +18,19 @@ const lane = {
   default: { type: Boolean },              // automatically join this lane when join the instance
 };
 
-const notification = {
-  mail: {                                  // notification email when task is completed
-    subject: { type: String },
-    message: { type: String }
-  },
-  message: { type: String },               // in-app notification message
-  target: {                                // notification target
+const notify = {
+  subject: { type: String },               // notify subject when task is completed
+  message: { type: String },               // email/in-app notify message
+  target: {                                // notify target
     type: { type: String, enum: [          // target type
       'self', 'team_mates', 'mission_members', 'all'
     ]},
     requires: rules.rule.requires,         // target requirements
     roles: [{                              // target roles
       lane: { type: String },
-      role: { type: String }
+      role: { type: String, enum: [
+        'player', 'observer'               // observer can only view process state
+      ]}
     }]
   }
 };
@@ -49,7 +48,7 @@ const node = {
   activities: { type: Array, default: undefined }, // nested submission structure
   rewards: rules.rule.rewards,             // rewards which the player can earn upon completing this task
   requires: rules.rule.requires,           // requirements for performing the task
-  notification: notification,              // notify selected player(s) members when complete task is completed!
+  notify: notify,                          // notify selected player(s) members when complete task is completed!
   rate: actions.action.rate,               // rate limit of the node
   retry: { type: Boolean, default: false } // whether the player can retry a task if he fails
 };
