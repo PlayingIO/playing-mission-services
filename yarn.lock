@@ -939,7 +939,7 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-date-fns@v2.0.0-alpha.7:
+date-fns@^v2.0.0-alpha.7:
   version "2.0.0-alpha.7"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.0.0-alpha.7.tgz#245ad16f95764eababfb2c0a41fd5d033c20e57a"
 
@@ -978,7 +978,7 @@ deep-is@~0.1.3:
   version "0.1.3"
   resolved "http://registry.npm.taobao.org/deep-is/download/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
 
-defaults@^1.0.0, defaults@^1.0.3:
+defaults@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/defaults/-/defaults-1.0.3.tgz#c656051e9817d9ff08ed881477f3fe4019f3ef7d"
   dependencies:
@@ -2634,12 +2634,6 @@ mongodb@2.2.26:
 mongoose-random@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/mongoose-random/-/mongoose-random-0.1.1.tgz#9ab163f11d4644f2f1b0562b2ebe94b05b201f7a"
-
-mongoose-timestamp@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/mongoose-timestamp/-/mongoose-timestamp-0.6.0.tgz#da54110ca8e6d4c2b9957a0366836c362ed272be"
-  dependencies:
-    defaults "^1.0.3"
 
 mongoose@^4.9.8:
   version "4.9.8"

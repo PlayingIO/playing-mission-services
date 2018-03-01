@@ -30,7 +30,6 @@
     "feathers-hooks-common": "^3.5.1",
     "mongoose": "^4.9.8",
     "mongoose-random": "^0.1.1",
-    "mongoose-timestamp": "^0.6.0",
     "nats": "^0.7.20"
   },
   "devDependencies": {

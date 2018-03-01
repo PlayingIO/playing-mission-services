@@ -1,8 +1,11 @@
-import timestamps from 'mongoose-timestamp';
 import { plugins } from 'mostly-feathers-mongoose';
 import { models as contents } from 'playing-content-services';
 import { models as rules } from 'playing-rule-services';
 import { models as actions } from 'playing-action-services';
+
+const options = {
+  timestamps: true
+};
 
 const settings = {
   maxMissions: { type: Number },           // maximun number of instances can be created
@@ -71,8 +74,7 @@ const fields = {
 
 export default function model (app, name) {
   const mongoose = app.get('mongoose');
-  const schema = new mongoose.Schema(fields);
-  schema.plugin(timestamps);
+  const schema = new mongoose.Schema(fields, options);
   schema.plugin(plugins.softDelete);
   return mongoose.model(name, schema);
 }
