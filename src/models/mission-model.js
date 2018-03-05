@@ -12,7 +12,7 @@ const settings = {
   maxActive: { type: Number },             // maximun number of active instances can be created
   maxPlayerMissions: { type: Number },     // maximun number of instances can be created by a player
   maxPlayerActive: { type: Number },       // maximun number of active instances can be created by a player
-  requires: rules.rule.requires,           // creation requirements
+  requires: rules.requires.schema,         // creation requirements
 };
 
 const lane = {
@@ -28,7 +28,7 @@ const notify = {
     type: { type: String, enum: [          // target type
       'self', 'team_mates', 'mission_members', 'all'
     ]},
-    requires: rules.rule.requires,         // target requirements
+    requires: rules.requires.schema,       // target requirements
     roles: [{                              // target roles
       lane: { type: String },
       role: { type: String, enum: [
@@ -49,10 +49,10 @@ const node = {
   lane: { type: String },                  // lane in which the node belongs to
   loop: { type: Number },                  // number of times a player can perform this task
   activities: { type: Array, default: undefined }, // nested submission structure
-  rewards: rules.rule.rewards,             // rewards which the player can earn upon completing this task
-  requires: rules.rule.requires,           // requirements for performing the task
+  rewards: rules.rewards.schema,           // rewards which the player can earn upon completing this task
+  requires: rules.requires.schema,         // requirements for performing the task
   notify: notify,                          // notify selected player(s) members when complete task is completed!
-  rate: actions.action.rate,               // rate limit of the node
+  rate: actions.rate.schema,               // rate limit of the node
   retry: { type: Boolean, default: false } // whether the player can retry a task if he fails
 };
 
