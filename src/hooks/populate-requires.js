@@ -4,7 +4,7 @@ import makeDebug from 'debug';
 import { helpers } from 'mostly-feathers-mongoose';
 import { helpers as rules } from 'playing-rule-services';
 
-const debug = makeDebug('playing:rule-services:hooks:populateRequires');
+const debug = makeDebug('playing:mission-services:hooks:populateRequires');
 
 function getActivityRequires(activities) {
   return fp.reduce((arr, activity) => {
