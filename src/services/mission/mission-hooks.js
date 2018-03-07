@@ -1,5 +1,7 @@
 import { hooks as auth } from 'feathers-authentication';
 import { hooks } from 'mostly-feathers-mongoose';
+import { populateRequires } from '../../hooks';
+
 import MissionEntity from '~/entities/mission-entity';
 
 module.exports = function(options = {}) {
@@ -17,6 +19,7 @@ module.exports = function(options = {}) {
     },
     after: {
       all: [
+        populateRequires('activities.requires'),
         hooks.presentEntity(MissionEntity, options),
         hooks.responder()
       ]
