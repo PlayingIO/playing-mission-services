@@ -8,21 +8,26 @@ const options = {
  * mission instance structure
  */
 const fields = {
-  mission: { type: 'ObjectId' },             // id of the mission definition
-  state: { type: String, enum: [             // state of the mission instance
-    'ready',                                 // task can be performed
-    'completed',                             // task being finished
-    'active'                                 // task being performed but not completed
+  mission: { type: 'ObjectId', required: true },  // id of the mission definition
+  access: { type: String, enum: [                 // access of the mission instance
+    'public', 'protected', 'private'
+  ], required: true },
+  state: { type: String, enum: [                  // state of the mission instance
+    'ready',                                      // task can be performed
+    'completed',                                  // task being finished
+    'active'                                      // task being performed but not completed
   ]},
-  loop: { type: Number },                    // number of times the player has perfomed this task
-  perfomers: [{                              // players within this task who have performed this task at least once
-    id: { type: 'ObjectId' },                // id of the performer
-    lanes: [{
+  loop: { type: Number },                         // number of times the player has perfomed this task
+  perfomers: [{                                   // players within this task who have performed this task at least once
+    id: { type: 'ObjectId' },                     // id of the performer
+    lanes: [{                                     // lane/role of the performer
       name: { type: String },
-      role: { type: String },
+      role: { type: String, enum: [
+        'observer', 'player'
+      ]},
     }]
   }],
-  owner: { type: 'ObjectId' },               // owner of the mission
+  owner: { type: 'ObjectId' },                    // owner of the mission
 };
 
 export default function model (app, name) {

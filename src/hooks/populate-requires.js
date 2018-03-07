@@ -27,7 +27,7 @@ export default function populateRequires(target) {
     // target must be specified by $select to assoc
     if (!helpers.isSelected(target, params.query.$select)) return hook;
 
-    // gether all requies in activites, as array of conditions array
+    // gether all requires in activites, as array of conditions array
     const requires = fp.reduce((arr, mission) => {
       return arr.concat(getActivityRequires(mission.activities || []));
     }, [], data);
