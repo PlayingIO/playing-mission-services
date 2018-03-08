@@ -38,10 +38,10 @@ class UserMissionService extends Service {
       data.status = 'ready';
       const defaultLane = fp.find(fp.propEq('default', true), mission.lanes || []);
       if (defaultLane) {
-        data.performers = {
+        data.performers = [{
           user: data.owner,
           lanes: [{ lane: defaultLane.name, role: 'player' }]
-        };
+        }];
       }
       return super._upsert(null, data, { query: {
         mission: data.mission,
@@ -50,6 +50,35 @@ class UserMissionService extends Service {
         return result;
       });
     });
+  }
+
+  _join(id, data, params, orignal) {
+    assert(data.lane, 'data.lane is not provided.');
+    assert(data.role, 'data.role is not provided.');
+
+    const performerId = data.performer || data.user;
+    const performer = fp.find(p => {
+      return String(p.user) === performerId;
+    }, orignal.performers);
+    if (performer) {
+      params.query = fp.assign(params.query, {
+        'performers.user': performerId
+      });
+      return super.patch(id, {
+        $addToSet: {
+          'performers.$.lanes': { role: data.role, lane: data.lane }
+        }
+      }, params);
+    } else {
+      return super.patch(id, {
+        $addToSet: {
+          performers: {
+            user: performerId,
+            lanes: [{ role: data.role, lane: data.lane }]
+          }
+        }
+      }, params);
+    }
   }
 }
 

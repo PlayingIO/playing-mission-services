@@ -16,14 +16,19 @@ module.exports = function(options = {}) {
           associateCurrentUser({ idField: 'id', as: 'owner' }))
       ],
       update: [
+        iff(isProvider('external'),
+          associateCurrentUser({ idField: 'id', as: 'user' })),
         hooks.discardFields('id', 'owner', 'createdAt', 'updatedAt', 'destroyedAt')
       ],
       patch: [
+        iff(isProvider('external'),
+          associateCurrentUser({ idField: 'id', as: 'user' })),
         hooks.discardFields('id', 'owner', 'createdAt', 'updatedAt', 'destroyedAt')
       ]
     },
     after: {
       all: [
+        hooks.populate('mission', { service: 'missions' }),
         hooks.populate('owner', { service: 'users' }),
         hooks.populate('performers.user', { service: 'users' }),
         hooks.presentEntity(UserMissionEntity, options),
