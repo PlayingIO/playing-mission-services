@@ -66,14 +66,11 @@ class UserMissionService extends Service {
       assert(mission, 'mission not exists');
       if (data.performer) assert(performerUser, 'performer not exists');
 
+      const performerId = data.performer || data.user;
+      const performer = fp.find(p => String(p.user) === performerId, orignal.performers);
       const lanes = fp.map(fp.prop('name'), mission.lanes || []);
       assert(fp.contains(data.lane, lanes), 'data.lane not exists in current mission');
 
-      const performerId = data.performer || data.user;
-      const performer = fp.find(p => {
-        return String(p.user) === performerId;
-      }, orignal.performers);
-      
       if (performer) {
         params.query = fp.assign(params.query, {
           'performers.user': performerId
