@@ -18,10 +18,12 @@ const fields = {
     'active'                                      // task being performed but not completed
   ]},
   loop: { type: Number },                         // number of times the player has perfomed this task
-  perfomers: [{                                   // players within this task who have performed this task at least once
-    id: { type: 'ObjectId' },                     // id of the performer
+  performers: [{                                  // players within this task who have performed this task at least once
+    _id: false,
+    user: { type: 'ObjectId' },                   // id of the performer
     lanes: [{                                     // lane/role of the performer
-      name: { type: String },
+      _id: false,
+      lane: { type: String },
       role: { type: String, enum: [
         'observer', 'player'
       ]},
