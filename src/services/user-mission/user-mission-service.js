@@ -29,12 +29,11 @@ class UserMissionService extends Service {
     assert(params.user, 'params.user not provided');
 
     const svcMissions = this.app.service('missions');
-
     const getMission = (id) => svcMissions.get(id);
 
     return getMission(data.mission).then(mission => {
       assert(mission, 'data.mission is not exists.');
-      data['$inc'] = { loop: 1 };
+      data['$inc'] = { loop: 0 };
       data.status = 'ready';
       const defaultLane = fp.find(fp.propEq('default', true), mission.lanes || []);
       if (defaultLane) {
@@ -53,32 +52,48 @@ class UserMissionService extends Service {
   }
 
   _join(id, data, params, orignal) {
+    assert(orignal && orignal.performers, 'target performers not exists');
     assert(data.lane, 'data.lane is not provided.');
     assert(data.role, 'data.role is not provided.');
 
-    const performerId = data.performer || data.user;
-    const performer = fp.find(p => {
-      return String(p.user) === performerId;
-    }, orignal.performers);
-    if (performer) {
-      params.query = fp.assign(params.query, {
-        'performers.user': performerId
-      });
-      return super.patch(id, {
-        $addToSet: {
-          'performers.$.lanes': { role: data.role, lane: data.lane }
-        }
-      }, params);
-    } else {
-      return super.patch(id, {
-        $addToSet: {
-          performers: {
-            user: performerId,
-            lanes: [{ role: data.role, lane: data.lane }]
+    const getMission = (id) => this.app.service('missions').get(id);
+    const getPerformer = (id) => id? this.app.service('users').get(id) : Promise.resolve();
+
+    return Promise.all([
+      getMission(orignal.mission),
+      getPerformer(data.performer)
+    ]).then(([mission, performerUser]) => {
+      assert(mission, 'mission not exists');
+      if (data.performer) assert(performerUser, 'performer not exists');
+
+      const lanes = fp.map(fp.prop('name'), mission.lanes || []);
+      assert(fp.contains(data.lane, lanes), 'data.lane not exists in current mission');
+
+      const performerId = data.performer || data.user;
+      const performer = fp.find(p => {
+        return String(p.user) === performerId;
+      }, orignal.performers);
+      
+      if (performer) {
+        params.query = fp.assign(params.query, {
+          'performers.user': performerId
+        });
+        return super.patch(id, {
+          $addToSet: {
+            'performers.$.lanes': { role: data.role, lane: data.lane }
           }
-        }
-      }, params);
-    }
+        }, params);
+      } else {
+        return super.patch(id, {
+          $addToSet: {
+            performers: {
+              user: performerId,
+              lanes: [{ role: data.role, lane: data.lane }]
+            }
+          }
+        }, params);
+      }
+    });
   }
 }
 
