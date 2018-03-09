@@ -33,7 +33,7 @@ class UserMissionService extends Service {
 
     return getMission(data.mission).then(mission => {
       assert(mission, 'data.mission is not exists.');
-      data['$inc'] = { loop: 0 };
+      data.loop = 0;
       data.status = 'ready';
       const defaultLane = fp.find(fp.propEq('default', true), mission.lanes || []);
       if (defaultLane) {
@@ -42,10 +42,7 @@ class UserMissionService extends Service {
           lanes: [{ lane: defaultLane.name, role: 'player' }]
         }];
       }
-      return super._upsert(null, data, { query: {
-        mission: data.mission,
-        owner: data.owner
-      }});
+      return super.create(data);
     });
   }
 
