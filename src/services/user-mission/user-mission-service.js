@@ -45,9 +45,7 @@ class UserMissionService extends Service {
       return super._upsert(null, data, { query: {
         mission: data.mission,
         owner: data.owner
-      }}).then(result => {
-        return result;
-      });
+      }});
     });
   }
 
