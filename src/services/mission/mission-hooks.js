@@ -21,7 +21,7 @@ module.exports = function(options = {}) {
   return {
     before: {
       all: [
-        hooks.authenticate('jwt', options)
+        hooks.authenticate('jwt', options.auth)
       ],
       update: [
         hooks.discardFields('id', 'createdAt', 'updatedAt', 'destroyedAt')
