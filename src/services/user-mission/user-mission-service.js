@@ -47,28 +47,31 @@ class UserMissionService extends Service {
   }
 
   _join(id, data, params, orignal) {
-    assert(orignal && orignal.performers, 'target performers not exists');
+    assert(orignal, 'user mission not exists');
     assert(data.lane, 'data.lane is not provided.');
     assert(data.role, 'data.role is not provided.');
+    assert(data.player || data.user, 'data.player is not provided.');
 
     const getMission = (id) => this.app.service('missions').get(id);
-    const getPerformer = (id) => id? this.app.service('users').get(id) : Promise.resolve();
+    const getPlayer = (id) => id? this.app.service('users').get(id) : Promise.resolve();
 
     return Promise.all([
       getMission(orignal.mission),
-      getPerformer(data.performer)
-    ]).then(([mission, performerUser]) => {
+      getPlayer(data.player)
+    ]).then(([mission, player]) => {
       assert(mission, 'mission not exists');
-      if (data.performer) assert(performerUser, 'performer not exists');
+      if (data.player) assert(player, 'player not exists');
 
-      const performerId = data.performer || data.user;
-      const performer = fp.find(p => String(p.user) === performerId, orignal.performers);
+      const playerId = data.player || data.user; // player or current user
+      const hasPerformer = fp.find(p => String(p.user) === playerId, orignal.performers || []);
       const lanes = fp.map(fp.prop('name'), mission.lanes || []);
-      assert(fp.contains(data.lane, lanes), 'data.lane not exists in current mission');
+      assert(fp.contains(data.lane, lanes), 'data.lane not exists in this mission');
 
-      if (performer) {
+      // TODO check the permission for join the group
+
+      if (hasPerformer) {
         params.query = fp.assign(params.query, {
-          'performers.user': performerId
+          'performers.user': playerId
         });
         return super.patch(id, {
           $addToSet: {
@@ -79,12 +82,40 @@ class UserMissionService extends Service {
         return super.patch(id, {
           $addToSet: {
             performers: {
-              user: performerId,
+              user: playerId,
               lanes: [{ role: data.role, lane: data.lane }]
             }
           }
         }, params);
       }
+    });
+  }
+
+  _leave(id, data, params, orignal) {
+    assert(orignal, 'user mission not exists');
+    assert(data.player || data.user, 'data.player is not provided.');
+
+    const getMission = (id) => this.app.service('missions').get(id);
+    const getPlayer = (id) => id? this.app.service('users').get(id) : Promise.resolve();
+
+    return Promise.all([
+      getMission(orignal.mission),
+      getPlayer(data.player)
+    ]).then(([mission, player]) => {
+      assert(mission, 'mission not exists');
+      if (data.player) assert(player, 'player not exists');
+
+      const playerId = data.player || data.user; // player or current user
+      const hasPerformer = fp.find(p => String(p.user) === playerId, orignal.performers || []);
+      assert(hasPerformer, 'player is not a performer of this mission');
+
+      // TODO check the permission for leave the group
+      
+      return super.patch(id, {
+        $pull: {
+          'performers': { user: playerId }
+        }
+      }, params);
     });
   }
 }
