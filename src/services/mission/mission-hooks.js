@@ -1,5 +1,6 @@
 import { hooks } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
+import { cache } from 'mostly-feathers-cache';
 import { hooks as rules } from 'playing-rule-services';
 
 import MissionEntity from '~/entities/mission-entity';
@@ -21,7 +22,8 @@ module.exports = function(options = {}) {
   return {
     before: {
       all: [
-        hooks.authenticate('jwt', options.auth)
+        hooks.authenticate('jwt', options.auth),
+        cache(options.cache)
       ],
       update: [
         hooks.discardFields('id', 'createdAt', 'updatedAt', 'destroyedAt')
@@ -36,6 +38,7 @@ module.exports = function(options = {}) {
         rules.populateRequires('activities.notify.target.requires', getActivityNotifyRequires),
         rules.populateRewards('activities.rewards', getActivityRewards),
         rules.populateRequires('settings.requires'),
+        cache(options.cache),
         hooks.presentEntity(MissionEntity, options),
         hooks.responder()
       ]
