@@ -6,7 +6,6 @@ import { notify } from './notify-schema';
 
 // activity structure
 const activity = {
-  _id: false,
   name: { type: String, required: true },  // name for the activity
   description: { type: String },           // brief description of the activity
   type: { type: String, enum: [            // type of the activity

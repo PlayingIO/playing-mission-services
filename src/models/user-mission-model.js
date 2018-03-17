@@ -4,7 +4,26 @@ const options = {
   timestamps: true
 };
 
-/*
+/**
+ * task is a activity being performed by user
+ */
+const task = {
+  key: { type: 'String', required: true },        // path to an actity in mission's activities, eg. "1.0.2" means activities[1][0][2]
+  activity: { type: 'ObjectId', required: true }, // id of the activity to check if mismatched with key
+  state: { type: String, enum: [                  // state of the task
+    'ready',                                      // task can be performed
+    'completed',                                  // all task being finished
+    'active'                                      // task in progress (looped task or has unfinished nested tasks)
+  ]},
+  loop: { type: Number },                         // number of times the task has perfomed
+  performers: [{                                  // players within this task who have performed this task at least once
+    _id: false,
+    user: { type: 'ObjectId' },                   // id of the performer
+    scopes: [{ type: String }]                    // custom leaderboard scopes which the task performed with
+  }]
+};
+
+/**
  * mission instance structure
  */
 const fields = {
@@ -13,11 +32,11 @@ const fields = {
     'public', 'protected', 'private'
   ], required: true },
   state: { type: String, enum: [                  // state of the mission instance
-    'ready',                                      // task can be performed
-    'completed',                                  // task being finished
-    'active'                                      // task being performed but not completed
+    'ready',                                      // mission can be performed
+    'completed',                                  // mission being finished
+    'active'                                      // mission in progress
   ]},
-  loop: { type: Number },                         // number of times the player has perfomed this task
+  tasks: [task],                                  // tasks in this mission (defined by activities)
   performers: [{                                  // players within this task who have performed this task at least once
     _id: false,
     user: { type: 'ObjectId' },                   // id of the performer
