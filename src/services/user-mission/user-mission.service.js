@@ -3,8 +3,8 @@ import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 
-import UserMissionModel from '~/models/user-mission-model';
-import defaultHooks from './user-mission-hooks';
+import UserMissionModel from '~/models/user-mission.model';
+import defaultHooks from './user-mission.hooks';
 import { getRecursiveTasks } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions');

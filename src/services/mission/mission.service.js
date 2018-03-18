@@ -2,8 +2,8 @@ import assert from 'assert';
 import makeDebug from 'debug';
 import { Service, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
-import MissionModel from '~/models/mission-model';
-import defaultHooks from './mission-hooks';
+import MissionModel from '~/models/mission.model';
+import defaultHooks from './mission.hooks';
 
 const debug = makeDebug('playing:mission-services:missions');
 
