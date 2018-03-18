@@ -2,7 +2,7 @@ import { plugins } from 'mostly-feathers-mongoose';
 import { models as rules } from 'playing-rule-services';
 import { models as actions } from 'playing-action-services';
 
-import { notify } from './notify-schema';
+import { notify } from './notify.schema';
 
 // activity structure
 const activity = {
