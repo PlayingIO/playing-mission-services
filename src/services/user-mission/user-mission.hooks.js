@@ -14,17 +14,18 @@ module.exports = function(options = {}) {
       ],
       create: [
         iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'owner' }))
+          associateCurrentUser({ idField: 'id', as: 'owner' })),
+        hooks.discardFields('tasks')
       ],
       update: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.discardFields('id', 'owner', 'createdAt', 'updatedAt', 'destroyedAt')
+        hooks.discardFields('id', 'owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
       ],
       patch: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.discardFields('id', 'owner', 'createdAt', 'updatedAt', 'destroyedAt')
+        hooks.discardFields('id', 'owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
       ]
     },
     after: {
