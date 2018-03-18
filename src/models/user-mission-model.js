@@ -8,8 +8,8 @@ const options = {
  * task is a activity being performed by user
  */
 const task = {
-  key: { type: 'String', required: true },        // path to an actity in mission's activities, eg. "1.0.2" means activities[1][0][2]
-  activity: { type: 'ObjectId', required: true }, // id of the activity to check if mismatched with key
+  key: { type: String, required: true },          // path to an actity in mission's activities, eg. "1.0.2" means activities[1][0][2]
+  name: { type: String, required: true },         // name of the activity to check if mismatched with key
   state: { type: String, enum: [                  // state of the task
     'ready',                                      // task can be performed
     'completed',                                  // all task being finished
