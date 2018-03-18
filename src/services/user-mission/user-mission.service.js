@@ -5,7 +5,7 @@ import fp from 'mostly-func';
 
 import UserMissionModel from '~/models/user-mission.model';
 import defaultHooks from './user-mission.hooks';
-import { getRecursiveTasks } from '../../helpers';
+import { walkRecursiveTasks } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions');
 
@@ -30,7 +30,12 @@ class UserMissionService extends Service {
     const userMission = await super.get(id, params);
     assert(userMission, 'user mission not exists.');
     const mission = await svcMissions.get(userMission.mission);
-    userMission.tasks = getRecursiveTasks([])(mission.activities);
+    userMission.tasks = [{
+      key: "0",
+      name: "step1",
+      loop: 1,
+    }];
+    userMission.tasks = walkRecursiveTasks(userMission.tasks || [], [])(mission.activities);
     return userMission;
   }
 

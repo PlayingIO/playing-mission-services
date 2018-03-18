@@ -1,24 +1,41 @@
 import fp from 'mostly-func';
 
-const getTask = (keys, activity) => {
-  return {
-    key: keys.join('.'),
-    name: activity.name,
-    loop: activity.loop? parseInt(activity.loop) : undefined
-  };
+const getTask = (tasks, keys, activity) => {
+  const task = fp.path(keys, tasks);
+  const key = keys.join('.');
+  const name = activity.name;
+  let state = 'ready';
+  let loop = undefined;
+  if (task && name === task.name) { // check name with key
+    state = 'completed';
+    if (task.loop && activity.loop) { // if looped task
+      loop = task.loop;
+      if (task.loop < parseInt(activity.loop)) {
+        state = 'active';
+      }
+    }
+    return { key, name, state, loop };
+  } else {
+    return null;
+  }
 };
 
-export const getRecursiveTasks = (keys) => (activities) => {
-  return fp.flatten(fp.mapIndexed((activity, index) => {
-    if (activity.type === 'single') {
-      return getTask([...keys,index], activity);
-    } else {
-      return [
-        getTask([...keys,index], activity),
-        ...fp.flatten(getRecursiveTasks([...keys,index])(activity.activities || []))
-      ];
+export const walkRecursiveTasks = (tasks, keys, previous = null) => (activities) => {
+  return fp.reduceIndexed((acc, activity, index) => {
+    const task = getTask(tasks, [...keys,index], activity, previous);
+    if (task) {
+      switch (activity.type) {
+        case 'single':
+          acc = acc.concat([task]);
+          break;
+        case 'sequential': {
+          acc = acc.concat(walkRecursiveTasks(tasks, [...keys,index])(activity.activities || []));
+          break;
+        }
+      }
     }
-  }, activities));
+    return acc;
+  }, [], activities);
 };
 
 export const getRecursiveRequires = (path) => (activities) => {
