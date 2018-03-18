@@ -1,9 +1,11 @@
 import assert from 'assert';
 import makeDebug from 'debug';
-import { Service, createService } from 'mostly-feathers-mongoose';
+import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
+
 import UserMissionModel from '~/models/user-mission-model';
 import defaultHooks from './user-mission-hooks';
+import { getRecursiveTasks } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions');
 
@@ -20,6 +22,20 @@ class UserMissionService extends Service {
   setup(app) {
     super.setup(app);
     this.hooks(defaultHooks(this.options));
+  }
+
+  async get(id, params) {
+    const svcMissions = this.app.service('missions');
+
+    const userMission = await super.get(id, params);
+    assert(userMission, 'user mission not exists.');
+    const mission = await svcMissions.get(userMission.mission);
+    userMission.tasks = getRecursiveTasks([])(mission.activities);
+    return userMission;
+  }
+
+  _getTasks(activities) {
+
   }
 
   create(data, params) {
@@ -46,6 +62,63 @@ class UserMissionService extends Service {
     });
   }
 
+  /**
+   * Get a list of all available tasks a player can play in a user mission.
+   */
+  _trigger(id, data, params, orignal) {
+    // params = fp.assign({ query: {} }, params);
+    // assert(params.user, 'params.user not provided');
+
+    // const svcActions = this.app.service('actions');
+    // // get available actions
+    // const getActions = () => svcActions.find({
+    //   query: { $select: ['rules.rewards.metric', '*'] },
+    //   paginate: false
+    // });
+    // // get user-actions of provided actions
+    // const getUserActions = (actions) => {
+    //   return super.find({
+    //     query: { action: { $in: fp.map(fp.prop('id'), actions) } },
+    //     paginate: false
+    //   });
+    // };
+
+    // // filter actions by requires
+    // const fulfillActions = (actions => {
+    //   const activeActions = fp.reduce((arr, action) => {
+    //     // filter by visibility requirements
+    //     if (fulfillActionRequires(action, params.user)) {
+    //       // filter by the rule requirements
+    //       const rewards = fulfillActionRewards(action, params.user);
+    //       action = fp.omit(['rules', 'requires', 'rate'], action);
+    //       action.rewards = rewards;
+    //       return arr.concat(action);
+    //     }
+    //     return arr;
+    //   }, [], actions);
+    //   return activeActions;
+    // });
+
+    // // assoc count from user-actions to active actions
+    // const assocActions = (actions, userActions) => {
+    //   return fp.map(action => {
+    //     const userAction = fp.find(fp.propEq('action', action.id), userActions);
+    //     return fp.assoc('count', userAction && userAction.count || 0, action);
+    //   }, actions);
+    // };
+
+    // let activeActions = [];
+    // return getActions().then(results => {
+    //   activeActions = fulfillActions(results && results.data || results);
+    //   return getUserActions(activeActions);
+    // }).then(results => {
+    //   return assocActions(activeActions, results && results.data || results);
+    // });
+  }
+
+  /**
+   * Join a user mission with specified the role and lanes.
+   */
   _join(id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(data.lane, 'data.lane is not provided.');
@@ -91,6 +164,9 @@ class UserMissionService extends Service {
     });
   }
 
+  /**
+   * Leave a user mission.
+   */
   _leave(id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(data.player || data.user, 'data.player is not provided.');
@@ -110,7 +186,7 @@ class UserMissionService extends Service {
       assert(hasPerformer, 'player is not a performer of this mission');
 
       // TODO check the permission for leave the group
-      
+
       return super.patch(id, {
         $pull: {
           'performers': { user: playerId }
