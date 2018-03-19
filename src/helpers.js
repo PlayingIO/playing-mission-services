@@ -1,7 +1,7 @@
 import fp from 'mostly-func';
 
 // get a task of an activity at a given keys,
-// based by previous task status
+// based by previous task state
 const getTask = (tasks, keys, activity, previous) => {
   const key = keys.join('.');
   const task = fp.find(fp.propEq('key', key), tasks);
@@ -10,7 +10,7 @@ const getTask = (tasks, keys, activity, previous) => {
     if (task && task.name == activity.name) { // check name with key
       return fp.assoc('type', activity.type, task);
     } else {
-      return { key, name: activity.name, status: 'ready', type: activity.type };
+      return { key, name: activity.name, state: 'ready', type: activity.type };
     }
   }
   return null;

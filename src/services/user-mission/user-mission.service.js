@@ -5,7 +5,6 @@ import fp from 'mostly-func';
 
 import UserMissionModel from '~/models/user-mission.model';
 import defaultHooks from './user-mission.hooks';
-import { walkThroughTasks } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions');
 
@@ -24,30 +23,7 @@ class UserMissionService extends Service {
     this.hooks(defaultHooks(this.options));
   }
 
-  async get(id, params) {
-    const svcMissions = this.app.service('missions');
-
-    const userMission = await super.get(id, params);
-    assert(userMission, 'user mission not exists.');
-    const mission = await svcMissions.get(userMission.mission);
-    userMission.tasks = [
-      { key: "0", name: "step1", state: 'completed' },
-      { key: "1.0", name: "step2-1", state: 'completed' },
-      { key: "1.1", name: "step2-2", state: 'completed' },
-      { key: "2.0", name: "step3-1", state: 'completed' },
-      { key: "2.1", name: "step3-2", state: 'completed' },
-      //{ key: "3.1", name: "step4-2", state: 'completed' },
-      { key: "4", name: "step5", state: 'completed' },
-    ];
-    userMission.tasks = walkThroughTasks(userMission.tasks || [], [])(mission.activities);
-    return userMission;
-  }
-
-  _getTasks(activities) {
-
-  }
-
-  create(data, params) {
+  async create(data, params) {
     assert(data.mission, 'data.mission not provided.');
     assert(data.access, 'data.access not provided.');
     assert(data.owner, 'data.owner not provided.');
@@ -56,73 +32,18 @@ class UserMissionService extends Service {
     const svcMissions = this.app.service('missions');
     const getMission = (id) => svcMissions.get(id);
 
-    return getMission(data.mission).then(mission => {
-      assert(mission, 'data.mission is not exists.');
-      data.loop = 0;
-      data.status = 'ready';
-      const defaultLane = fp.find(fp.propEq('default', true), mission.lanes || []);
-      if (defaultLane) {
-        data.performers = [{
-          user: data.owner,
-          lanes: [{ lane: defaultLane.name, role: 'player' }]
-        }];
-      }
-      return super.create(data);
-    });
-  }
-
-  /**
-   * Get a list of all available tasks a player can play in a user mission.
-   */
-  _trigger(id, data, params, orignal) {
-    // params = fp.assign({ query: {} }, params);
-    // assert(params.user, 'params.user not provided');
-
-    // const svcActions = this.app.service('actions');
-    // // get available actions
-    // const getActions = () => svcActions.find({
-    //   query: { $select: ['rules.rewards.metric', '*'] },
-    //   paginate: false
-    // });
-    // // get user-actions of provided actions
-    // const getUserActions = (actions) => {
-    //   return super.find({
-    //     query: { action: { $in: fp.map(fp.prop('id'), actions) } },
-    //     paginate: false
-    //   });
-    // };
-
-    // // filter actions by requires
-    // const fulfillActions = (actions => {
-    //   const activeActions = fp.reduce((arr, action) => {
-    //     // filter by visibility requirements
-    //     if (fulfillActionRequires(action, params.user)) {
-    //       // filter by the rule requirements
-    //       const rewards = fulfillActionRewards(action, params.user);
-    //       action = fp.omit(['rules', 'requires', 'rate'], action);
-    //       action.rewards = rewards;
-    //       return arr.concat(action);
-    //     }
-    //     return arr;
-    //   }, [], actions);
-    //   return activeActions;
-    // });
-
-    // // assoc count from user-actions to active actions
-    // const assocActions = (actions, userActions) => {
-    //   return fp.map(action => {
-    //     const userAction = fp.find(fp.propEq('action', action.id), userActions);
-    //     return fp.assoc('count', userAction && userAction.count || 0, action);
-    //   }, actions);
-    // };
-
-    // let activeActions = [];
-    // return getActions().then(results => {
-    //   activeActions = fulfillActions(results && results.data || results);
-    //   return getUserActions(activeActions);
-    // }).then(results => {
-    //   return assocActions(activeActions, results && results.data || results);
-    // });
+    const mission = await getMission(data.mission);
+    assert(mission, 'data.mission is not exists.');
+    data.loop = 0;
+    data.status = 'ready';
+    const defaultLane = fp.find(fp.propEq('default', true), mission.lanes || []);
+    if (defaultLane) {
+      data.performers = [{
+        user: data.owner,
+        lanes: [{ lane: defaultLane.name, role: 'player' }]
+      }];
+    }
+    return super.create(data);
   }
 
   /**

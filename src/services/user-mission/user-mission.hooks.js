@@ -3,6 +3,7 @@ import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authenticat
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 
+import { populateTasks } from '~/hooks';
 import UserMissionEntity from '~/entities/user-mission.entity';
 
 module.exports = function(options = {}) {
@@ -33,6 +34,7 @@ module.exports = function(options = {}) {
         hooks.populate('mission', { service: 'missions' }),
         hooks.populate('owner', { service: 'users' }),
         hooks.populate('performers.user', { service: 'users' }),
+        populateTasks(),
         cache(options.cache),
         hooks.presentEntity(UserMissionEntity, options),
         hooks.responder()
