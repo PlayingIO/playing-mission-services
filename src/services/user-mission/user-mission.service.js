@@ -122,6 +122,29 @@ class UserMissionService extends Service {
       }
     }, params);
   }
+
+  /**
+   * Play a user mission. Playing a mission causes its state to change.
+   */
+  async _play(id, data, params, orignal) {
+    assert(orignal, 'user mission not exists');
+    assert(data.trigger, 'data.trigger is not provided.');
+    assert(data.user, 'data.user is not provided.');
+    data.scopes = data.scopes || []; // scope in which the scores will be counted
+    
+    const performer = fp.find(fp.propEq('user', context.params.user.id), orignal.mission.performers);
+    assert(performer, 'data.user is not members of this mission, please join the mission first.');
+
+    const task = fp.find(fp.propEq('key', data.trigger), orignal.tasks);
+    if (!task) {
+      throw new Error('Requirements not meet, You can not play the trigger yet.');
+    }
+    if (task.state === 'completed') {
+      throw new Error('Trigger has already been played by someone else.');
+    }
+    
+    return task;
+  }
 }
 
 export default function init(app, options, hooks) {
