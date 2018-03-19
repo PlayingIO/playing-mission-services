@@ -20,7 +20,10 @@ export default function populateTasks(target, getRequires) {
     let data = helpers.getHookDataAsArray(context);
 
     const missions = await svcMissions.find({
-      query: { id: { $in: fp.map(helpers.pathId('mission'), data) } },
+      query: {
+        id: { $in: fp.map(helpers.pathId('mission'), data) },
+        $select: 'activities.requires,activities.rewards'
+      },
       paginate: false
     });
     for (let userMission of data) {
@@ -35,7 +38,8 @@ export default function populateTasks(target, getRequires) {
           //{ key: "3.1", name: "step4-2", state: 'completed' },
           { key: "4", name: "step5", state: 'completed' },
         ];
-        userMission.tasks = walkThroughTasks(userMission.tasks || [], [])(mission.activities);
+        userMission.tasks = walkThroughTasks(context.params.user,
+          userMission.tasks || [], [])(mission.activities);
       }
     }
 

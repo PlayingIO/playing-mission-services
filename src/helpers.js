@@ -1,8 +1,18 @@
 import fp from 'mostly-func';
+import { helpers } from 'mostly-feathers-mongoose';
+import { helpers as rules } from 'playing-rule-services';
+
+export const fulfillActivityRequires = (activity, user) => {
+  return rules.fulfillRequires(user, [], activity.requires);
+};
+
+export const fulfillActivityRewards = (activity, user) => {
+  return rules.fulfillCustomRewards(fp.pick(['requires', 'rewards'], activity), [], user);
+};
 
 // get a task of an activity at a given keys,
 // based by previous task state
-const getTask = (tasks, keys, activity, previous) => {
+const getTask = (user, tasks, keys, activity, previous) => {
   const key = keys.join('.');
   const task = fp.find(fp.propEq('key', key), tasks);
 
@@ -16,9 +26,9 @@ const getTask = (tasks, keys, activity, previous) => {
   return null;
 };
 
-export const walkThroughTasks = (tasks, keys, previous = null, keepPrevious = false) => (activities) => {
+export const walkThroughTasks = (user, tasks, keys, previous = null, keepPrevious = false) => (activities) => {
   return fp.reduceIndexed((acc, activity, index) => {
-    const task = getTask(tasks, [...keys,index], activity, previous);
+    const task = getTask(user, tasks, [...keys,index], activity, previous);
     if (!task) return acc; // break
 
     const subActivities = activity.activities || [];
@@ -29,7 +39,7 @@ export const walkThroughTasks = (tasks, keys, previous = null, keepPrevious = fa
         break;
       }
       case 'sequential': {
-        const subTasks = walkThroughTasks(tasks, [...keys,index], previous)(subActivities);
+        const subTasks = walkThroughTasks(user, tasks, [...keys,index], previous)(subActivities);
         const completed = fp.filter(fp.propEq('state', 'completed'), subTasks);
         if (completed.length == subActivities.length) { // all completed
           task.state = 'completed';
@@ -41,7 +51,7 @@ export const walkThroughTasks = (tasks, keys, previous = null, keepPrevious = fa
         break;
       }
       case 'parallel': {
-        const subTasks = walkThroughTasks(tasks, [...keys,index], previous, true)(subActivities);
+        const subTasks = walkThroughTasks(user, tasks, [...keys,index], previous, true)(subActivities);
         const completed = fp.filter(fp.propEq('state', 'completed'), subTasks);
         if (completed.length == subActivities.length) { // all completed
           task.state = 'completed';
@@ -53,7 +63,7 @@ export const walkThroughTasks = (tasks, keys, previous = null, keepPrevious = fa
         break;
       }
       case 'exclusive': {
-        const subTasks = walkThroughTasks(tasks, [...keys,index], previous, true)(subActivities);
+        const subTasks = walkThroughTasks(user, tasks, [...keys,index], previous, true)(subActivities);
         const completed = fp.filter(fp.propEq('state', 'completed'), subTasks);
         if (completed.length > 0) { // any completed
           task.state = 'completed';
