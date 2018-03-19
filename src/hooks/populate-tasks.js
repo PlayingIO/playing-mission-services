@@ -15,6 +15,8 @@ export default function populateTasks(target, getRequires) {
   return async function (context) {
     assert(context.type === 'after', `populateTasks must be used as a 'after get' hook.`);
 
+    assert(context.params.user, 'Cannot view tasks without logined.');
+
     const svcMissions = this.app.service('missions');
 
     let data = helpers.getHookDataAsArray(context);
