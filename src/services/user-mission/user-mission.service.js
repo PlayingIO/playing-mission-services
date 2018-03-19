@@ -131,10 +131,14 @@ class UserMissionService extends Service {
     assert(data.trigger, 'data.trigger is not provided.');
     assert(data.user, 'data.user is not provided.');
     data.scopes = data.scopes || []; // scope in which the scores will be counted
-    
-    const performer = fp.find(fp.propEq('user', context.params.user.id), orignal.mission.performers);
+
+    // whether the user is one of the performers
+    const performer = fp.find(performer => {
+      return helpers.getId(performer.user) === helpers.getId(params.user);
+    }, orignal.performers || []);
     assert(performer, 'data.user is not members of this mission, please join the mission first.');
 
+    // check the state of the task
     const task = fp.find(fp.propEq('key', data.trigger), orignal.tasks);
     if (!task) {
       throw new Error('Requirements not meet, You can not play the trigger yet.');
@@ -142,7 +146,18 @@ class UserMissionService extends Service {
     if (task.state === 'completed') {
       throw new Error('Trigger has already been played by someone else.');
     }
-    
+
+    // create reward for this task
+    const svcUserMetrics = this.app.service('user-metrics');
+    const createRewards = fp.reduce((arr, reward) => {
+      if (reward.metric) {
+        reward.metric = helpers.getId(reward.metric.id);
+        reward.user = data.user;
+        arr.push(svcUserMetrics.create(reward));
+      }
+      return arr;
+    }, []);
+
     return task;
   }
 }
