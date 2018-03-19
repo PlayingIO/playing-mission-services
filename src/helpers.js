@@ -23,7 +23,7 @@ const getTask = (user, tasks, keys, activity, previous) => {
   if (!previous || previous.state === 'completed') {
     if (task && task.name == activity.name) { // check name with key
       return fp.assoc('rewards', rewards, task);
-    } else {
+    } else if (fulfillActivityRequires(activity, user)) {
       return { key, name: activity.name, state: 'ready', rewards: rewards };
     }
   }
