@@ -21,7 +21,7 @@ export default function populateTasks(target, getRequires) {
 
     const missions = await svcMissions.find({
       query: {
-        id: { $in: fp.map(helpers.pathId('mission'), data) },
+        id: { $in: fp.uniq(fp.map(helpers.pathId('mission'), data)) },
         $select: 'activities.requires,activities.rewards'
       },
       paginate: false
