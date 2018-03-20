@@ -2,6 +2,7 @@ import assert from 'assert';
 import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
+import { helpers as metrics } from 'playing-metric-services';
 
 import UserMissionModel from '~/models/user-mission.model';
 import defaultHooks from './user-mission.hooks';
@@ -144,12 +145,28 @@ class UserMissionService extends Service {
       throw new Error('Requirements not meet, You can not play the trigger yet.');
     }
     if (task.state === 'completed') {
-      throw new Error('Trigger has already been played by someone else.');
+      throw new Error('Task has already been completed.');
     }
 
-    // create reward for this task
+    // add task to the user mission if not exists
+    await super.patch(id, {
+      $push: { tasks: task }
+    }, {
+      query: { 'tasks.key': { $ne: task.key } }
+    });
 
-    return task;
+    // update task state and performers
+    const userMission = await super.patch(id, {
+      $set: { 'tasks.$.state': 'completed' },
+      $addToSet: { 'tasks.$.performers': { user: data.user, scopes: data.scopes } }
+    }, {
+      query: { 'tasks.key': task.key }
+    });
+
+    // create reward for this task
+    const rewards = await metrics.createUserMetrics(this.app)(data.user, task.rewards || []);
+
+    return userMission;
   }
 }
 
