@@ -148,15 +148,6 @@ class UserMissionService extends Service {
     }
 
     // create reward for this task
-    const svcUserMetrics = this.app.service('user-metrics');
-    const createRewards = fp.reduce((arr, reward) => {
-      if (reward.metric) {
-        reward.metric = helpers.getId(reward.metric.id);
-        reward.user = data.user;
-        arr.push(svcUserMetrics.create(reward));
-      }
-      return arr;
-    }, []);
 
     return task;
   }
