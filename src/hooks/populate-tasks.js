@@ -21,10 +21,13 @@ export default function populateTasks(target, getRequires) {
 
     let data = helpers.getHookDataAsArray(context);
 
+    const missionIds = fp.uniq(
+      fp.reject(fp.isNil,
+      fp.map(helpers.pathId('mission'), data)));
     const missions = await svcMissions.find({
       query: {
-        id: { $in: fp.uniq(fp.map(helpers.pathId('mission'), data)) },
-        $select: 'activities.requires,activities.rewards'
+        id: { $in: missionIds },
+        $select: 'activities.requires,activities.rewards,*'
       },
       paginate: false
     });
@@ -40,8 +43,9 @@ export default function populateTasks(target, getRequires) {
         //   { key: "3.1", name: "step4-2", state: 'completed' },
         //   { key: "4", name: "step5", state: 'completed' },
         // ];
-        userMission.tasks = walkThroughTasks(context.params.user,
-          userMission.tasks || [], [])(mission.activities);
+        userMission.tasks = walkThroughTasks(
+          context.params.user, userMission.tasks || [], []
+        )(mission.activities);
       }
     }
 
