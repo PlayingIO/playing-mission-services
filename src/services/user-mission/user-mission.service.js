@@ -14,17 +14,17 @@ const defaultOptions = {
 };
 
 class UserMissionService extends Service {
-  constructor(options) {
+  constructor (options) {
     options = Object.assign({}, defaultOptions, options);
     super(options);
   }
 
-  setup(app) {
+  setup (app) {
     super.setup(app);
     this.hooks(defaultHooks(this.options));
   }
 
-  async create(data, params) {
+  async create (data, params) {
     assert(data.mission, 'data.mission not provided.');
     assert(data.access, 'data.access not provided.');
     assert(data.owner, 'data.owner not provided.');
@@ -50,7 +50,7 @@ class UserMissionService extends Service {
   /**
    * Join a user mission with specified the role and lanes.
    */
-  async _join(id, data, params, orignal) {
+  async _join (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(data.lane, 'data.lane is not provided.');
     assert(data.role, 'data.role is not provided.');
@@ -97,7 +97,7 @@ class UserMissionService extends Service {
   /**
    * Leave a user mission.
    */
-  async _leave(id, data, params, orignal) {
+  async _leave (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(data.player || data.user, 'data.player is not provided.');
 
@@ -127,7 +127,7 @@ class UserMissionService extends Service {
   /**
    * Play a user mission. Playing a mission causes its state to change.
    */
-  async _play(id, data, params, orignal) {
+  async _play (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(data.trigger, 'data.trigger is not provided.');
     assert(data.user, 'data.user is not provided.');
@@ -170,7 +170,7 @@ class UserMissionService extends Service {
   }
 }
 
-export default function init(app, options, hooks) {
+export default function init (app, options, hooks) {
   options = Object.assign({ ModelName: 'user-mission' }, options);
   return createService(app, UserMissionService, UserMissionModel, options);
 }
