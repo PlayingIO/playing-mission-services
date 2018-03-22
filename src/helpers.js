@@ -30,7 +30,7 @@ const getTask = (user, tasks, keys, activity, previous) => {
   return null;
 };
 
-export const walkThroughTasks = (user, tasks, keys, previous = null, keepPrevious = false) => (activities) => {
+export const walkThroughTasks = (user, tasks = [], keys = [], previous = null, keepPrevious = false) => (activities) => {
   return fp.reduceIndexed((acc, activity, index) => {
     const task = getTask(user, tasks, [...keys,index], activity, previous);
     if (!task) return acc; // break
