@@ -3,6 +3,7 @@ import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 import { helpers as metrics } from 'playing-metric-services';
+import { helpers as rules } from 'playing-rule-services';
 
 import UserMissionModel from '~/models/user-mission.model';
 import defaultHooks from './user-mission.hooks';
@@ -149,13 +150,23 @@ class UserMissionService extends Service {
 
     // verify and get new tasks
     const tasks = walkThroughTasks(params.user, orignal.tasks)(mission.activities);
-    // check the state of the corresponding task
     const task = fp.find(fp.propEq('key', data.trigger), tasks);
-    if (!task) {
+    const activity = fp.dotPath(data.trigger, mission.activities);
+    let state = 'completed';
+    // check the state of the corresponding task
+    if (!task || !activity || task.name !== activity.name) {
       throw new Error('Requirements not meet, You can not play the trigger yet.');
     }
     if (task.state === 'completed') {
       throw new Error('Task has already been completed.');
+    }
+    if (activity.loop) {
+      const loop = task.loop || 0;
+      if (loop >= activity.loop) {
+        throw new Error(`Number of times exceeds, task can only performed ${activity.loop} times.`);
+      } else {
+        state = (loop + 1 >= activity.loop)? 'completed' : 'active';
+      }
     }
 
     // add task to the user mission if not exists
@@ -165,11 +176,23 @@ class UserMissionService extends Service {
       query: { 'tasks.key': { $ne: task.key } }
     });
 
-    // update task state and performers
-    const userMission = await super.patch(id, {
-      $set: { 'tasks.$.state': 'completed' },
+    let updateTask = {
+      $inc: { 'tasks.$.loop': 1 },
+      $set: { 'tasks.$.state': state },
       $addToSet: { 'tasks.$.performers': { user: data.user, scopes: data.scopes } }
-    }, {
+    };
+
+    // rate limiting the task
+    if (activity.rate && activity.rate.frequency) {
+      let { count, firstRequest, lastRequest, expiredAt } = rules.checkRateLimit(activity.rate, task.limit || {});
+      updateTask.$inc['tasks.$.limit.count'] = count;
+      updateTask.$set['tasks.$.limit.firstRequest'] = firstRequest;
+      updateTask.$set['tasks.$.limit.lastRequest'] = lastRequest;
+      updateTask.$set['tasks.$.limit.expiredAt'] = expiredAt;
+    }
+
+    // update task state and performers
+    const userMission = await super.patch(id, updateTask, {
       query: { 'tasks.key': task.key }
     });
 

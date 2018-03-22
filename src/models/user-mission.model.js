@@ -1,4 +1,5 @@
 import { plugins } from 'mostly-feathers-mongoose';
+import { models as rules } from 'playing-rule-services';
 
 const options = {
   timestamps: true
@@ -17,6 +18,7 @@ const task = {
     'active'                                      // task in progress (looped task or has unfinished nested tasks)
   ]},
   loop: { type: Number },                         // number of times the task has performed
+  limit: { type: rules.limit.schema },            // rate limiting data
   performers: [{                                  // players within this task who have performed this task at least once
     _id: false,
     user: { type: 'ObjectId' },                   // id of the performer

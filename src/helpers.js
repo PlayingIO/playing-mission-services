@@ -16,15 +16,14 @@ const getTask = (user, tasks, keys, activity, previous) => {
   const key = keys.join('.');
   const task = fp.find(fp.propEq('key', key), tasks);
   const rewards = fp.map(fp.pickPath([
-    'verb', 'value', 'item',
-    'metric.id', 'metric.name', 'metric.type'
+    'verb', 'value', 'item', 'metric.id', 'metric.name', 'metric.type'
   ]), activity.rewards || []);
 
   if (!previous || previous.state === 'completed') {
     if (task && task.name == activity.name) { // check name with key
       return fp.assoc('rewards', rewards, task);
     } else if (fulfillActivityRequires(activity, user)) {
-      return { key, name: activity.name, state: 'ready', rewards: rewards };
+      return { key, name: activity.name, state: 'ready', rewards: rewards, loop: 0 };
     }
   }
   return null;
