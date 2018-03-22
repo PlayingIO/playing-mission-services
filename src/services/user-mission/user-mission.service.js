@@ -50,6 +50,26 @@ class UserMissionService extends Service {
   }
 
   /**
+   * Kick out a performer from the mission.
+   */
+  async _kick (id, data, params, orignal) {
+    assert(orignal, 'user mission not exists');
+    assert(data.player, 'data.player is not provided.');
+
+    // can only done by the owner of the mission and the owner himself cannot be kicked out.
+    assert(orignal.owner === data.user, 'You must be owner of this mission to kick out someone.');
+    assert(orignal.owner !== data.player, 'You are owner of this mission yourself cannot be kicked out.');
+    const hasPerformer = fp.find(p => String(p.user) === data.player, orignal.performers || []);
+    assert(hasPerformer, 'player is not a performer of this mission');
+
+    return super.patch(id, {
+      $pull: {
+        'performers': { user: data.player }
+      }
+    }, params);
+  }
+
+  /**
    * Join a user mission with specified the role and lanes.
    */
   async _join (id, data, params, orignal) {
@@ -73,7 +93,7 @@ class UserMissionService extends Service {
     const lanes = fp.map(fp.prop('name'), mission.lanes || []);
     assert(fp.contains(data.lane, lanes), 'data.lane not exists in this mission');
 
-    // TODO check the permission for join the group
+    // TODO check the access for join the mission
 
     if (hasPerformer) {
       params.query = fp.assign(params.query, {
@@ -111,26 +131,6 @@ class UserMissionService extends Service {
     return super.patch(id, {
       $pull: {
         'performers': { user: data.user }
-      }
-    }, params);
-  }
-
-  /**
-   * Kick out a performer from the mission.
-   */
-  async _kick (id, data, params, orignal) {
-    assert(orignal, 'user mission not exists');
-    assert(data.player, 'data.player is not provided.');
-
-    // can only done by the owner of the mission and the owner himself cannot be kicked out.
-    assert(orignal.owner === data.user, 'You must be owner of this mission to kick out someone.');
-    assert(orignal.owner !== data.player, 'You are owner of this mission yourself cannot be kicked out.');
-    const hasPerformer = fp.find(p => String(p.user) === data.player, orignal.performers || []);
-    assert(hasPerformer, 'player is not a performer of this mission');
-
-    return super.patch(id, {
-      $pull: {
-        'performers': { user: data.player }
       }
     }, params);
   }
