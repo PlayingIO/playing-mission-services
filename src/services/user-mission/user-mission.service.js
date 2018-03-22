@@ -6,6 +6,7 @@ import { helpers as metrics } from 'playing-metric-services';
 
 import UserMissionModel from '~/models/user-mission.model';
 import defaultHooks from './user-mission.hooks';
+import { walkThroughTasks } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions');
 
@@ -139,8 +140,17 @@ class UserMissionService extends Service {
     }, orignal.performers || []);
     assert(performer, 'data.user is not members of this mission, please join the mission first.');
 
-    // check the state of the task
-    const task = fp.find(fp.propEq('key', data.trigger), orignal.tasks);
+    // get mission activities
+    const svcMissions = this.app.service('missions');
+    const mission = await svcMissions.get(helpers.getId(orignal.mission), {
+      query: { $select: 'activities.requires,activities.rewards,*' }
+    });
+    assert(mission && mission.activities, 'mission not exists');
+
+    // verify and get new tasks
+    const tasks = walkThroughTasks(params.user, orignal.tasks)(mission.activities);
+    // check the state of the corresponding task
+    const task = fp.find(fp.propEq('key', data.trigger), tasks);
     if (!task) {
       throw new Error('Requirements not meet, You can not play the trigger yet.');
     }

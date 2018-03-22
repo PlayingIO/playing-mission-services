@@ -16,7 +16,7 @@ const task = {
     'completed',                                  // all task being finished
     'active'                                      // task in progress (looped task or has unfinished nested tasks)
   ]},
-  loop: { type: Number },                         // number of times the task has perfomed
+  loop: { type: Number },                         // number of times the task has performed
   performers: [{                                  // players within this task who have performed this task at least once
     _id: false,
     user: { type: 'ObjectId' },                   // id of the performer
