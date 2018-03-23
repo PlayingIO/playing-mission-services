@@ -4,7 +4,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const eslint = require('gulp-eslint');
 const changed = require('gulp-changed');
 
-gulp.task('lint', function() {
+gulp.task('lint', function () {
   return gulp.src('src/**/*.js')
     //.pipe(changed('lib'))
     .pipe(eslint())
