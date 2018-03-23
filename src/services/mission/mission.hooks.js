@@ -18,7 +18,7 @@ const getActivityRewards = fp.reduce((arr, mission) => {
   return arr.concat(getRecursiveRewards('rewards')(mission.activities || []));
 }, []);
 
-module.exports = function (options = {}) {
+export default function (options = {}) {
   return {
     before: {
       all: [
