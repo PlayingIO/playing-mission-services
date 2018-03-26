@@ -39,7 +39,7 @@ export default function (options = {}) {
         rules.populateRewards('activities.rewards', getActivityRewards),
         rules.populateRequires('settings.requires'),
         cache(options.cache),
-        hooks.presentEntity(MissionEntity, options),
+        hooks.presentEntity(MissionEntity, options.entities),
         hooks.responder()
       ]
     }

@@ -36,7 +36,7 @@ export default function (options = {}) {
         hooks.populate('performers.user', { service: 'users' }),
         populateTasks(),
         cache(options.cache),
-        hooks.presentEntity(UserMissionEntity, options),
+        hooks.presentEntity(UserMissionEntity, options.entities),
         hooks.responder()
       ]
     }
