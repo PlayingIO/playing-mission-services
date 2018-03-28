@@ -6,7 +6,7 @@ const options = {
 };
 
 /**
- * task is a activity being performed by user
+ * Task is a activity being performed by user
  */
 const task = {
   _id: false,

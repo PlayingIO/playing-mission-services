@@ -23,7 +23,7 @@ const lane = {
   default: { type: Boolean },              // automatically join this lane when join the instance
 };
 
-/*
+/**
  * Definition of the mission to structure the player activities
  */
 const fields = {

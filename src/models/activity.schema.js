@@ -1,4 +1,3 @@
-import { plugins } from 'mostly-feathers-mongoose';
 import { models as rules } from 'playing-rule-services';
 
 import { notify } from './notify.schema';
