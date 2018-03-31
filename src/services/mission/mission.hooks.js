@@ -3,7 +3,7 @@ import fp from 'mostly-func';
 import { cache } from 'mostly-feathers-cache';
 import { hooks as rules } from 'playing-rule-services';
 
-import MissionEntity from '~/entities/mission.entity';
+import MissionEntity from '../../entities/mission.entity';
 import { getRecursiveRequires, getRecursiveRewards } from '../../helpers';
 
 const getActivityRequires = fp.reduce((arr, mission) => {

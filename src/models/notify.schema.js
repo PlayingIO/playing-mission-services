@@ -17,4 +17,4 @@ const notify = {
   }
 };
 
-export default { notify };
+export { notify };

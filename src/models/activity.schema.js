@@ -20,4 +20,4 @@ const activity = {
   retry: { type: Boolean, default: false } // whether the player can retry a task if he fails
 };
 
-export default { activity };
+export { activity };

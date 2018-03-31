@@ -2,7 +2,7 @@ import assert from 'assert';
 import makeDebug from 'debug';
 import { Service, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
-import MissionModel from '~/models/mission.model';
+import MissionModel from '../../models/mission.model';
 import defaultHooks from './mission.hooks';
 
 const debug = makeDebug('playing:mission-services:missions');
@@ -11,7 +11,7 @@ const defaultOptions = {
   name: 'missions'
 };
 
-class MissionService extends Service {
+export class MissionService extends Service {
   constructor (options) {
     options = Object.assign({}, defaultOptions, options);
     super(options);

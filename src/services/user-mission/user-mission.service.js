@@ -5,7 +5,7 @@ import fp from 'mostly-func';
 import { helpers as metrics } from 'playing-metric-services';
 import { helpers as rules } from 'playing-rule-services';
 
-import UserMissionModel from '~/models/user-mission.model';
+import UserMissionModel from '../../models/user-mission.model';
 import defaultHooks from './user-mission.hooks';
 import { walkThroughTasks } from '../../helpers';
 
@@ -15,7 +15,7 @@ const defaultOptions = {
   name: 'user-missions'
 };
 
-class UserMissionService extends Service {
+export class UserMissionService extends Service {
   constructor (options) {
     options = Object.assign({}, defaultOptions, options);
     super(options);
