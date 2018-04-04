@@ -7,6 +7,7 @@ import { helpers as rules } from 'playing-rule-services';
 
 import UserMissionModel from '../../models/user-mission.model';
 import defaultHooks from './user-mission.hooks';
+import defaultEvents from './user-mission.events';
 import { walkThroughTasks } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions');
@@ -24,6 +25,7 @@ export class UserMissionService extends Service {
   setup (app) {
     super.setup(app);
     this.hooks(defaultHooks(this.options));
+    defaultEvents(app, this.options);
   }
 
   async create (data, params) {

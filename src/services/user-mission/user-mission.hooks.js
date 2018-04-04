@@ -38,6 +38,9 @@ export default function (options = {}) {
         cache(options.cache),
         hooks.presentEntity(UserMissionEntity, options.entities),
         hooks.responder()
+      ],
+      create: [
+        hooks.publishEvent('mission.create', { prefix: 'playing' })
       ]
     }
   };
