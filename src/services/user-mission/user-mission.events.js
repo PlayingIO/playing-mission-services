@@ -11,7 +11,7 @@ const createActivity = async function (app, userMission, verb, message) {
 
   await Promise.all([
     // add to game's actvity log
-    svcFeeds.action('addActivity').patch(`game:playread`, activity),
+    svcFeeds.action('addActivity').patch(`game:milkread`, activity),
     // add to player's activity log
     svcFeeds.action('addActivity').patch(`user:${userMission.user}`, activity),
   ]);
