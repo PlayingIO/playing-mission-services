@@ -29,4 +29,15 @@ export default function (app, options) {
       createActivity(app, userMission, 'mission.create', 'Create a mission');
     }
   });
+
+  app.trans.add({
+    pubsub$: true,
+    topic: 'playing.events',
+    cmd: 'mission.delete'
+  }, (resp) => {
+    const userMission = resp.event;
+    if (userMission) {
+      createActivity(app, userMission, 'mission.delete', 'Delete a mission');
+    }
+  });
 }
