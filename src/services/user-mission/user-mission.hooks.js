@@ -42,6 +42,12 @@ export default function (options = {}) {
       create: [
         hooks.publishEvent('mission.create', { prefix: 'playing' })
       ],
+      patch: [
+        iff(
+          hooks.isAction('join'),
+          hooks.publishEvent('mission.join', { prefix: 'playing' })
+        )
+      ],
       remove: [
         hooks.publishEvent('mission.delete', { prefix: 'playing' })
       ]
