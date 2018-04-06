@@ -1,3 +1,5 @@
+import fp from 'mostly-func';
+
 const createActivity = async function (app, userMission, verb, message) {
   const svcFeeds = app.service('feeds');
 
@@ -9,11 +11,18 @@ const createActivity = async function (app, userMission, verb, message) {
     message: message
   };
 
+  // notification all other team members/process performers
+  const others = fp.without([userMission.owner],
+    fp.map(fp.prop('user'), userMission.performers || []));
+  const actorActivity = others.length > 0
+    ? fp.assoc('cc', fp.map(fp.concat('notification:'), others), activity)
+    : fp.clone(activity);
+
   await Promise.all([
     // add to game's actvity log
     svcFeeds.action('addActivity').patch(`game:milkread`, activity),
-    // add to player's activity log
-    svcFeeds.action('addActivity').patch(`user:${userMission.owner}`, activity),
+    // add to actor's activity log
+    svcFeeds.action('addActivity').patch(`user:${userMission.owner}`, actorActivity),
   ]);
 };
 
