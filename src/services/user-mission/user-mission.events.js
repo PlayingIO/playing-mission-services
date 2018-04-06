@@ -2,7 +2,7 @@ const createActivity = async function (app, userMission, verb, message) {
   const svcFeeds = app.service('feeds');
 
   const activity = {
-    actor: `user:${userMission.user}`,
+    actor: `user:${userMission.owner}`,
     verb: verb,
     object: `mission:${userMission.mission}`,
     foreignId: `userMission:${userMission.id}`,
@@ -13,13 +13,14 @@ const createActivity = async function (app, userMission, verb, message) {
     // add to game's actvity log
     svcFeeds.action('addActivity').patch(`game:milkread`, activity),
     // add to player's activity log
-    svcFeeds.action('addActivity').patch(`user:${userMission.user}`, activity),
+    svcFeeds.action('addActivity').patch(`user:${userMission.owner}`, activity),
   ]);
 };
 
 // subscribe to mission.create events
 export default function (app, options) {
   app.trans.add({
+    pubsub$: true,
     topic: 'playing.events',
     cmd: 'mission.create'
   }, (resp) => {
