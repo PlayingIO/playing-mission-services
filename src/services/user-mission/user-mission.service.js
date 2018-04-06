@@ -51,6 +51,10 @@ export class UserMissionService extends Service {
     return super.create(data);
   }
 
+  async remove (id, params) {
+    return super.remove(id, params);
+  }
+
   /**
    * Join a user mission with specified the role and lanes.
    */

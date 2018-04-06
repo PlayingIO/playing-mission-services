@@ -41,6 +41,9 @@ export default function (options = {}) {
       ],
       create: [
         hooks.publishEvent('mission.create', { prefix: 'playing' })
+      ],
+      remove: [
+        hooks.publishEvent('mission.delete', { prefix: 'playing' })
       ]
     }
   };
