@@ -5,6 +5,7 @@ import { cache } from 'mostly-feathers-cache';
 
 import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
+import notifier from './user-mission.notifier';
 
 export default function (options = {}) {
   return {
@@ -40,16 +41,13 @@ export default function (options = {}) {
         hooks.responder()
       ],
       create: [
-        hooks.publishEvent('mission.create', { prefix: 'playing' })
+        notifier('mission.create')
       ],
       patch: [
-        iff(
-          hooks.isAction('join'),
-          hooks.publishEvent('mission.join', { prefix: 'playing' })
-        )
+        iff(hooks.isAction('join'), notifier('mission.join'))
       ],
       remove: [
-        hooks.publishEvent('mission.delete', { prefix: 'playing' })
+        notifier('mission.delete')
       ]
     }
   };
