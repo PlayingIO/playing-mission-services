@@ -1,4 +1,4 @@
-import { upperFirst, camelCase } from 'lodash';
+import camelCase from 'lodash.camelcase';
 import glob from 'glob';
 import path from 'path';
 
