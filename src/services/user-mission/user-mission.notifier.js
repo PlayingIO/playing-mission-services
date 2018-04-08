@@ -4,24 +4,23 @@ import { helpers as feeds } from 'playing-feed-services';
 
 export default function (event) {
   return context => {
-    const createActivity = async function (result, verb, message) {
+    const createActivity = async function (userMission, verb, message) {
       const activity = {
-        actor: `user:${result.owner}`,
+        actor: `user:${userMission.owner}`,
         verb: verb,
-        object: `mission:${result.mission}`,
-        foreignId: `userMission:${result.id}`,
+        object: `mission:${userMission.mission}`,
+        foreignId: `userMission:${userMission.id}`,
         message: message
       };
 
-      // notification all other team members/process performers
-      const others = fp.without([result.owner],
-        fp.map(fp.prop('user'), result.performers || []));
-      const actorActivity = others.length > 0
-        ? fp.assoc('cc', fp.map(fp.concat('notification:'), others), activity)
-        : fp.clone(activity);
+      // notification all other mission performers
+      const others = fp.without([userMission.owner],
+        fp.map(fp.prop('user'), userMission.performers || []));
+      const notifications = fp.map(fp.concat('notification:'), others);
 
       await feeds.addActivity(context.app, activity).feeds(
-        `user:${result.owner}`         // add to actor's activity log
+        `user:${userMission.owner}`,     // add to actor's activity log
+        notifications                    // add to performers' notification stream
       );
     };
 
