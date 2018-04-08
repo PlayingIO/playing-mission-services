@@ -78,26 +78,30 @@ export class UserMissionService extends Service {
     const lanes = fp.map(fp.prop('name'), mission.lanes || []);
     assert(fp.contains(data.lane, lanes), 'data.lane not exists in this mission');
 
-    // TODO send join:request event for protected mission
-
-    if (hasPerformer) {
-      params.query = fp.assign(params.query, {
-        'performers.user': playerId
-      });
-      return super.patch(id, {
-        $addToSet: {
-          'performers.$.lanes': { role: data.role, lane: data.lane }
-        }
-      }, params);
-    } else {
-      return super.patch(id, {
-        $addToSet: {
-          performers: {
-            user: playerId,
-            lanes: [{ role: data.role, lane: data.lane }]
+    // process the join for public mission
+    if (orignal.access === 'public') {
+      if (hasPerformer) {
+        params.query = fp.assign(params.query, {
+          'performers.user': playerId
+        });
+        return super.patch(id, {
+          $addToSet: {
+            'performers.$.lanes': { role: data.role, lane: data.lane }
           }
-        }
-      }, params);
+        }, params);
+      } else {
+        return super.patch(id, {
+          $addToSet: {
+            performers: {
+              user: playerId,
+              lanes: [{ role: data.role, lane: data.lane }]
+            }
+          }
+        }, params);
+      }
+    } else {
+      // send join.request in notifier
+      return orignal;
     }
   }
 
