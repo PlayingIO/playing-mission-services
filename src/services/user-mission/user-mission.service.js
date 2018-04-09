@@ -74,7 +74,7 @@ export class UserMissionService extends Service {
     if (data.player) assert(player, 'player not exists');
 
     const playerId = data.player || data.user; // player or current user
-    const hasPerformer = fp.find(p => String(p.user) === playerId, orignal.performers || []);
+    const hasPerformer = fp.find(fp.idPropEq('user', playerId), orignal.performers || []);
     const lanes = fp.map(fp.prop('name'), mission.lanes || []);
     assert(fp.contains(data.lane, lanes), 'data.lane not exists in this mission');
 
@@ -114,7 +114,7 @@ export class UserMissionService extends Service {
 
     // the owner himself cannot leave
     assert(orignal.owner !== data.player, 'You are owner of this mission yourself cannot leave.');
-    const hasPerformer = fp.find(p => String(p.user) === data.user, orignal.performers || []);
+    const hasPerformer = fp.find(fp.idPropEq('user', data.user), orignal.performers || []);
     assert(hasPerformer, 'You are not a performer of this mission');
 
     return super.patch(id, {
@@ -134,7 +134,7 @@ export class UserMissionService extends Service {
     // can only done by the owner of the mission and the owner himself cannot be kicked out.
     assert(orignal.owner === data.user, 'You must be owner of this mission to kick out someone.');
     assert(orignal.owner !== data.player, 'You are owner of this mission yourself cannot be kicked out.');
-    const hasPerformer = fp.find(p => String(p.user) === data.player, orignal.performers || []);
+    const hasPerformer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
     assert(hasPerformer, 'player is not a performer of this mission');
 
     return super.patch(id, {
@@ -154,9 +154,7 @@ export class UserMissionService extends Service {
     data.scopes = data.scopes || []; // scope in which the scores will be counted
 
     // whether the user is one of the performers
-    const performer = fp.find(performer => {
-      return helpers.getId(performer.user) === helpers.getId(params.user);
-    }, orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', params.user), orignal.performers || []);
     assert(performer, 'data.user is not members of this mission, please join the mission first.');
 
     // get mission activities
