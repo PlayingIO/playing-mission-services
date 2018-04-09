@@ -31,7 +31,7 @@ export default function (event) {
         const custom = { message: 'Create a mission' };
         createActivity(result, event, custom,
           `user:${result.owner}`,          // add to owner's activity log
-          notifications                    // add to performers' notification stream
+          notifications                    // add to all performers' notification stream
         );
         break;
       }
@@ -40,20 +40,22 @@ export default function (event) {
           const player = context.data.player || context.data.user;
           const notifications = performersNotifications(result, player);
           const custom = {
-            message: 'Join a mission',
+            actor: `user:${player}`,
+            message: 'Join the mission',
             role: context.data.roles,
             player: `user:${player}`
           };
           createActivity(result, event, custom,
-            `user:${player}`,              // add to performer's activity log
+            `user:${player}`,              // add to player's activity log
             `user:${result.owner}`,        // add to owner's activity log
             `mission:${result.id}`,        // add to mission's activity log
-            notifications                  // add to performers' notification stream
+            notifications                  // add to all performers' notification stream
           );
         } else {
           const player = context.data.player || context.data.user;
           const custom = {
-            message: 'Join request a mission',
+            actor: `user:${player}`,
+            message: 'Join request the mission',
             role: context.data.roles,
             state: 'pending',
             player: `user:${player}`
@@ -63,12 +65,26 @@ export default function (event) {
           );
         }
         break;
+      case 'mission.leave': {
+        const player = context.data.user;
+        const notifications = performersNotifications(result);
+        const custom = {
+          actor: `user:${player}`,
+          message: 'Leave the mission'
+        };
+        createActivity(result, event, custom,
+          `user:${player}`,                // add to player's activity log
+          `mission:${result.id}`,          // add to mission's activity log
+          notifications                    // add to all performers' notification stream
+        );
+        break;
+      }
       case 'mission.delete': {
         const notifications = performersNotifications(result);
-        const custom = { message: 'Delete a mission' };
+        const custom = { message: 'Delete the mission' };
         createActivity(result, event, custom,
           `user:${result.owner}`,          // add to owner's activity log
-          notifications                    // add to performers' notification stream
+          notifications                    // add to all performers' notification stream
         );
         break;
       }
