@@ -17,9 +17,11 @@ export default function (event) {
     };
 
     const performersNotifications = function (userMission) {
-      const others = fp.without([userMission.owner],
-        fp.map(fp.prop('user'), userMission.performers || []));
-      return fp.map(o => 'notification:' + o, others);
+      return fp.map(fp.pipe(
+        fp.prop('user'),
+        fp.toString,
+        fp.concat('notification:')
+      ), userMission.performers || []);
     };
 
     const result = helpers.getHookData(context);
@@ -34,11 +36,11 @@ export default function (event) {
       }
       case 'mission.join':
         if (result.access === 'public') {
-          const notifications = performersNotifications(result);
           const player = context.data.player || context.data.user;
+          const notifications = performersNotifications(result, player);
           createActivity(result, event, 'Join a mission',
-            `user:${result.owner}`,       // add to owner's activity log
             `user:${player}`,             // add to performer's activity log
+            `user:${result.owner}`,       // add to owner's activity log
             `userMission:${result.id}`,   // add to mission's activity log
             notifications                 // add to performers' notification stream
           );
