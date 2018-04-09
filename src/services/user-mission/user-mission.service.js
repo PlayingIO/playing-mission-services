@@ -56,7 +56,7 @@ export class UserMissionService extends Service {
   /**
    * Join a user mission with specified the role and lanes.
    */
-  async _join (id, data, params, orignal) {
+  async join (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(orignal.access !== 'private', 'user mission is private');
     assert(data.lane, 'data.lane is not provided.');
@@ -108,7 +108,7 @@ export class UserMissionService extends Service {
   /**
    * Leave a user mission.
    */
-  async _leave (id, data, params, orignal) {
+  async leave (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(data.user, 'data.user is not provided.');
 
@@ -127,7 +127,7 @@ export class UserMissionService extends Service {
   /**
    * Kick out a performer from the mission.
    */
-  async _kick (id, data, params, orignal) {
+  async kick (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(data.player, 'data.player is not provided.');
 
@@ -147,7 +147,7 @@ export class UserMissionService extends Service {
   /**
    * Play a user mission. Playing a mission causes its state to change.
    */
-  async _play (id, data, params, orignal) {
+  async play (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(data.trigger, 'data.trigger is not provided.');
     assert(data.user, 'data.user is not provided.');
