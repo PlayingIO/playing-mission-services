@@ -4,16 +4,16 @@ import { helpers as feeds } from 'playing-feed-services';
 
 export default function (event) {
   return context => {
-    const createActivity = async function (userMission, verb, message, ...targets) {
+    const createActivity = async function (userMission, verb, custom, ...targets) {
       const activity = {
         actor: `user:${userMission.owner}`,
         verb: verb,
         object: `mission:${userMission.mission}`,
         foreignId: `userMission:${userMission.id}`,
-        message: message
+        ...custom
       };
 
-      await feeds.addActivity(context.app, activity).feeds(targets);
+      await feeds.addActivity(context.app, activity, targets);
     };
 
     const performersNotifications = function (userMission) {
@@ -28,9 +28,10 @@ export default function (event) {
     switch (event) {
       case 'mission.create': {
         const notifications = performersNotifications(result);
-        createActivity(result, event, 'Create a mission',
-          `user:${result.owner}`,         // add to owner's activity log
-          notifications                   // add to performers' notification stream
+        const custom = { message: 'Create a mission' };
+        createActivity(result, event, custom,
+          `user:${result.owner}`,          // add to owner's activity log
+          notifications                    // add to performers' notification stream
         );
         break;
       }
@@ -38,21 +39,36 @@ export default function (event) {
         if (result.access === 'public') {
           const player = context.data.player || context.data.user;
           const notifications = performersNotifications(result, player);
-          createActivity(result, event, 'Join a mission',
-            `user:${player}`,             // add to performer's activity log
-            `user:${result.owner}`,       // add to owner's activity log
-            `userMission:${result.id}`,   // add to mission's activity log
-            notifications                 // add to performers' notification stream
+          const custom = {
+            message: 'Join a mission',
+            role: context.data.roles,
+            player: `user:${player}`
+          };
+          createActivity(result, event, custom,
+            `user:${player}`,              // add to performer's activity log
+            `user:${result.owner}`,        // add to owner's activity log
+            `mission:${result.id}`,        // add to mission's activity log
+            notifications                  // add to performers' notification stream
           );
         } else {
-          createActivity(result, event + '.request', 'Join request a mission');
+          const player = context.data.player || context.data.user;
+          const custom = {
+            message: 'Join request a mission',
+            role: context.data.roles,
+            state: 'pending',
+            player: `user:${player}`
+          };
+          createActivity(result, event + '.request', custom,
+            `notification:${result.owner}` // notify owner of the mission to approve requests
+          );
         }
         break;
       case 'mission.delete': {
         const notifications = performersNotifications(result);
-        createActivity(result, event, 'Delete a mission',
-          `user:${result.owner}`,       // add to owner's activity log
-          notifications                 // add to performers' notification stream
+        const custom = { message: 'Delete a mission' };
+        createActivity(result, event, custom,
+          `user:${result.owner}`,          // add to owner's activity log
+          notifications                    // add to performers' notification stream
         );
         break;
       }
