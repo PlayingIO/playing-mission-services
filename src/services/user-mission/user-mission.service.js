@@ -213,7 +213,7 @@ export class UserMissionService extends Service {
     });
 
     // create reward for this task
-    const rewards = await metrics.createUserMetrics(this.app)(data.user, task.rewards || []);
+    const rewards = await metrics.createUserMetrics(this.app, data.user, task.rewards || []);
 
     return userMission;
   }
