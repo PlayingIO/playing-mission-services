@@ -35,6 +35,15 @@ export default function (event) {
         );
         break;
       }
+      case 'mission.delete': {
+        const notifications = performersNotifications(result);
+        const custom = { message: 'Delete the mission' };
+        createActivity(result, event, custom,
+          `user:${result.owner}`,          // add to owner's activity log
+          notifications                    // add to all performers' notification stream
+        );
+        break;
+      }
       case 'mission.join':
         if (result.access === 'public') {
           const player = context.data.player || context.data.user;
@@ -79,11 +88,18 @@ export default function (event) {
         );
         break;
       }
-      case 'mission.delete': {
+      case 'mission.play': {
+        const player = context.data.user;
         const notifications = performersNotifications(result);
-        const custom = { message: 'Delete the mission' };
+        const custom = {
+          actor: `user:${player}`,
+          message: 'Play a mission trigger',
+          task: result.currentTask,
+          rewards: result.currentRewards
+        };
         createActivity(result, event, custom,
-          `user:${result.owner}`,          // add to owner's activity log
+          `user:${player}`,                // add to player's activity log
+          `mission:${result.id}`,          // add to mission's activity log
           notifications                    // add to all performers' notification stream
         );
         break;

@@ -45,7 +45,8 @@ export default function (options = {}) {
       ],
       patch: [
         iff(hooks.isAction('join'), notifier('mission.join')),
-        iff(hooks.isAction('leave'), notifier('mission.leave'))
+        iff(hooks.isAction('leave'), notifier('mission.leave')),
+        iff(hooks.isAction('play'), notifier('mission.play'))
       ],
       remove: [
         notifier('mission.delete')
