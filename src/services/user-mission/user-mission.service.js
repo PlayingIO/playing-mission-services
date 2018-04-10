@@ -154,7 +154,7 @@ export class UserMissionService extends Service {
     data.scopes = data.scopes || []; // scope in which the scores will be counted
 
     // whether the user is one of the performers
-    const performer = fp.find(fp.idPropEq('user', params.user), orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', params.user.id), orignal.performers || []);
     assert(performer, 'data.user is not members of this mission, please join the mission first.');
 
     // get mission activities
@@ -168,7 +168,7 @@ export class UserMissionService extends Service {
     const tasks = walkThroughTasks(params.user, orignal.tasks)(mission.activities);
     const task = fp.find(fp.propEq('key', data.trigger), tasks);
     const activity = fp.dotPath(data.trigger, mission.activities);
-    let state = 'completed';
+
     // check the state of the corresponding task
     if (!task || !activity || task.name !== activity.name) {
       throw new Error('Requirements not meet, You can not play the trigger yet.');
@@ -176,6 +176,7 @@ export class UserMissionService extends Service {
     if (task.state === 'completed') {
       throw new Error('Task has already been completed.');
     }
+    let state = 'completed';
     if (activity.loop) {
       const loop = task.loop || 0;
       if (loop >= activity.loop) {
@@ -211,9 +212,10 @@ export class UserMissionService extends Service {
     const userMission = await super.patch(id, updateTask, {
       query: { 'tasks.key': task.key }
     });
+    userMission.currentTask = task;
 
     // create reward for this task
-    const rewards = await metrics.createUserMetrics(this.app, data.user, task.rewards || []);
+    userMission.currentRewards = await metrics.createUserMetrics(this.app, data.user, task.rewards || []);
 
     return userMission;
   }
