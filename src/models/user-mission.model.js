@@ -43,13 +43,7 @@ const fields = {
   performers: [{                                  // players within this task who have performed this task at least once
     _id: false,
     user: { type: 'ObjectId' },                   // id of the performer
-    lanes: [{                                     // lane/role of the performer
-      _id: false,
-      lane: { type: String },                     // each lane has only one role
-      role: { type: String, enum: [
-        'observer', 'player'
-      ]},
-    }]
+    lanes: { type: 'Mixed' }                      // lane/role map of the performer
   }],
   owner: { type: 'ObjectId' },                    // owner of the mission
 };
