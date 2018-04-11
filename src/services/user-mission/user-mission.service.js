@@ -43,7 +43,7 @@ export class UserMissionService extends Service {
     if (defaultLane) {
       data.performers = [{
         user: data.owner,
-        lanes: [{ lane: defaultLane.name, role: 'player' }]
+        lanes: { [defaultLane.name]: 'player' }
       }];
     }
     return super.create(data);
@@ -60,7 +60,7 @@ export class UserMissionService extends Service {
     assert(orignal, 'user mission not exists');
     assert(orignal.access !== 'private', 'user mission is private');
     assert(data.lane, 'data.lane is not provided.');
-    assert(data.role, 'data.role is not provided.');
+    assert(fp.contains(data.role, ['player', 'observer']), 'data.role is not valid.');
     assert(data.player || data.user, 'data.player is not provided.');
 
     const getMission = async (id) => this.app.service('missions').get(id);
@@ -85,16 +85,14 @@ export class UserMissionService extends Service {
           'performers.user': playerId
         });
         return super.patch(id, {
-          $addToSet: {
-            'performers.$.lanes': { role: data.role, lane: data.lane }
-          }
+          [`performers.$.lanes.${data.lane}`]: data.role
         }, params);
       } else {
         return super.patch(id, {
           $addToSet: {
             performers: {
               user: playerId,
-              lanes: [{ role: data.role, lane: data.lane }]
+              lanes: { [data.lane]: data.role }
             }
           }
         }, params);
@@ -164,7 +162,7 @@ export class UserMissionService extends Service {
     });
     assert(mission && mission.activities, 'mission not exists');
 
-    // verify and get new tasks
+    // verify and get new tasks, TODO: task lane?
     const tasks = walkThroughTasks(params.user, orignal.tasks)(mission.activities);
     const task = fp.find(fp.propEq('key', data.trigger), tasks);
     const activity = fp.dotPath(data.trigger, mission.activities);
@@ -226,8 +224,9 @@ export class UserMissionService extends Service {
   async roles (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(data.lane, 'data.lane is not provided.');
-    assert(data.role, 'data.role is not valid.');
+    assert(fp.contains(data.role, ['player', 'observer', 'false']), 'data.role is not valid.');
     assert(data.player || data.user, 'data.player is not provided.');
+    if (data.role === 'false') data.role = null;
 
     const getMission = async (id) => this.app.service('missions').get(id);
     const getPlayer = async (id) => id? this.app.service('users').get(id) : null;
@@ -249,26 +248,13 @@ export class UserMissionService extends Service {
 
     // process the join for public mission
     if (orignal.access === 'public') {
-      if (data.role === 'false') {
-        // remove a performer from the lane
-        params.query = fp.assign(params.query, {
-          'performers.user': playerId
-        });
-        return super.patch(id, {
-          $pull: {
-            'performers.$.lanes': { role: data.role, lane: data.lane }
-          }
-        }, params);
-      } else {
-        // change the performer's role of the lane
-        params.query = fp.assign(params.query, {
-          'performers.user': playerId,
-          'performers.lanes': { $elemMatch: { lane: data.lane }}
-        });
-        return super.patch(id, {
-          'performers.$.lanes.0.role': data.role
-        }, params);
-      }
+      // remove a performer from the lane
+      params.query = fp.assign(params.query, {
+        'performers.user': playerId
+      });
+      return super.patch(id, {
+        $unset: { [`performers.$.lanes.${data.lane}`]: '' }
+      }, params);
     } else {
       // send role.change in notifier
       return orignal;
