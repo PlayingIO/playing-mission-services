@@ -219,6 +219,61 @@ export class UserMissionService extends Service {
 
     return userMission;
   }
+
+  /**
+   * Change own roles in mission.
+   */
+  async roles (id, data, params, orignal) {
+    assert(orignal, 'user mission not exists');
+    assert(data.lane, 'data.lane is not provided.');
+    assert(data.role, 'data.role is not valid.');
+    assert(data.player || data.user, 'data.player is not provided.');
+
+    const getMission = async (id) => this.app.service('missions').get(id);
+    const getPlayer = async (id) => id? this.app.service('users').get(id) : null;
+
+    const [mission, player] = await Promise.all([
+      getMission(orignal.mission),
+      getPlayer(data.player)
+    ]);
+    assert(mission, 'mission not exists');
+    if (data.player) assert(player, 'player not exists');
+
+    // whether the user is one of the performers
+    const playerId = data.player || data.user; // player or current user
+    const performer = fp.find(fp.idPropEq('user', playerId), orignal.performers || []);
+    assert(performer, 'player is not members of this mission, please join the mission first.');
+
+    const lanes = fp.map(fp.prop('name'), mission.lanes || []);
+    assert(fp.contains(data.lane, lanes), 'data.lane not exists in this mission');
+
+    // process the join for public mission
+    if (orignal.access === 'public') {
+      if (data.role === 'false') {
+        // remove a performer from the lane
+        params.query = fp.assign(params.query, {
+          'performers.user': playerId
+        });
+        return super.patch(id, {
+          $pull: {
+            'performers.$.lanes': { role: data.role, lane: data.lane }
+          }
+        }, params);
+      } else {
+        // change the performer's role of the lane
+        params.query = fp.assign(params.query, {
+          'performers.user': playerId,
+          'performers.lanes': { $elemMatch: { lane: data.lane }}
+        });
+        return super.patch(id, {
+          'performers.$.lanes.0.role': data.role
+        }, params);
+      }
+    } else {
+      // send role.change in notifier
+      return orignal;
+    }
+  }
 }
 
 export default function init (app, options, hooks) {

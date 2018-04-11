@@ -45,7 +45,7 @@ const fields = {
     user: { type: 'ObjectId' },                   // id of the performer
     lanes: [{                                     // lane/role of the performer
       _id: false,
-      lane: { type: String },
+      lane: { type: String },                     // each lane has only one role
       role: { type: String, enum: [
         'observer', 'player'
       ]},
