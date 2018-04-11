@@ -226,7 +226,6 @@ export class UserMissionService extends Service {
     assert(data.lane, 'data.lane is not provided.');
     assert(fp.contains(data.role, ['player', 'observer', 'false']), 'data.role is not valid.');
     assert(data.player || data.user, 'data.player is not provided.');
-    if (data.role === 'false') data.role = null;
 
     const getMission = async (id) => this.app.service('missions').get(id);
     const getPlayer = async (id) => id? this.app.service('users').get(id) : null;
@@ -252,9 +251,15 @@ export class UserMissionService extends Service {
       params.query = fp.assign(params.query, {
         'performers.user': playerId
       });
-      return super.patch(id, {
-        $unset: { [`performers.$.lanes.${data.lane}`]: '' }
-      }, params);
+      if (data.role === 'false') {
+        return super.patch(id, {
+          $unset: { [`performers.$.lanes.${data.lane}`]: '' }
+        }, params);
+      } else {
+        return super.patch(id, {
+          [`performers.$.lanes.${data.lane}`]: data.role
+        }, params);
+      }
     } else {
       // send role.change in notifier
       return orignal;
