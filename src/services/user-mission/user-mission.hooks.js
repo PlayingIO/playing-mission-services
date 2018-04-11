@@ -46,7 +46,8 @@ export default function (options = {}) {
       patch: [
         iff(hooks.isAction('join'), notifier('mission.join')),
         iff(hooks.isAction('leave'), notifier('mission.leave')),
-        iff(hooks.isAction('play'), notifier('mission.play'))
+        iff(hooks.isAction('play'), notifier('mission.play')),
+        iff(hooks.isAction('roles'), notifier('mission.role'))
       ],
       remove: [
         notifier('mission.delete')
