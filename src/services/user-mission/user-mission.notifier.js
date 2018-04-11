@@ -8,8 +8,9 @@ export default function (event) {
       const activity = {
         actor: `user:${userMission.owner}`,
         verb: verb,
-        object: `mission:${userMission.mission}`,
+        object: `userMission:${userMission.id}`,
         foreignId: `userMission:${userMission.id}`,
+        mission: `mission:${userMission.mission}`,
         ...custom
       };
 
@@ -44,14 +45,14 @@ export default function (event) {
         );
         break;
       }
-      case 'mission.join':
+      case 'mission.join': {
+        const player = context.data.player || context.data.user;
         if (result.access === 'public') {
-          const player = context.data.player || context.data.user;
           const notifications = performersNotifications(result, player);
           const custom = {
             actor: `user:${player}`,
             message: 'Join the mission',
-            role: context.data.roles,
+            roles: { [context.data.lane]: context.data.role },
             player: `user:${player}`
           };
           createActivity(result, event, custom,
@@ -61,10 +62,9 @@ export default function (event) {
             notifications                  // add to all performers' notification stream
           );
         } else {
-          const player = context.data.player || context.data.user;
           const custom = {
             actor: `user:${player}`,
-            message: 'Join request the mission',
+            message: 'Request joining the mission',
             role: context.data.roles,
             state: 'pending',
             player: `user:${player}`
@@ -74,6 +74,7 @@ export default function (event) {
           );
         }
         break;
+      }
       case 'mission.leave': {
         const player = context.data.user;
         const notifications = performersNotifications(result);
