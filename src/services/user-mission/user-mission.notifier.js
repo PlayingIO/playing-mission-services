@@ -105,6 +105,36 @@ export default function (event) {
         );
         break;
       }
+      case 'mission.role': {
+        const player = context.data.player || context.data.user;
+        if (result.access === 'public') {
+          const notifications = performersNotifications(result, player);
+          const custom = {
+            actor: `user:${player}`,
+            message: 'Change roles in the mission',
+            roles: { [context.data.lane]: context.data.role },
+            player: `user:${player}`
+          };
+          createActivity(result, event, custom,
+            `user:${player}`,              // add to player's activity log
+            `user:${result.owner}`,        // add to owner's activity log
+            `mission:${result.id}`,        // add to mission's activity log
+            notifications                  // add to all performers' notification stream
+          );
+        } else {
+          const custom = {
+            actor: `user:${player}`,
+            message: 'Request roles change in the mission',
+            role: context.data.roles,
+            state: 'pending',
+            player: `user:${player}`
+          };
+          createActivity(result, event + '.request', custom,
+            `notification:${result.owner}` // notify owner of the mission to approve requests
+          );
+        }
+        break;
+      }
     }
   };
 }
