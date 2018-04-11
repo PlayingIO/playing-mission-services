@@ -1,11 +1,22 @@
 import { iff, isProvider } from 'feathers-hooks-common';
 import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authentication-hooks';
+import fp from 'mostly-func';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 
 import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
 import notifier from './user-mission.notifier';
+
+const isLanes = (context) => async (val, params) => {
+  const mission = await context.app.service('missions').get(params.mission);
+  if (!fp.contains(val, mission.lanes || [])) return 'lane is not exists';
+};
+
+const defaultLane = async (app, missionId) => {
+  const mission = await app.service('missions').get(missionId);
+  return fp.find(fp.propEq('default', true), mission.lanes || []);
+};
 
 const accepts = (context) => {
   // rules
@@ -14,12 +25,12 @@ const accepts = (context) => {
   const access = { arg: 'access', type: 'string',
     validates: { isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' }, required: true },
     description: 'access of the mission' };
-  const owner = { arg: 'owner', type: 'string',
-    validates: { isMongoId: true, required: true },
+  const lane = { arg: 'owner', type: 'string',
+    validates: { isLanes: isLanes(context) },
     description: 'mission owner' };
 
   return {
-    create: [ mission, access, owner ]
+    create: [ mission, access, lane ]
   };
 };
 
