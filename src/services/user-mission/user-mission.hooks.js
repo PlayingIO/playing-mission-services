@@ -7,6 +7,22 @@ import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
 import notifier from './user-mission.notifier';
 
+const accepts = (context) => {
+  // rules
+  const mission = { arg: 'mission', type: 'string',
+    required: true, description: 'mission definition' };
+  const access = { arg: 'access', type: 'string',
+    validates: { isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' }, required: true },
+    description: 'access of the mission' };
+  const owner = { arg: 'owner', type: 'string',
+    validates: { isMongoId: true, required: true },
+    description: 'mission owner' };
+
+  return {
+    create: [ mission, access, owner ]
+  };
+};
+
 export default function (options = {}) {
   return {
     before: {
@@ -17,16 +33,19 @@ export default function (options = {}) {
       create: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'owner' })),
+        hooks.validation(accepts),
         hooks.discardFields('tasks')
       ],
       update: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
+        hooks.validation(accepts),
         hooks.discardFields('owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
       ],
       patch: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
+        hooks.validation(accepts),
         hooks.discardFields('owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
       ]
     },

@@ -27,11 +27,6 @@ export class UserMissionService extends Service {
   }
 
   async create (data, params) {
-    assert(data.mission, 'data.mission not provided.');
-    assert(data.access, 'data.access not provided.');
-    assert(data.owner, 'data.owner not provided.');
-    assert(params.user, 'params.user not provided');
-
     const svcMissions = this.app.service('missions');
     const getMission = (id) => svcMissions.get(id);
 
@@ -74,13 +69,13 @@ export class UserMissionService extends Service {
     if (data.player) assert(player, 'player not exists');
 
     const playerId = data.player || data.user; // player or current user
-    const hasPerformer = fp.find(fp.idPropEq('user', playerId), orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', playerId), orignal.performers || []);
     const lanes = fp.map(fp.prop('name'), mission.lanes || []);
     assert(fp.contains(data.lane, lanes), 'data.lane not exists in this mission');
 
     // process the join for public mission
     if (orignal.access === 'public') {
-      if (hasPerformer) {
+      if (performer) {
         params.query = fp.assign(params.query, {
           'performers.user': playerId
         });
@@ -112,8 +107,8 @@ export class UserMissionService extends Service {
 
     // the owner himself cannot leave
     assert(orignal.owner !== data.player, 'You are owner of this mission yourself cannot leave.');
-    const hasPerformer = fp.find(fp.idPropEq('user', data.user), orignal.performers || []);
-    assert(hasPerformer, 'You are not a performer of this mission');
+    const performer = fp.find(fp.idPropEq('user', data.user), orignal.performers || []);
+    assert(performer, 'You are not a performer of this mission');
 
     return super.patch(id, {
       $pull: {
@@ -132,8 +127,8 @@ export class UserMissionService extends Service {
     // can only done by the owner of the mission and the owner himself cannot be kicked out.
     assert(orignal.owner === data.user, 'You must be owner of this mission to kick out someone.');
     assert(orignal.owner !== data.player, 'You are owner of this mission yourself cannot be kicked out.');
-    const hasPerformer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
-    assert(hasPerformer, 'player is not a performer of this mission');
+    const performer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
+    assert(performer, 'player is not a performer of this mission');
 
     return super.patch(id, {
       $pull: {
@@ -264,6 +259,24 @@ export class UserMissionService extends Service {
       // send mission.role in notifier
       return orignal;
     }
+  }
+
+  /**
+   * Transfer mission wwnership
+   */
+  async transfer (id, data, params, orignal) {
+    assert(orignal, 'user mission not exists');
+    assert(data.player, 'data.player is not provided.');
+    assert(data.lane, 'data.lane is not provided.');
+    assert(fp.contains(data.role, ['player', 'observer']), 'data.role is not valid.');
+
+    // can only done by the owner of the mission
+    assert(orignal.owner === data.user, 'You must be owner of this mission to kick out someone.');
+    assert(orignal.owner !== data.player, 'You are already owner of this mission.');
+    const hasPerformer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
+    assert(hasPerformer, 'player is not a performer of this mission');
+
+    return super.patch(id, {}, params);
   }
 }
 
