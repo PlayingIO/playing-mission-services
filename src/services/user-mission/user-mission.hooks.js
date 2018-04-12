@@ -14,12 +14,10 @@ const isLanes = (context) => async (val, params) => {
   if (!fp.find(fp.propEq('name', val, mission.lanes || []))) return 'lane is not exists';
 };
 
-const defaultLane = (context) => async () => {
-  if (context.data.mission) {
-    const mission = await context.app.service('missions').get(context.data.mission);
-    const lane = fp.find(fp.propEq('default', true), mission.lanes || []);
-    return lane? lane.name : null;
-  }
+const defaultLane = (context) => async (params) => {
+  const mission = await context.app.service('missions').get(params.mission);
+  const lane = fp.find(fp.propEq('default', true), mission.lanes || []);
+  return lane? lane.name : null;
 };
 
 const accepts = (context) => {
