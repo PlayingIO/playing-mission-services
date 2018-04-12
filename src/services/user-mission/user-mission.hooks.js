@@ -3,7 +3,7 @@ import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authenticat
 import fp from 'mostly-func';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
-import { validate } from 'mostly-feathers-validate';
+import { sanitize, validate } from 'mostly-feathers-validate';
 
 import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
@@ -25,6 +25,7 @@ const accepts = (context) => {
     required: true, description: 'mission definition' };
   const access = { arg: 'access', type: 'string',
     validates: { isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' }, required: true },
+    sanitizes: { trim: true },
     description: 'access of the mission' };
   const lane = { arg: 'lane', type: 'string',
     validates: { isLanes: isLanes(context) },
@@ -43,20 +44,20 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       create: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'owner' })),
+        iff(isProvider('external'), associateCurrentUser({ idField: 'id', as: 'owner' })),
+        sanitize(accepts),
         validate(accepts),
         hooks.discardFields('tasks')
       ],
       update: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' })),
+        iff(isProvider('external'), associateCurrentUser({ idField: 'id', as: 'user' })),
+        sanitize(accepts),
         validate(accepts),
         hooks.discardFields('owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
       ],
       patch: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' })),
+        iff(isProvider('external'), associateCurrentUser({ idField: 'id', as: 'user' })),
+        sanitize(accepts),
         validate(accepts),
         hooks.discardFields('owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
       ]
