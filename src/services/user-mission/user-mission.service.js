@@ -48,24 +48,9 @@ export class UserMissionService extends Service {
   async join (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
     assert(orignal.access !== 'private', 'user mission is private');
-    assert(data.lane, 'data.lane is not provided.');
-    assert(fp.contains(data.role, ['player', 'observer']), 'data.role is not valid.');
-    assert(data.player || data.user, 'data.player is not provided.');
-
-    const getMission = async (id) => this.app.service('missions').get(id);
-    const getPlayer = async (id) => id? this.app.service('users').get(id) : null;
-
-    const [mission, player] = await Promise.all([
-      getMission(orignal.mission),
-      getPlayer(data.player)
-    ]);
-    assert(mission, 'mission not exists');
-    if (data.player) assert(player, 'player not exists');
 
     const playerId = data.player || data.user; // player or current user
     const performer = fp.find(fp.idPropEq('user', playerId), orignal.performers || []);
-    const lanes = fp.map(fp.prop('name'), mission.lanes || []);
-    assert(fp.contains(data.lane, lanes), 'data.lane not exists in this mission');
 
     // process the join for public mission
     if (orignal.access === 'public') {
