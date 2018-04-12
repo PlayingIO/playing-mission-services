@@ -9,13 +9,13 @@ import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
 import notifier from './user-mission.notifier';
 
-const isLanes = (context) => async (val, params) => {
-  const mission = await context.app.service('missions').get(params.mission);
+const isLanes = (service, id) => async (val, params) => {
+  const mission = await service.get(params[id]);
   if (!fp.find(fp.propEq('name', val, mission.lanes || []))) return 'lane is not exists';
 };
 
-const defaultLane = (context) => async (params) => {
-  const mission = await context.app.service('missions').get(params.mission);
+const defaultLane = (service, id) => async (params) => {
+  const mission = await service.get(params[id]);
   const lane = fp.find(fp.propEq('default', true), mission.lanes || []);
   return lane? lane.name : null;
 };
@@ -28,12 +28,11 @@ const accepts = (context) => {
     required: true, description: 'Mission definition' };
   const access = { arg: 'access', type: 'string',
     validates: { isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' }, required: true },
-    sanitizes: { trim: true },
     default: 'public',
     description: 'Access of the mission' };
   const lane = { arg: 'lane', type: 'string',
-    validates: { isLanes: isLanes(context) },
-    default: defaultLane(context),
+    validates: { isLanes: isLanes(svcMission, 'mission') },
+    default: defaultLane(svcMission, 'mission'),
     description: 'Lane of the mission' };
 
   return {
