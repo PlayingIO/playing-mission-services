@@ -27,18 +27,12 @@ export class UserMissionService extends Service {
   }
 
   async create (data, params) {
-    const svcMissions = this.app.service('missions');
-    const getMission = (id) => svcMissions.get(id);
-
-    const mission = await getMission(data.mission);
-    assert(mission, 'data.mission is not exists.');
     data.loop = 0;
     data.status = 'ready';
-    const defaultLane = fp.find(fp.propEq('default', true), mission.lanes || []);
-    if (defaultLane) {
+    if (data.lane) {
       data.performers = [{
         user: data.owner,
-        lanes: { [defaultLane.name]: 'player' }
+        lanes: { [data.lane]: 'player' }
       }];
     }
     return super.create(data);
