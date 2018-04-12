@@ -11,12 +11,15 @@ import notifier from './user-mission.notifier';
 
 const isLanes = (context) => async (val, params) => {
   const mission = await context.app.service('missions').get(params.mission);
-  if (!fp.contains(val, mission.lanes || [])) return 'lane is not exists';
+  if (!fp.find(fp.propEq('name', val, mission.lanes || []))) return 'lane is not exists';
 };
 
-const defaultLane = async (app, missionId) => {
-  const mission = await app.service('missions').get(missionId);
-  return fp.find(fp.propEq('default', true), mission.lanes || []);
+const defaultLane = (context) => async () => {
+  if (context.data.mission) {
+    const mission = await context.app.service('missions').get(context.data.mission);
+    const lane = fp.find(fp.propEq('default', true), mission.lanes || []);
+    return lane? lane.name : null;
+  }
 };
 
 const accepts = (context) => {
@@ -26,9 +29,11 @@ const accepts = (context) => {
   const access = { arg: 'access', type: 'string',
     validates: { isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' }, required: true },
     sanitizes: { trim: true },
+    default: 'public',
     description: 'access of the mission' };
   const lane = { arg: 'lane', type: 'string',
     validates: { isLanes: isLanes(context) },
+    default: defaultLane(context),
     description: 'lane of the mission' };
 
   return {
