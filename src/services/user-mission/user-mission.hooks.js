@@ -3,6 +3,7 @@ import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authenticat
 import fp from 'mostly-func';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
+import validate from 'mostly-feathers-validate';
 
 import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
@@ -44,19 +45,19 @@ export default function (options = {}) {
       create: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'owner' })),
-        hooks.validation(accepts),
+        validate(accepts),
         hooks.discardFields('tasks')
       ],
       update: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.validation(accepts),
+        validate(accepts),
         hooks.discardFields('owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
       ],
       patch: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.validation(accepts),
+        validate(accepts),
         hooks.discardFields('owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
       ]
     },
