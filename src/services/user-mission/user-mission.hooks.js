@@ -3,7 +3,7 @@ import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authenticat
 import fp from 'mostly-func';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
-import { sanitize, validate } from 'mostly-feathers-validate';
+import { sanitize, validate, helpers } from 'mostly-feathers-validate';
 
 import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
@@ -21,18 +21,20 @@ const defaultLane = (context) => async (params) => {
 };
 
 const accepts = (context) => {
+  const svcMission = context.app.service('missions');
   // rules
   const mission = { arg: 'mission', type: 'string',
-    required: true, description: 'mission definition' };
+    validates: { idExists: helpers.idExists(svcMission, 'mission', 'Mission is not exists') },
+    required: true, description: 'Mission definition' };
   const access = { arg: 'access', type: 'string',
     validates: { isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' }, required: true },
     sanitizes: { trim: true },
     default: 'public',
-    description: 'access of the mission' };
+    description: 'Access of the mission' };
   const lane = { arg: 'lane', type: 'string',
     validates: { isLanes: isLanes(context) },
     default: defaultLane(context),
-    description: 'lane of the mission' };
+    description: 'Lane of the mission' };
 
   return {
     create: [ mission, access, lane ]
