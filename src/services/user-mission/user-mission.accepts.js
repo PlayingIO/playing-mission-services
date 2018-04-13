@@ -53,10 +53,14 @@ export default function accepts (context) {
     validates: { isIn: { args: ['player', 'observer', 'false'], message: 'role is not valid' }, required: true },
     description: 'Role of the player' };
 
+  const trigger = { arg: 'trigger', type: 'string', required: true, description: 'Id of trigger' };
+  const scopes = { arg: 'scopes', type: 'array', default: [], description: 'Scopes of scores to be counted' };
+  
   return {
     create: [ mission, access, lane ],
     join: [ access, userLane, playerOrUser, role ],
     leave: [ user ],
     kick: [ player ],
+    play: [ trigger, user, scopes ]
   };
 }

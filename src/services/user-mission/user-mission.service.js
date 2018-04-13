@@ -98,6 +98,7 @@ export class UserMissionService extends Service {
    */
   async kick (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
+
     // can only done by the owner of the mission and the owner himself cannot be kicked out.
     assert(fp.idEquals(orignal.owner, data.user), 'Only owner of the mission can kick a player.');
     assert(!fp.idEquals(orignal.owner, data.player), 'Owner of the mission cannot kick yourself.');
@@ -117,9 +118,6 @@ export class UserMissionService extends Service {
    */
   async play (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
-    assert(data.trigger, 'data.trigger is not provided.');
-    assert(data.user, 'data.user is not provided.');
-    data.scopes = data.scopes || []; // scope in which the scores will be counted
 
     // whether the user is one of the performers
     const performer = fp.find(fp.idPropEq('user', params.user.id), orignal.performers || []);
