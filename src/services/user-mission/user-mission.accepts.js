@@ -26,9 +26,11 @@ export default function accepts (context) {
   const mission = { arg: 'mission', type: 'string',
     validates: { idExists: helpers.idExists(svcMissions, 'mission', 'Mission is not exists') },
     required: true, description: 'Mission definition' };
+
   const access = { arg: 'access', type: 'string',
     validates: { isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' }, required: true },
     description: 'Access of the mission' };
+
   const lane = { arg: 'lane', type: 'string',
     validates: { isLanes: isLanes(svcMissions, 'mission') },
     default: defaultLane(svcMissions, 'mission'),
@@ -37,17 +39,20 @@ export default function accepts (context) {
     validates: { isUserLanes: isUserLanes(svcUserMissions, '$id') },
     default: defaultLane(svcUserMissions, '$id'),
     description: 'Lane of the mission' };
+
   const player = { arg: ['player', 'user'], type: 'string',
     validates: {
       idExists: helpers.idExists(svcUsers, ['player', 'user'], 'Player is not exists'),
       atLeastOneOf: helpers.atLeastOneOf('player', 'user') },
     description: 'Player' };
+  const user = { arg: 'user', type: 'string', required: true, description: 'Current user' };
   const role = { arg: 'role', type: 'string',
     validates: { isIn: { args: ['player', 'observer', 'false'], message: 'role is not valid' }, required: true },
     description: 'Role of the player' };
 
   return {
     create: [ mission, access, lane ],
-    join: [ access, userLane, player, role ]
+    join: [ access, userLane, player, role ],
+    leave: [ user ]
   };
 }

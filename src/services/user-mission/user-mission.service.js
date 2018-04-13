@@ -29,12 +29,10 @@ export class UserMissionService extends Service {
   async create (data, params) {
     data.loop = 0;
     data.status = 'ready';
-    if (data.lane) {
-      data.performers = [{
-        user: data.owner,
-        lanes: { [data.lane]: 'player' }
-      }];
-    }
+    data.performers = [{
+      user: data.owner,
+      lanes: { [data.lane]: 'player' }
+    }];
     return super.create(data);
   }
 
@@ -82,10 +80,9 @@ export class UserMissionService extends Service {
    */
   async leave (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
-    assert(data.user, 'data.user is not provided.');
 
     // the owner himself cannot leave
-    assert(orignal.owner !== data.player, 'You are owner of this mission yourself cannot leave.');
+    assert(!fp.idEquals(orignal.owner, data.user), 'Owner of the mission cannot leave yourself.');
     const performer = fp.find(fp.idPropEq('user', data.user), orignal.performers || []);
     assert(performer, 'You are not a performer of this mission');
 
