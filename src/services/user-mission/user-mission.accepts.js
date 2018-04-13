@@ -6,15 +6,27 @@ const isLanes = (service, id) => async (val, params) => {
   if (!fp.find(fp.propEq('name', val, mission.lanes))) return 'Lane is not exists';
 };
 
-const isUserLanes = (service, id) => async (val, params) => {
-  const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
-  if (!fp.find(fp.propEq('name', val, userMission.mission.lanes || []))) return 'Lane is not exists';
-};
-
 const defaultLane = (service, id) => async (params) => {
   const mission = await service.get(params[id]);
-  const lane = fp.find(fp.propEq('default', true), mission.lanes || []);
-  return lane? lane.name : null;
+  if (mission && mission.lanes) {
+    const lane = fp.find(fp.propEq('default', true), mission.lanes);
+    return lane? lane.name : null;
+  }
+  return null;
+};
+
+const isUserLanes = (service, id) => async (val, params) => {
+  const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
+  if (!fp.find(fp.propEq('name', val, userMission.mission.lanes))) return 'Lane is not exists';
+};
+
+const defaultUserLane = (service, id) => async (params) => {
+  const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
+  if (userMission && userMission.mission && userMission.mission.lanes) {
+    const lane = fp.find(fp.propEq('default', true), userMission.mission.lanes);
+    return lane? lane.name : null;
+  }
+  return null;
 };
 
 export default function accepts (context) {
@@ -28,17 +40,17 @@ export default function accepts (context) {
     required: true, description: 'Mission definition' };
 
   const access = { arg: 'access', type: 'string',
-    validates: { isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' }, required: true },
-    description: 'Access of the mission' };
+    validates: { isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' } },
+    required: true, description: 'Access of the mission' };
 
   const lane = { arg: 'lane', type: 'string',
     validates: { isLanes: isLanes(svcMissions, 'mission') },
     default: defaultLane(svcMissions, 'mission'),
-    description: 'Lane of the mission' };
+    required: true, description: 'Lane of the mission' };
   const userLane = { arg: 'lane', type: 'string',
     validates: { isUserLanes: isUserLanes(svcUserMissions, '$id') },
-    default: defaultLane(svcUserMissions, '$id'),
-    description: 'Lane of the mission' };
+    default: defaultUserLane(svcUserMissions, '$id'),
+    required: true, description: 'Lane of the mission' };
 
   const player = { arg: 'player', type: 'string',
     validates: { idExists: helpers.idExists(svcUsers, 'player', 'Player is not exists') },
@@ -50,8 +62,8 @@ export default function accepts (context) {
       atLeastOneOf: helpers.atLeastOneOf('player', 'user') },
     description: 'Player or current user' };
   const role = { arg: 'role', type: 'string',
-    validates: { isIn: { args: ['player', 'observer', 'false'], message: 'role is not valid' }, required: true },
-    description: 'Role of the player' };
+    validates: { isIn: { args: ['player', 'observer', 'false'], message: 'role is not valid' } },
+    required: true, description: 'Role of the player' };
 
   const trigger = { arg: 'trigger', type: 'string', required: true, description: 'Id of trigger' };
   const scopes = { arg: 'scopes', type: 'array', default: [], description: 'Scopes of scores to be counted' };
@@ -61,6 +73,7 @@ export default function accepts (context) {
     join: [ access, userLane, playerOrUser, role ],
     leave: [ user ],
     kick: [ player ],
-    play: [ trigger, user, scopes ]
+    play: [ trigger, user, scopes ],
+    roles: [ userLane, user, scopes ]
   };
 }
