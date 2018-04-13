@@ -98,13 +98,12 @@ export class UserMissionService extends Service {
    */
   async kick (id, data, params, orignal) {
     assert(orignal, 'user mission not exists');
-    assert(data.player, 'data.player is not provided.');
-
     // can only done by the owner of the mission and the owner himself cannot be kicked out.
-    assert(orignal.owner === data.user, 'You must be owner of this mission to kick out someone.');
-    assert(orignal.owner !== data.player, 'You are owner of this mission yourself cannot be kicked out.');
+    assert(fp.idEquals(orignal.owner, data.user), 'Only owner of the mission can kick a player.');
+    assert(!fp.idEquals(orignal.owner, data.player), 'Owner of the mission cannot kick yourself.');
+
     const performer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
-    assert(performer, 'player is not a performer of this mission');
+    assert(performer, 'Player is not a member of the mission');
 
     return super.patch(id, {
       $pull: {
