@@ -40,19 +40,23 @@ export default function accepts (context) {
     default: defaultLane(svcUserMissions, '$id'),
     description: 'Lane of the mission' };
 
-  const player = { arg: ['player', 'user'], type: 'string',
+  const player = { arg: 'player', type: 'string',
+    validates: { idExists: helpers.idExists(svcUsers, 'player', 'Player is not exists') },
+    required: true, description: 'Player' };
+  const user = { arg: 'user', type: 'string', required: true, description: 'Current user' };
+  const playerOrUser = { arg: ['player', 'user'], type: 'string',
     validates: {
       idExists: helpers.idExists(svcUsers, ['player', 'user'], 'Player is not exists'),
       atLeastOneOf: helpers.atLeastOneOf('player', 'user') },
-    description: 'Player' };
-  const user = { arg: 'user', type: 'string', required: true, description: 'Current user' };
+    description: 'Player or current user' };
   const role = { arg: 'role', type: 'string',
     validates: { isIn: { args: ['player', 'observer', 'false'], message: 'role is not valid' }, required: true },
     description: 'Role of the player' };
 
   return {
     create: [ mission, access, lane ],
-    join: [ access, userLane, player, role ],
-    leave: [ user ]
+    join: [ access, userLane, playerOrUser, role ],
+    leave: [ user ],
+    kick: [ player ],
   };
 }
