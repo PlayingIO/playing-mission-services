@@ -45,9 +45,9 @@ export default function accepts (context) {
   const userLane = { arg: 'lane', type: 'string',
     validates: {
       exists: helpers.propExists(svcUserMissions, {
-        id: '$id', path: 'mission.lanes', prop: 'name', select: 'mission,*'
+        id: 'id', path: 'mission.lanes', prop: 'name', select: 'mission,*'
       }, 'Lane is not exists') },
-    default: defaultUserLane(svcUserMissions, '$id'),
+    default: defaultUserLane(svcUserMissions, 'id'),
     required: true, description: 'Lane of the mission' };
 
   const player = { arg: 'player', type: 'string',
