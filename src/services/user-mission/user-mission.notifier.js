@@ -17,10 +17,12 @@ export default function (event) {
       await feeds.addActivity(context.app, activity, targets);
     };
 
-    const performersNotifications = function (userMission) {
+    // notification feeds of all performers
+    const performersNotifications = function (userMission, excepts = []) {
       return fp.map(fp.pipe(
         fp.prop('user'),
         fp.toString,
+        fp.without(fp.map(fp.toString, excepts)),
         fp.concat('notification:')
       ), userMission.performers || []);
     };
