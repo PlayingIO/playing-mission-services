@@ -10,12 +10,21 @@ const defaultLane = (service, id) => async (params) => {
   return null;
 };
 
+const defaultUserLane = (service, id) => async (params) => {
+  const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
+  if (userMission && userMission.mission && userMission.mission.lanes) {
+    const lane = fp.find(fp.propEq('default', true), userMission.mission.lanes);
+    return lane? lane.name : null;
+  }
+  return null;
+};
+
 export default function accepts (context) {
   const svcMissions = context.app.service('missions');
   const svcUserMissions = context.app.service('user-missions');
   const svcUsers = context.app.service('users');
 
-  // validations
+  // validation rules
   const mission = { arg: 'mission', type: 'string',
     validates: {
       exists: helpers.idExists(svcMissions, 'mission', 'Mission is not exists') },
@@ -23,7 +32,7 @@ export default function accepts (context) {
 
   const access = { arg: 'access', type: 'string',
     validates: {
-      isIn: { args: ['public', 'protected', 'private'], message: 'access is not valid' } },
+      isIn: helpers.isIn('access', ['public', 'protected', 'private']) },
     required: true, description: 'Access of the mission' };
 
   const lane = { arg: 'lane', type: 'string',
@@ -38,6 +47,7 @@ export default function accepts (context) {
       exists: helpers.propExists(svcUserMissions, {
         id: '$id', path: 'mission.lanes', prop: 'name', select: 'mission,*'
       }, 'Lane is not exists') },
+    default: defaultUserLane(svcUserMissions, '$id'),
     required: true, description: 'Lane of the mission' };
 
   const player = { arg: 'player', type: 'string',
@@ -50,9 +60,11 @@ export default function accepts (context) {
       exists: helpers.idExists(svcUsers, ['player', 'user'], 'Player is not exists'),
       atLeastOneOf: helpers.atLeastOneOf('player', 'user') },
     description: 'Player or current user' };
+
   const role = { arg: 'role', type: 'string',
     validates: {
-      isIn: { args: ['player', 'observer', 'false'], message: 'role is not valid' } },
+      isIn: helpers.isIn('role', ['player', 'observer', 'false']) },
+    default: 'player',
     required: true, description: 'Role of the player' };
 
   const trigger = { arg: 'trigger', type: 'string', required: true, description: 'Id of trigger' };
@@ -64,6 +76,7 @@ export default function accepts (context) {
     leave: [ user ],
     kick: [ player ],
     play: [ trigger, user, scopes ],
-    roles: [ userLane, playerOrUser, scopes ]
+    roles: [ userLane, playerOrUser, scopes ],
+    transfer: [ userLane, player, role ]
   };
 }
