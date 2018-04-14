@@ -144,6 +144,24 @@ export default function (event) {
         }
         break;
       }
+      case 'mission.transfer': {
+        const player = context.data.user;
+        const owner = context.data.player;
+        const notifications = performersNotifications(result, player);
+        const custom = {
+          actor: `user:${player}`,
+          message: 'Transfer the ownership of the mission',
+          roles: { [context.data.lane]: context.data.role },
+          owner: `user:${owner}`
+        };
+        createActivity(result, event, custom,
+          `user:${player}`,              // add to old owner's activity log
+          `user:${owner}`,               // add to new owner's activity log
+          `mission:${result.id}`,        // add to mission's activity log
+          notifications                  // add to all performers' notification stream
+        );
+        break;
+      }
     }
   };
 }
