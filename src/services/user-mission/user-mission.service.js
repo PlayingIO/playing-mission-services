@@ -242,9 +242,6 @@ export class UserMissionService extends Service {
       throw new Error('Already owner of the mission.');
     }
     const performer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
-    if (!performer) {
-      throw new Error('Player is not a performer of this mission');
-    }
 
     if (performer) {
       params.query = fp.assign(params.query, {
