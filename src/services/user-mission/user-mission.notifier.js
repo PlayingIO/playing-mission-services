@@ -19,30 +19,37 @@ export default function (event) {
 
     // notification feeds of all performers
     const performersNotifications = function (userMission, excepts = []) {
-      return fp.map(fp.pipe(
-        fp.prop('user'),
-        fp.toString,
-        fp.without(fp.map(fp.toString, excepts)),
-        fp.concat('notification:')
-      ), userMission.performers || []);
+      const performers = fp.without(
+        fp.map(fp.toString, [].concat(excepts)),
+        fp.map(fp.pipe(fp.prop('user'), fp.toString), userMission.performers || [])
+      );
+      return fp.map(fp.concat('notification:'), performers);
     };
 
     const result = helpers.getHookData(context);
     switch (event) {
       case 'mission.create': {
+        const player = context.data.owner;
         const notifications = performersNotifications(result);
-        const custom = { message: 'Create a mission' };
+        const custom = {
+          actor: `user:${player}`,
+          message: 'Create a mission'
+        };
         createActivity(result, event, custom,
-          `user:${result.owner}`,          // add to owner's activity log
+          `user:${player}`,                // add to player's activity log
           notifications                    // add to all performers' notification stream
         );
         break;
       }
       case 'mission.delete': {
+        const player = context.data.owner;
         const notifications = performersNotifications(result);
-        const custom = { message: 'Delete the mission' };
+        const custom = {
+          actor: `user:${player}`,
+          message: 'Delete the mission'
+        };
         createActivity(result, event, custom,
-          `user:${result.owner}`,          // add to owner's activity log
+          `user:${player}`,                // add to player's activity log
           notifications                    // add to all performers' notification stream
         );
         break;
@@ -50,7 +57,7 @@ export default function (event) {
       case 'mission.join': {
         const player = context.data.player || context.data.user;
         if (result.access === 'public') {
-          const notifications = performersNotifications(result, player);
+          const notifications = performersNotifications(result);
           const custom = {
             actor: `user:${player}`,
             message: 'Join the mission',
