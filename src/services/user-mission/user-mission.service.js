@@ -97,7 +97,7 @@ export class UserMissionService extends Service {
 
     // can only done by the owner of the mission and the owner himself cannot be kicked out.
     assert(fp.idEquals(orignal.owner, data.user), 'Only owner of the mission can kick a player.');
-    assert(!fp.idEquals(orignal.owner, data.player), 'Owner of the mission cannot kick yourself.');
+    assert(fp.idNotEquals(orignal.owner, data.player), 'Owner of the mission cannot kick yourself.');
 
     const performer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
     assert(performer, 'Player is not a member of the mission');
@@ -215,21 +215,36 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Transfer mission wwnership
+   * Transfer mission ownership to existing performer or any other player
    */
   async transfer (id, data, params, orignal) {
     assert(orignal, 'User mission not exists.');
-    assert(data.player, 'data.player is not provided.');
-    assert(data.lane, 'data.lane is not provided.');
-    assert(fp.contains(data.role, ['player', 'observer']), 'data.role is not valid.');
 
     // can only done by the owner of the mission
-    assert(orignal.owner === data.user, 'You must be owner of this mission to kick out someone.');
-    assert(orignal.owner !== data.player, 'You are already owner of this mission.');
-    const hasPerformer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
-    assert(hasPerformer, 'Player is not a performer of this mission');
+    assert(fp.idEquals(orignal.owner, data.user), 'Only owner of the mission can transfer ownership..');
+    assert(fp.idNotEquals(orignal.owner, data.player), 'Already owner of the mission.');
+    const performer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
+    assert(performer, 'Player is not a performer of this mission');
 
-    return super.patch(id, {}, params);
+    if (performer) {
+      params.query = fp.assign(params.query, {
+        'performers.user': data.player
+      });
+      return super.patch(id, {
+        owner: data.player,
+        [`performers.$.lanes.${data.lane}`]: data.role
+      }, params);
+    } else {
+      return super.patch(id, {
+        owner: data.player,
+        $addToSet: {
+          performers: {
+            user: data.player,
+            lanes: { [data.lane]: data.role }
+          }
+        }
+      }, params);
+    }
   }
 }
 
