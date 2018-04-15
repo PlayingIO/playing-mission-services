@@ -54,25 +54,15 @@ export class UserMissionService extends Service {
 
     // check for pending invitation
     const svcFeeds = this.app.service('feeds');
-    const invitation = await svcFeeds.action('activities').get(`notification:${data.player}`, {
-      query: {
+    const invitations = await svcFeeds.action('activities').get(`notification:${data.player}`, {
+      $match: {
         verb: 'mission.invite',
-        activities:{
-          $elemMatch: {
-            object: `userMission:${original.id}`,
-            invitee: `user:${data.player}`,
-            state: 'PENDING'
-          }
-        }
+        object: `userMission:${original.id}`,
+        invitee: `user:${data.player}`,
+        state: 'PENDING'
       }
     });
-    const activities = fp.flatMap(fp.prop('activities'), invitation.data || []);
-    const hasInvited = fp.find(fp.where({
-      object: fp.equals(`userMission:${original.id}`),
-      invitee: fp.equals(`user:${data.player}`),
-      state: fp.equals('PENDING')
-    }), activities);
-    if (hasInvited) {
+    if (invitations.data && invitations.data.length > 0) {
       throw new Error('An invitation is already pending for the requested player.');
     }
 
