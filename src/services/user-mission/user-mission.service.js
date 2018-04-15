@@ -100,7 +100,7 @@ export class UserMissionService extends Service {
     assert(orignal, 'User mission not exists');
 
     // can only done by the owner of the mission and the owner himself cannot be kicked out.
-    if (fp.idNotEquals(orignal.owner, data.user)) {
+    if (!fp.idEquals(orignal.owner, data.user)) {
       throw new Error('Only owner of the mission can kick a player.');
     }
     if (fp.idEquals(orignal.owner, data.player)) {
@@ -235,7 +235,7 @@ export class UserMissionService extends Service {
     assert(orignal, 'User mission not exists.');
 
     // can only done by the owner of the mission
-    if (fp.idNotEquals(orignal.owner, data.user)) {
+    if (!fp.idEquals(orignal.owner, data.user)) {
       throw new Error('Only owner of the mission can transfer ownership..');
     }
     if (fp.idEquals(orignal.owner, data.player)) {
