@@ -54,6 +54,20 @@ export default function (event) {
         );
         break;
       }
+      case 'mission.invite': {
+        const actor = context.data.user;
+        const player = context.data.player;
+        const custom = {
+          actor: `user:${actor}`,
+          message: 'Invite a player to join the mission',
+          invitee: `user:${player}`,
+          state: 'pending'
+        };
+        createActivity(result, event, custom,
+          `notification:${player}`         // add to invited player's notification stream
+        );
+        break;
+      }
       case 'mission.join': {
         const actor = context.data.user;
         const player = context.data.player || context.data.user;
