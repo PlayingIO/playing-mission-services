@@ -49,6 +49,7 @@ export default function (options = {}) {
         notifier('mission.create')
       ],
       patch: [
+        iff(hooks.isAction('invite'), notifier('mission.invite')),
         iff(hooks.isAction('join'), notifier('mission.join')),
         iff(hooks.isAction('leave'), notifier('mission.leave')),
         iff(hooks.isAction('play'), notifier('mission.play')),
