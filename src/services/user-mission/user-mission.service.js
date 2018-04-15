@@ -39,32 +39,35 @@ export class UserMissionService extends Service {
   /**
    * Invite a player to join a mission.
    */
-  async invite (id, data, params, orignal) {
-    assert(orignal, 'User mission not exists.');
+  async invite (id, data, params, original) {
+    assert(original, 'User mission not exists.');
 
     // owner of the mission
-    if (!fp.idEquals(orignal.owner, data.user)) {
+    if (!fp.idEquals(original.owner, data.user)) {
       throw new Error('Only mission owner can send invites.');
     }
 
-    const performer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', data.player), original.performers || []);
     if (performer) {
-      throw new Error('Requested player already a part of the process');
+      throw new Error('Requested player already a part of the process.');
     }
+
+    // send mission.invite in notifier
+    return original;
   }
 
   /**
    * Join a mission with specified the role and lanes.
    */
-  async join (id, data, params, orignal) {
-    assert(orignal, 'User mission not exists.');
-    assert(orignal.access !== 'PRIVATE', 'The mission is private, cannot join.');
+  async join (id, data, params, original) {
+    assert(original, 'User mission not exists.');
+    assert(original.access !== 'PRIVATE', 'The mission is private, cannot join.');
 
     const playerId = data.player || data.user; // player or current user
-    const performer = fp.find(fp.idPropEq('user', playerId), orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', playerId), original.performers || []);
 
     // process the join for public mission
-    if (orignal.access === 'PUBLIC') {
+    if (original.access === 'PUBLIC') {
       if (performer) {
         params.query = fp.assign(params.query, {
           'performers.user': playerId
@@ -83,22 +86,22 @@ export class UserMissionService extends Service {
         }, params);
       }
     } else {
-      // send join.request in notifier
-      return orignal;
+      // send mission.join.request in notifier
+      return original;
     }
   }
 
   /**
    * Leave a mission.
    */
-  async leave (id, data, params, orignal) {
-    assert(orignal, 'User mission not exists.');
+  async leave (id, data, params, original) {
+    assert(original, 'User mission not exists.');
 
     // the owner himself cannot leave
-    if (fp.idEquals(orignal.owner, data.user)) {
+    if (fp.idEquals(original.owner, data.user)) {
       throw new Error('Owner of the mission cannot leave yourself.');
     }
-    const performer = fp.find(fp.idPropEq('user', data.user), orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', data.user), original.performers || []);
     if (!performer) {
       throw new Error('You are not a performer of this mission.');
     }
@@ -113,19 +116,19 @@ export class UserMissionService extends Service {
   /**
    * Kick out a performer from the mission.
    */
-  async kick (id, data, params, orignal) {
-    assert(orignal, 'User mission not exists');
+  async kick (id, data, params, original) {
+    assert(original, 'User mission not exists');
 
     // owner of the mission
-    if (!fp.idEquals(orignal.owner, data.user)) {
+    if (!fp.idEquals(original.owner, data.user)) {
       throw new Error('Only owner of the mission can kick a player.');
     }
     // the owner cannot kicked out himself
-    if (fp.idEquals(orignal.owner, data.player)) {
+    if (fp.idEquals(original.owner, data.player)) {
       throw new Error('Owner of the mission cannot kick yourself.');
     }
 
-    const performer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', data.player), original.performers || []);
     if (!performer) {
       throw new Error('Player is not a member of the mission');
     }
@@ -140,24 +143,24 @@ export class UserMissionService extends Service {
   /**
    * Play a mission. Playing a mission causes its state to change.
    */
-  async play (id, data, params, orignal) {
-    assert(orignal, 'User mission not exists.');
+  async play (id, data, params, original) {
+    assert(original, 'User mission not exists.');
 
     // whether the user is one of the performers
-    const performer = fp.find(fp.idPropEq('user', params.user.id), orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', params.user.id), original.performers || []);
     if (!performer) {
       throw new Error('data.user is not members of this mission, please join the mission first.');
     }
 
     // get mission activities
     const svcMissions = this.app.service('missions');
-    const mission = await svcMissions.get(helpers.getId(orignal.mission), {
+    const mission = await svcMissions.get(helpers.getId(original.mission), {
       query: { $select: 'activities.requires,activities.rewards,*' }
     });
     assert(mission && mission.activities, 'Mission activities not exists.');
 
     // verify and get new tasks, TODO: task lane?
-    const tasks = walkThroughTasks(params.user, orignal.tasks)(mission.activities);
+    const tasks = walkThroughTasks(params.user, original.tasks)(mission.activities);
     const task = fp.find(fp.propEq('key', data.trigger), tasks);
     const activity = fp.dotPath(data.trigger, mission.activities);
 
@@ -215,22 +218,22 @@ export class UserMissionService extends Service {
   /**
    * Change own roles or roles of a performer in mission.
    */
-  async roles (id, data, params, orignal) {
-    assert(orignal, 'User mission not exists.');
+  async roles (id, data, params, original) {
+    assert(original, 'User mission not exists.');
 
-    if (data.player && !fp.idEquals(orignal.owner, data.user)) {
+    if (data.player && !fp.idEquals(original.owner, data.user)) {
       throw new Error('Only owner of the mission can change roles of a player.');
     }
 
     // whether the user is one of the performers
     const playerId = data.player || data.user; // player or current user
-    const performer = fp.find(fp.idPropEq('user', playerId), orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', playerId), original.performers || []);
     if (!performer) {
       throw new Error('Player is not members of this mission, please join the mission first.');
     }
 
     // process the change if owner or it's a public mission
-    if (fp.idEquals(orignal.owner, data.user) || orignal.access === 'PUBLIC') {
+    if (fp.idEquals(original.owner, data.user) || original.access === 'PUBLIC') {
       // remove a performer from the lane
       params.query = fp.assign(params.query, {
         'performers.user': playerId
@@ -246,24 +249,24 @@ export class UserMissionService extends Service {
       }
     } else {
       // send mission.role in notifier
-      return orignal;
+      return original;
     }
   }
 
   /**
    * Transfer mission ownership to existing performer or any other player
    */
-  async transfer (id, data, params, orignal) {
-    assert(orignal, 'User mission not exists.');
+  async transfer (id, data, params, original) {
+    assert(original, 'User mission not exists.');
 
     // owner of the mission
-    if (!fp.idEquals(orignal.owner, data.user)) {
+    if (!fp.idEquals(original.owner, data.user)) {
       throw new Error('Only owner of the mission can transfer ownership.');
     }
-    if (fp.idEquals(orignal.owner, data.player)) {
+    if (fp.idEquals(original.owner, data.player)) {
       throw new Error('Already owner of the mission.');
     }
-    const performer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
+    const performer = fp.find(fp.idPropEq('user', data.player), original.performers || []);
 
     if (performer) {
       params.query = fp.assign(params.query, {
