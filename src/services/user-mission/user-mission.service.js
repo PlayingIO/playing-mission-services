@@ -37,7 +37,7 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Join a user mission with specified the role and lanes.
+   * Join a mission with specified the role and lanes.
    */
   async join (id, data, params, orignal) {
     assert(orignal, 'User mission not exists.');
@@ -72,7 +72,7 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Leave a user mission.
+   * Leave a mission.
    */
   async leave (id, data, params, orignal) {
     assert(orignal, 'User mission not exists.');
@@ -99,10 +99,11 @@ export class UserMissionService extends Service {
   async kick (id, data, params, orignal) {
     assert(orignal, 'User mission not exists');
 
-    // can only done by the owner of the mission and the owner himself cannot be kicked out.
+    // owner of the mission
     if (!fp.idEquals(orignal.owner, data.user)) {
       throw new Error('Only owner of the mission can kick a player.');
     }
+    // the owner cannot kicked out himself
     if (fp.idEquals(orignal.owner, data.player)) {
       throw new Error('Owner of the mission cannot kick yourself.');
     }
@@ -120,7 +121,7 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Play a user mission. Playing a mission causes its state to change.
+   * Play a mission. Playing a mission causes its state to change.
    */
   async play (id, data, params, orignal) {
     assert(orignal, 'User mission not exists.');
@@ -160,7 +161,7 @@ export class UserMissionService extends Service {
       }
     }
 
-    // add task to the user mission if not exists
+    // add task to the mission if not exists
     await super.patch(id, {
       $push: { tasks: task }
     }, {
@@ -238,9 +239,9 @@ export class UserMissionService extends Service {
   async transfer (id, data, params, orignal) {
     assert(orignal, 'User mission not exists.');
 
-    // can only done by the owner of the mission
+    // owner of the mission
     if (!fp.idEquals(orignal.owner, data.user)) {
-      throw new Error('Only owner of the mission can transfer ownership..');
+      throw new Error('Only owner of the mission can transfer ownership.');
     }
     if (fp.idEquals(orignal.owner, data.player)) {
       throw new Error('Already owner of the mission.');
