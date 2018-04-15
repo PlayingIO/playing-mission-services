@@ -71,7 +71,7 @@ export default function (event) {
       case 'mission.join': {
         const actor = context.data.user;
         const player = context.data.player || context.data.user;
-        if (result.access === 'public') {
+        if (result.access === 'PUBLIC') {
           const notifications = performersNotifications(result);
           const custom = {
             actor: `user:${actor}`,
@@ -132,7 +132,7 @@ export default function (event) {
       case 'mission.roles': {
         const actor = context.data.user;
         const player = context.data.player || context.data.user;
-        if (result.access === 'public') {
+        if (result.access === 'PUBLIC') {
           const notifications = performersNotifications(result);
           const custom = {
             actor: `user:${actor}`,

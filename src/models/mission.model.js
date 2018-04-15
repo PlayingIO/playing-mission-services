@@ -31,7 +31,7 @@ const fields = {
   description: { type: String },           // brief description of the mission
   image: contents.blob.schema,             // image which represents the mission
   access: [{ type: String, enum: [         // access settings with which the mission instance can be created
-    'public', 'protected', 'private'
+    'PUBLIC', 'PROTECTED', 'PRIVATE'
   ]}],
   settings: settings,                      // settings for the whole mission
   lanes: [lane],                           // lanes for retricting players

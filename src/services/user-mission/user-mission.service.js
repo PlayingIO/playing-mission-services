@@ -58,13 +58,13 @@ export class UserMissionService extends Service {
    */
   async join (id, data, params, orignal) {
     assert(orignal, 'User mission not exists.');
-    assert(orignal.access !== 'private', 'The mission is private, cannot join.');
+    assert(orignal.access !== 'PRIVATE', 'The mission is private, cannot join.');
 
     const playerId = data.player || data.user; // player or current user
     const performer = fp.find(fp.idPropEq('user', playerId), orignal.performers || []);
 
     // process the join for public mission
-    if (orignal.access === 'public') {
+    if (orignal.access === 'PUBLIC') {
       if (performer) {
         params.query = fp.assign(params.query, {
           'performers.user': playerId
@@ -230,7 +230,7 @@ export class UserMissionService extends Service {
     }
 
     // process the change if owner or it's a public mission
-    if (fp.idEquals(orignal.owner, data.user) || orignal.access === 'public') {
+    if (fp.idEquals(orignal.owner, data.user) || orignal.access === 'PUBLIC') {
       // remove a performer from the lane
       params.query = fp.assign(params.query, {
         'performers.user': playerId

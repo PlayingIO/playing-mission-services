@@ -32,7 +32,7 @@ export default function accepts (context) {
 
   const access = { arg: 'access', type: 'string',
     validates: {
-      isIn: helpers.isIn('access', ['public', 'protected', 'private']) },
+      isIn: helpers.isIn('access', ['PUBLIC', 'PROTECTED', 'PRIVATE']) },
     required: true, description: 'Access of the mission' };
 
   const lane = { arg: 'lane', type: 'string',

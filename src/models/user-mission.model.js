@@ -32,7 +32,7 @@ const task = {
 const fields = {
   mission: { type: 'ObjectId', required: true },  // id of the mission definition
   access: { type: String, enum: [                 // access of the mission instance
-    'public', 'protected', 'private'
+    'PUBLIC', 'PROTECTED', 'PRIVATE'
   ], required: true },
   state: { type: String, enum: [                  // state of the mission instance
     'READY',                                      // mission can be performed
