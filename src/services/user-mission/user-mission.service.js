@@ -52,6 +52,30 @@ export class UserMissionService extends Service {
       throw new Error('Requested player already a part of the process.');
     }
 
+    // check for pending invitation
+    const svcFeeds = this.app.service('feeds');
+    const invitation = await svcFeeds.action('activities').get(`notification:${data.player}`, {
+      query: {
+        verb: 'mission.invite',
+        activities:{
+          $elemMatch: {
+            object: `userMission:${original.id}`,
+            invitee: `user:${data.player}`,
+            state: 'PENDING'
+          }
+        }
+      }
+    });
+    const activities = fp.flatMap(fp.prop('activities'), invitation.data || []);
+    const hasInvited = fp.find(fp.where({
+      object: fp.equals(`userMission:${original.id}`),
+      invitee: fp.equals(`user:${data.player}`),
+      state: fp.equals('PENDING')
+    }), activities);
+    if (hasInvited) {
+      throw new Error('An invitation is already pending for the requested player.');
+    }
+
     // send mission.invite in notifier
     return original;
   }
