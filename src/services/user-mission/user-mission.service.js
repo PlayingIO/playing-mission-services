@@ -37,6 +37,23 @@ export class UserMissionService extends Service {
   }
 
   /**
+   * Invite a player to join a mission.
+   */
+  async invite (id, data, params, orignal) {
+    assert(orignal, 'User mission not exists.');
+
+    // owner of the mission
+    if (!fp.idEquals(orignal.owner, data.user)) {
+      throw new Error('Only mission owner can send invites.');
+    }
+
+    const performer = fp.find(fp.idPropEq('user', data.player), orignal.performers || []);
+    if (performer) {
+      throw new Error('Requested player already a part of the process');
+    }
+  }
+
+  /**
    * Join a mission with specified the role and lanes.
    */
   async join (id, data, params, orignal) {

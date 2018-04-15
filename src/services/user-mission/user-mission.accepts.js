@@ -72,11 +72,12 @@ export default function accepts (context) {
   
   return {
     create: [ mission, access, lane ],
-    join: [ userLane, playerOrUser, role ],
+    invite: [ player, userLane, role ],
+    join: [ playerOrUser, userLane, role ],
     leave: [ user ],
     kick: [ player ],
     play: [ trigger, user, scopes ],
     roles: [ userLane, playerOrUser, scopes ],
-    transfer: [ userLane, player, role ]
+    transfer: [ player, userLane, role ]
   };
 }
