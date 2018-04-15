@@ -61,7 +61,7 @@ export default function (event) {
           actor: `user:${actor}`,
           message: 'Invite a player to join the mission',
           invitee: `user:${player}`,
-          state: 'pending'
+          state: 'PENDING'
         };
         createActivity(result, event, custom,
           `notification:${player}`         // add to invited player's notification stream
@@ -90,7 +90,7 @@ export default function (event) {
             actor: `user:${actor}`,
             message: 'Request joining the mission',
             role: context.data.roles,
-            state: 'pending',
+            state: 'PENDING',
             player: `user:${player}`
           };
           createActivity(result, event + '.request', custom,
@@ -151,7 +151,7 @@ export default function (event) {
             actor: `user:${actor}`,
             message: 'Request roles change in the mission',
             role: context.data.roles,
-            state: 'pending',
+            state: 'PENDING',
             player: `user:${player}`
           };
           createActivity(result, event + '.request', custom,
