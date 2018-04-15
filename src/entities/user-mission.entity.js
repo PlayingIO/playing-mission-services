@@ -8,7 +8,7 @@ const UserMissionEntity = new Entity('UserMission', {
 
 // show tasks not completed as triggers
 UserMissionEntity.expose('triggers', {}, obj => {
-  return fp.reject(fp.propEq('state', 'completed'), obj.tasks || []);
+  return fp.reject(fp.propEq('state', 'COMPLETED'), obj.tasks || []);
 });
 
 UserMissionEntity.excepts('updatedAt', 'destroyedAt');

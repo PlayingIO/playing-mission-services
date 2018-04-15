@@ -19,11 +19,11 @@ const getTask = (user, tasks, keys, activity, previous) => {
     'verb', 'value', 'item', 'metric.id', 'metric.name', 'metric.type'
   ]), activity.rewards || []);
 
-  if (!previous || previous.state === 'completed') {
+  if (!previous || previous.state === 'COMPLETED') {
     if (task && task.name == activity.name) { // check name with key
       return fp.assoc('rewards', rewards, task);
     } else if (fulfillActivityRequires(activity, user)) {
-      return { key, name: activity.name, state: 'ready', rewards: rewards, loop: 0 };
+      return { key, name: activity.name, state: 'READY', rewards: rewards, loop: 0 };
     }
   }
   return null;
@@ -43,11 +43,11 @@ export const walkThroughTasks = (user, tasks = [], keys = [], previous = null, k
       }
       case 'sequential': {
         const subTasks = walkThroughTasks(user, tasks, [...keys,index], previous)(subActivities);
-        const completed = fp.filter(fp.propEq('state', 'completed'), subTasks);
+        const completed = fp.filter(fp.propEq('state', 'COMPLETED'), subTasks);
         if (completed.length == subActivities.length) { // all completed
-          task.state = 'completed';
+          task.state = 'COMPLETED';
         } else {
-          task.state = completed.length? 'active' : 'ready';
+          task.state = completed.length? 'ACTIVE' : 'READY';
         }
         acc = acc.concat(subTasks);
         previous = task;
@@ -55,11 +55,11 @@ export const walkThroughTasks = (user, tasks = [], keys = [], previous = null, k
       }
       case 'parallel': {
         const subTasks = walkThroughTasks(user, tasks, [...keys,index], previous, true)(subActivities);
-        const completed = fp.filter(fp.propEq('state', 'completed'), subTasks);
+        const completed = fp.filter(fp.propEq('state', 'COMPLETED'), subTasks);
         if (completed.length == subActivities.length) { // all completed
-          task.state = 'completed';
+          task.state = 'COMPLETED';
         } else {
-          task.state = 'ready';
+          task.state = 'READY';
         }
         acc = acc.concat(subTasks);
         previous = task;
@@ -67,12 +67,12 @@ export const walkThroughTasks = (user, tasks = [], keys = [], previous = null, k
       }
       case 'exclusive': {
         const subTasks = walkThroughTasks(user, tasks, [...keys,index], previous, true)(subActivities);
-        const completed = fp.filter(fp.propEq('state', 'completed'), subTasks);
+        const completed = fp.filter(fp.propEq('state', 'COMPLETED'), subTasks);
         if (completed.length > 0) { // any completed
-          task.state = 'completed';
+          task.state = 'COMPLETED';
           acc = acc.concat(completed);
         } else {
-          task.state = 'ready';
+          task.state = 'READY';
           acc = acc.concat(subTasks);
         }
         previous = task;

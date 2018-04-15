@@ -28,7 +28,7 @@ export class UserMissionService extends Service {
 
   async create (data, params) {
     data.loop = 0;
-    data.status = 'ready';
+    data.status = 'READY';
     data.performers = [{
       user: data.owner,
       lanes: { [data.lane]: 'player' }
@@ -165,16 +165,16 @@ export class UserMissionService extends Service {
     if (!task || !activity || task.name !== activity.name) {
       throw new Error('Requirements not meet, You can not play the trigger yet.');
     }
-    if (task.state === 'completed') {
+    if (task.state === 'COMPLETED') {
       throw new Error('Task has already been completed.');
     }
-    let state = 'completed';
+    let state = 'COMPLETED';
     if (activity.loop) {
       const loop = task.loop || 0;
       if (loop >= activity.loop) {
         throw new Error(`Number of times exceeds, task can only performed ${activity.loop} times.`);
       } else {
-        state = (loop + 1 >= activity.loop)? 'completed' : 'active';
+        state = (loop + 1 >= activity.loop)? 'COMPLETED' : 'ACTIVE';
       }
     }
 

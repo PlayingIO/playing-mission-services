@@ -13,9 +13,9 @@ const task = {
   key: { type: String, required: true },          // path to an actity in mission's activities, eg. "1.0.2" means activities[1][0][2]
   name: { type: String, required: true },         // name of the activity to check if mismatched with key
   state: { type: String, enum: [                  // state of the task
-    'ready',                                      // task can be performed
-    'completed',                                  // all task being finished
-    'active'                                      // task in progress (looped task or has unfinished nested tasks)
+    'READY',                                      // task can be performed
+    'COMPLETED',                                  // all task being finished
+    'ACTIVE'                                      // task in progress (looped task or has unfinished nested tasks)
   ]},
   loop: { type: Number },                         // number of times the task has performed
   limit: { type: rules.limit.schema },            // rate limiting data
@@ -35,9 +35,9 @@ const fields = {
     'public', 'protected', 'private'
   ], required: true },
   state: { type: String, enum: [                  // state of the mission instance
-    'ready',                                      // mission can be performed
-    'completed',                                  // mission being finished
-    'active'                                      // mission in progress
+    'READY',                                      // mission can be performed
+    'COMPLETED',                                  // mission being finished
+    'ACTIVE'                                      // mission in progress
   ]},
   tasks: [task],                                  // tasks in this mission (defined by activities)
   performers: [{                                  // players within this task who have performed this task at least once
