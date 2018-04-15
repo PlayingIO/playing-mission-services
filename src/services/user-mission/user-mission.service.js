@@ -195,10 +195,14 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Change own roles in mission.
+   * Change own roles or roles of a performer in mission.
    */
   async roles (id, data, params, orignal) {
     assert(orignal, 'User mission not exists.');
+
+    if (data.player && !fp.idEquals(orignal.owner, data.user)) {
+      throw new Error('Only owner of the mission can change roles of a player.');
+    }
 
     // whether the user is one of the performers
     const playerId = data.player || data.user; // player or current user
@@ -207,8 +211,8 @@ export class UserMissionService extends Service {
       throw new Error('Player is not members of this mission, please join the mission first.');
     }
 
-    // process the join for public mission
-    if (orignal.access === 'public') {
+    // process the change if owner or it's a public mission
+    if (fp.idEquals(orignal.owner, data.user) || orignal.access === 'public') {
       // remove a performer from the lane
       params.query = fp.assign(params.query, {
         'performers.user': playerId
