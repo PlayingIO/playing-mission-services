@@ -129,7 +129,7 @@ export default function (event) {
         );
         break;
       }
-      case 'mission.role': {
+      case 'mission.roles': {
         const actor = context.data.user;
         const player = context.data.player || context.data.user;
         if (result.access === 'public') {
