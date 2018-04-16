@@ -84,7 +84,8 @@ export class UserMissionService extends Service {
 
     // check for pending invitation
     const svcFeeds = this.app.service('feeds');
-    const invitations = await svcFeeds.action('activities').get(`notification:${data.player}`, {
+    const notification = `notification:${data.player}`;
+    const invitations = await svcFeeds.action('activities').get(notification, {
       $match: {
         _id: data.inviteId
       }
@@ -93,7 +94,8 @@ export class UserMissionService extends Service {
       throw new Error('No pending invitation is found for this invite id.');
     }
     if (invitations.data[0].state === 'PENDING') {
-      //TODO
+      const activities = fp.map(fp.assoc('state', 'CANCELED'), invitations.data);
+      await svcFeeds.action('updateActivity').patch(notification, { activities });
     }
 
     // send mission.invite in notifier
