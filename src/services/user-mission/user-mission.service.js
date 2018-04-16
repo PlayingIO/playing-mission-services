@@ -37,7 +37,7 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Invite a player to join a mission.
+   * Invite a player to join a mission
    */
   async invite (id, data, params, original) {
     assert(original, 'User mission not exists.');
@@ -62,8 +62,38 @@ export class UserMissionService extends Service {
         state: 'PENDING'
       }
     });
-    if (invitations.data && invitations.data.length > 0) {
+    if (fp.isNotEmpty(invitations.data)) {
       throw new Error('An invitation is already pending for the requested player.');
+    }
+
+    // send mission.invite in notifier
+    return original;
+  }
+
+  /**
+   * Cancel a pending invite sent out by the player
+   */
+  async cancelInvite (id, data, params, original) {
+    assert(original, 'User mission not exists.');
+
+    const playerId = data.player || data.user;
+    const performer = fp.find(fp.idPropEq('user', playerId), original.performers || []);
+    if (performer) {
+      throw new Error('Requested player already a part of the process.');
+    }
+
+    // check for pending invitation
+    const svcFeeds = this.app.service('feeds');
+    const invitations = await svcFeeds.action('activities').get(`notification:${data.player}`, {
+      $match: {
+        _id: data.inviteId
+      }
+    });
+    if (fp.isEmpty(invitations.data)) {
+      throw new Error('No pending invitation is found for this invite id.');
+    }
+    if (invitations.data[0].state === 'PENDING') {
+      //TODO
     }
 
     // send mission.invite in notifier

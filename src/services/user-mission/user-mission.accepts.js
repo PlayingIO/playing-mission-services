@@ -70,7 +70,10 @@ export default function accepts (context) {
   const trigger = { arg: 'trigger', type: 'string', required: true, description: 'Id of trigger' };
   const scopes = { arg: 'scopes', type: 'array', default: [], description: 'Scopes of scores to be counted' };
   
+  const inviteId = { arg: 'inviteId', type: 'string', required: true, description: 'Invite id' };
+
   return {
+    cancelInvite: [ inviteId ],
     create: [ mission, access, lane ],
     invite: [ player, userLane, role ],
     join: [ playerOrUser, userLane, role ],
