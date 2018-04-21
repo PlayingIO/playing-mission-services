@@ -3,6 +3,7 @@ import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authenticat
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
+import { entities as feeds } from 'playing-feed-services';
 
 import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
@@ -15,6 +16,12 @@ export default function (options = {}) {
       all: [
         hooks.authenticate('jwt', options.auth, 'scores,actions'),
         cache(options.cache)
+      ],
+      get: [
+        // queryWithCurrentUser({ idField: 'id', as: 'user' })
+      ],
+      find: [
+        // queryWithCurrentUser({ idField: 'id', as: 'user' })
       ],
       create: [
         iff(isProvider('external'), associateCurrentUser({ idField: 'id', as: 'owner' })),
@@ -37,12 +44,22 @@ export default function (options = {}) {
     },
     after: {
       all: [
-        hooks.populate('mission', { service: 'missions' }),
-        hooks.populate('owner', { service: 'users' }),
-        hooks.populate('performers.user', { service: 'users' }),
-        populateTasks(),
+        iff(hooks.isAction('approvals'),
+          hooks.populate('mission', { service: 'missions' }),
+          hooks.populate('owner', { service: 'users' }),
+          hooks.populate('performers.user', { service: 'users' }),
+          populateTasks()
+        ).else(
+          hooks.populate('actor', { retained: false }),
+          hooks.populate('object', { retained: false }),
+          hooks.populate('target', { retained: false })
+        ),
         cache(options.cache),
-        hooks.presentEntity(UserMissionEntity, options.entities),
+        iff(hooks.isAction('approvals'),
+          hooks.presentEntity(feeds.activity, options.entities))
+        .else(
+          hooks.presentEntity(UserMissionEntity, options.entities)
+        ),
         hooks.responder()
       ],
       create: [
