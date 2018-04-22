@@ -105,6 +105,6 @@ export default function accepts (context) {
     kick: [ player ],
     play: [ trigger, user, scopes ],
     roles: [ roles, playerOrUser, scopes ],
-    transfer: [ player, userLane, role ]
+    transfer: [ player, roles ]
   };
 }

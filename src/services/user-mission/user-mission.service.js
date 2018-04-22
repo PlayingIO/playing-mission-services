@@ -142,10 +142,10 @@ export class UserMissionService extends Service {
         params.query = fp.assign(params.query, {
           'performers.user': playerId
         });
-        const lanes = fp.reduce((acc, lane) => {
+        const updates = fp.reduce((acc, lane) => {
           return fp.assoc(`performers.$.lanes.${lane}`, data.roles[lane]);
         }, {}, fp.keys(data.roles));
-        return super.patch(id, lanes, params);
+        return super.patch(id, updates, params);
       } else {
         return super.patch(id, {
           $addToSet: {
@@ -309,7 +309,7 @@ export class UserMissionService extends Service {
       params.query = fp.assign(params.query, {
         'performers.user': playerId
       });
-      const lanes = fp.reduce((acc, lane) => {
+      const updates = fp.reduce((acc, lane) => {
         if (data.roles[lane] !== 'false') {
           acc[`performers.$.lanes.${lane}`] = data.roles[lane];
         } else {
@@ -318,7 +318,7 @@ export class UserMissionService extends Service {
         }
         return acc;
       }, {}, fp.keys(data.roles));
-      return super.patch(id, lanes, params);
+      return super.patch(id, updates, params);
     } else {
       // send mission.role in notifier
       return original;
@@ -344,17 +344,18 @@ export class UserMissionService extends Service {
       params.query = fp.assign(params.query, {
         'performers.user': data.player
       });
-      return super.patch(id, {
-        owner: data.player,
-        [`performers.$.lanes.${data.lane}`]: data.role
-      }, params);
+      const updates = fp.reduce((acc, lane) => {
+        return fp.assoc(`performers.$.lanes.${lane}`, data.roles[lane]);
+      }, {}, fp.keys(data.roles));
+      updates.owner = data.player;
+      return super.patch(id, updates, params);
     } else {
       return super.patch(id, {
         owner: data.player,
         $addToSet: {
           performers: {
             user: data.player,
-            lanes: { [data.lane]: data.role }
+            lanes: data.roles
           }
         }
       }, params);
