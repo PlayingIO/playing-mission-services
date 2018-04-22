@@ -142,15 +142,16 @@ export class UserMissionService extends Service {
         params.query = fp.assign(params.query, {
           'performers.user': playerId
         });
-        return super.patch(id, {
-          [`performers.$.lanes.${data.lane}`]: data.role
-        }, params);
+        const lanes = fp.reduce((acc, lane) => {
+          return fp.assoc(`performers.$.lanes.${lane}`, data.roles[lane]);
+        }, {}, fp.keys(data.roles));
+        return super.patch(id, lanes, params);
       } else {
         return super.patch(id, {
           $addToSet: {
             performers: {
               user: playerId,
-              lanes: { [data.lane]: data.role }
+              lanes: data.roles
             }
           }
         }, params);
