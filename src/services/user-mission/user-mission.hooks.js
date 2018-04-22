@@ -45,14 +45,14 @@ export default function (options = {}) {
     after: {
       all: [
         iff(hooks.isAction('approvals'),
+          hooks.populate('actor', { retained: false }),
+          hooks.populate('object', { retained: false }),
+          hooks.populate('target', { retained: false })
+        ).else(
           hooks.populate('mission', { service: 'missions' }),
           hooks.populate('owner', { service: 'users' }),
           hooks.populate('performers.user', { service: 'users' }),
           populateTasks()
-        ).else(
-          hooks.populate('actor', { retained: false }),
-          hooks.populate('object', { retained: false }),
-          hooks.populate('target', { retained: false })
         ),
         cache(options.cache),
         iff(hooks.isAction('approvals'),
