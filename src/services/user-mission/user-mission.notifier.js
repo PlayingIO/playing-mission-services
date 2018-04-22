@@ -76,7 +76,7 @@ export default function (event) {
           const custom = {
             actor: `user:${actor}`,
             message: 'Join the mission',
-            roles: { [context.data.lane]: context.data.role },
+            roles: context.data.roles,
             player: `user:${player}`
           };
           createActivity(result, event, custom,
@@ -89,7 +89,7 @@ export default function (event) {
           const custom = {
             actor: `user:${actor}`,
             message: 'Request joining the mission',
-            role: context.data.roles,
+            roles: context.data.roles,
             state: 'PENDING',
             player: `user:${player}`
           };
