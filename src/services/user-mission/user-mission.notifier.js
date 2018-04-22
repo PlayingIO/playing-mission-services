@@ -61,6 +61,7 @@ export default function (event) {
           actor: `user:${actor}`,
           message: 'Invite a player to join the mission',
           invitee: `user:${player}`,
+          roles: context.data.roles,
           state: 'PENDING'
         };
         createActivity(result, event, custom,
