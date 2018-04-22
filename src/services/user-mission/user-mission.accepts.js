@@ -10,15 +10,6 @@ const defaultLane = (service, id) => async (params) => {
   return null;
 };
 
-const defaultUserLane = (service, id) => async (params) => {
-  const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
-  if (userMission && userMission.mission && userMission.mission.lanes) {
-    const lane = fp.find(fp.propEq('default', true), userMission.mission.lanes);
-    return lane? lane.name : null;
-  }
-  return null;
-};
-
 const rolesExists = (service, id, message) => async (val, params) => {
   const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
   const lanes = fp.keys(val), roles = fp.values(val);
@@ -66,13 +57,6 @@ export default function accepts (context) {
       exists: rolesExists(svcUserMissions, 'id', 'Roles is invalid') },
     default: defaultRoles(svcUserMissions, 'id'),
     required: true, description: 'Role and lanes ' };
-  const userLane = { arg: 'lane', type: 'string',
-    validates: {
-      exists: helpers.propExists(svcUserMissions, {
-        id: 'id', path: 'mission.lanes', prop: 'name', select: 'mission,*'
-      }, 'Lane is not exists') },
-    default: defaultUserLane(svcUserMissions, 'id'),
-    required: true, description: 'Lane of the mission' };
 
   const player = { arg: 'player', type: 'string',
     validates: {
