@@ -309,15 +309,16 @@ export class UserMissionService extends Service {
       params.query = fp.assign(params.query, {
         'performers.user': playerId
       });
-      if (data.role === 'false') {
-        return super.patch(id, {
-          $unset: { [`performers.$.lanes.${data.lane}`]: '' }
-        }, params);
-      } else {
-        return super.patch(id, {
-          [`performers.$.lanes.${data.lane}`]: data.role
-        }, params);
-      }
+      const lanes = fp.reduce((acc, lane) => {
+        if (data.roles[lane] !== 'false') {
+          acc[`performers.$.lanes.${lane}`] = data.roles[lane];
+        } else {
+          acc['$unset'] = acc['$unset'] || [];
+          acc['$unset'].push({ [`performers.$.lanes.${lane}`]: '' });
+        }
+        return acc;
+      }, {}, fp.keys(data.roles));
+      return super.patch(id, lanes, params);
     } else {
       // send mission.role in notifier
       return original;

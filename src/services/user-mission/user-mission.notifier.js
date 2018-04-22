@@ -138,7 +138,7 @@ export default function (event) {
           const custom = {
             actor: `user:${actor}`,
             message: 'Change roles in the mission',
-            roles: { [context.data.lane]: context.data.role },
+            roles: context.data.roles,
             player: `user:${player}`
           };
           createActivity(result, event, custom,
