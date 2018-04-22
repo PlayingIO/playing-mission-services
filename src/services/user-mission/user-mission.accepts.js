@@ -23,7 +23,7 @@ const rolesExists = (service, id, message) => async (val, params) => {
   const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
   const lanes = fp.keys(val), roles = fp.values(val);
   if (userMission && userMission.mission && userMission.mission.lanes) {
-    if (fp.includesAll(lanes, userMission.mission.lanes)
+    if (fp.includesAll(lanes, fp.map(fp.prop('name'), userMission.mission.lanes))
       && fp.includesAll(roles, ['player', 'observer'])) return;
   }
   return message;
@@ -61,7 +61,7 @@ export default function accepts (context) {
       }, 'Lane is not exists') },
     default: defaultLane(svcMissions, 'mission'),
     required: true, description: 'Lane of the mission' };
-  const roles = { arg: 'roles', type: 'string',
+  const roles = { arg: 'roles', type: 'object',
     validates: {
       exists: rolesExists(svcUserMissions, 'id', 'Roles is invalid') },
     default: defaultRoles(svcUserMissions, 'id'),
