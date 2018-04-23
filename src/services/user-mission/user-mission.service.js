@@ -37,6 +37,16 @@ export class UserMissionService extends Service {
   }
 
   /**
+   * Get a user mission's activity feed
+   */
+  async activities (id, data, params, original) {
+    assert(original, 'User mission not exists.');
+
+    const svcFeeds = this.app.service('feeds');
+    return svcFeeds.action('activities').get(`mission:${original.id}`, params);
+  }
+
+  /**
    * List pending mission join or role change requests
    */
   async approvals (id, data, params, original) {
