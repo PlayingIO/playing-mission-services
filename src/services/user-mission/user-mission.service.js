@@ -37,7 +37,7 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * List pending process join or role change requests
+   * List pending mission join or role change requests
    */
   async approvals (id, data, params, original) {
     assert(original, 'User mission not exists.');
@@ -61,6 +61,26 @@ export class UserMissionService extends Service {
   }
 
   /**
+   * List invitations sent out for a mission
+   */
+  async invites (id, data, params, original) {
+    assert(original, 'User mission not exists.');
+
+    // check for pending invitation
+    const svcFeeds = this.app.service('feeds');
+    const invitations = await svcFeeds.action('activities').get(`user:${params.user.id}`, {
+      query: {
+        verb: 'mission.invite',
+        actor: `user:${params.user.id}`,
+        object: `userMission:${original.id}`,
+        state: 'PENDING'
+      }
+    });
+
+    return invitations;
+  }
+
+  /**
    * Invite a player to join a mission
    */
   async invite (id, data, params, original) {
@@ -73,7 +93,7 @@ export class UserMissionService extends Service {
 
     const performer = fp.find(fp.idPropEq('user', data.player), original.performers || []);
     if (performer) {
-      throw new Error('Requested player already a part of the process.');
+      throw new Error('Requested player already a part of the mission.');
     }
 
     // check for pending invitation
@@ -103,7 +123,7 @@ export class UserMissionService extends Service {
     const playerId = data.player || data.user;
     const performer = fp.find(fp.idPropEq('user', playerId), original.performers || []);
     if (performer) {
-      throw new Error('Requested player already a part of the process.');
+      throw new Error('Requested player already a part of the mission.');
     }
 
     // check for pending invitation

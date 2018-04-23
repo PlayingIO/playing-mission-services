@@ -65,6 +65,7 @@ export default function (event) {
           state: 'PENDING'
         };
         createActivity(result, event, custom,
+          `user:${actor}`,                 // add to player's activity log
           `notification:${player}`         // add to invited player's notification stream
         );
         break;
