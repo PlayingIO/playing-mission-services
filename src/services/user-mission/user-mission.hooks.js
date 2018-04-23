@@ -17,26 +17,23 @@ export default function (options = {}) {
         hooks.authenticate('jwt', options.auth, 'scores,actions'),
         cache(options.cache)
       ],
-      get: [
-        // queryWithCurrentUser({ idField: 'id', as: 'user' })
-      ],
-      find: [
-        // queryWithCurrentUser({ idField: 'id', as: 'user' })
-      ],
       create: [
-        iff(isProvider('external'), associateCurrentUser({ idField: 'id', as: 'owner' })),
+        iff(isProvider('external'),
+          associateCurrentUser({ idField: 'id', as: 'owner' })),
         sanitize(accepts),
         validate(accepts),
         hooks.discardFields('tasks')
       ],
       update: [
-        iff(isProvider('external'), associateCurrentUser({ idField: 'id', as: 'user' })),
+        iff(isProvider('external'),
+          associateCurrentUser({ idField: 'id', as: 'user' })),
         sanitize(accepts),
         validate(accepts),
         hooks.discardFields('owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
       ],
       patch: [
-        iff(isProvider('external'), associateCurrentUser({ idField: 'id', as: 'user' })),
+        iff(isProvider('external'),
+          associateCurrentUser({ idField: 'id', as: 'user' })),
         sanitize(accepts),
         validate(accepts),
         hooks.discardFields('owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')
