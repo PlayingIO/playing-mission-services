@@ -52,7 +52,7 @@ export class UserMissionService extends Service {
   async approvals (id, data, params, original) {
     assert(original, 'User mission not exists.');
 
-    // owner of the mission
+    // must be owner of the mission
     if (!fp.idEquals(original.owner, params.user.id)) {
       throw new Error('Only mission owner can list pending requests.');
     }
@@ -96,7 +96,7 @@ export class UserMissionService extends Service {
   async invite (id, data, params, original) {
     assert(original, 'User mission not exists.');
 
-    // owner of the mission
+    // must be owner of the mission
     if (!fp.idEquals(original.owner, data.user)) {
       throw new Error('Only mission owner can send invites.');
     }
@@ -125,20 +125,14 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Cancel a pending invite sent out by the player
+   * Cancel a pending invite sent out by the current user
    */
   async cancelInvite (id, data, params, original) {
     assert(original, 'User mission not exists.');
 
-    const playerId = data.player || data.user;
-    const performer = fp.find(fp.idPropEq('user', playerId), original.performers || []);
-    if (performer) {
-      throw new Error('Requested player already a part of the mission.');
-    }
-
     // check for pending invitation
     const svcFeeds = this.app.service('feeds');
-    const notification = `notification:${data.player}`;
+    const notification = `notification:${data.user}`;
     const invitations = await svcFeeds.action('activities').get(notification, {
       $match: {
         _id: data.inviteId
@@ -220,7 +214,7 @@ export class UserMissionService extends Service {
   async kick (id, data, params, original) {
     assert(original, 'User mission not exists');
 
-    // owner of the mission
+    // must be owner of the mission
     if (!fp.idEquals(original.owner, data.user)) {
       throw new Error('Only owner of the mission can kick a player.');
     }
@@ -322,6 +316,7 @@ export class UserMissionService extends Service {
   async roles (id, data, params, original) {
     assert(original, 'User mission not exists.');
 
+    // must be owner of the mission for other player
     if (data.player && !fp.idEquals(original.owner, data.user)) {
       throw new Error('Only owner of the mission can change roles of a player.');
     }
@@ -361,7 +356,7 @@ export class UserMissionService extends Service {
   async transfer (id, data, params, original) {
     assert(original, 'User mission not exists.');
 
-    // owner of the mission
+    // must be owner of the mission
     if (!fp.idEquals(original.owner, data.user)) {
       throw new Error('Only owner of the mission can transfer ownership.');
     }
