@@ -103,7 +103,7 @@ export class UserMissionService extends Service {
 
     const performer = fp.find(fp.idPropEq('user', data.player), original.performers || []);
     if (performer) {
-      throw new Error('Requested player already a part of the mission.');
+      throw new Error('Requested player is already a part of the mission.');
     }
 
     // check for pending invitation
@@ -157,29 +157,21 @@ export class UserMissionService extends Service {
     assert(original, 'User mission not exists.');
     assert(original.access !== 'PRIVATE', 'The mission is private, cannot join.');
 
-    const playerId = data.player || data.user; // player or current user
-    const performer = fp.find(fp.idPropEq('user', playerId), original.performers || []);
+    const performer = fp.find(fp.idPropEq('user', data.user), original.performers || []);
+    if (performer) {
+      throw new Error('Player is already a part of the mission.');
+    }
 
     // process the join for public mission
     if (original.access === 'PUBLIC') {
-      if (performer) {
-        params.query = fp.assign(params.query, {
-          'performers.user': playerId
-        });
-        const updates = fp.reduce((acc, lane) => {
-          return fp.assoc(`performers.$.lanes.${lane}`, data.roles[lane]);
-        }, {}, fp.keys(data.roles));
-        return super.patch(id, updates, params);
-      } else {
-        return super.patch(id, {
-          $addToSet: {
-            performers: {
-              user: playerId,
-              lanes: data.roles
-            }
+      return super.patch(id, {
+        $addToSet: {
+          performers: {
+            user: data.user,
+            lanes: data.roles
           }
-        }, params);
-      }
+        }
+      }, params);
     } else {
       // send mission.join.request in notifier
       return original;

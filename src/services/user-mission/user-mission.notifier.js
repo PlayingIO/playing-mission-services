@@ -72,17 +72,15 @@ export default function (event) {
       }
       case 'mission.join': {
         const actor = context.data.user;
-        const player = context.data.player || context.data.user;
         if (userMission.access === 'PUBLIC') {
           const notifications = performersNotifications(userMission);
           const custom = {
             actor: `user:${actor}`,
             message: 'Join the mission',
-            roles: context.data.roles,
-            player: `user:${player}`
+            roles: context.data.roles
           };
           createActivity(userMission, event, custom,
-            `user:${player}`,              // add to player's activity log
+            `user:${actor}`,               // add to player's activity log
             `user:${userMission.owner}`,   // add to owner's activity log
             `mission:${userMission.id}`,   // add to mission's activity log
             notifications                  // add to all performers' notification stream
@@ -92,8 +90,7 @@ export default function (event) {
             actor: `user:${actor}`,
             message: 'Request joining the mission',
             roles: context.data.roles,
-            state: 'PENDING',
-            player: `user:${player}`
+            state: 'PENDING'
           };
           createActivity(userMission, event + '.request', custom,
             `notification:${userMission.owner}` // notify owner of the mission to approve requests

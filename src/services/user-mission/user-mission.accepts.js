@@ -84,7 +84,7 @@ export default function accepts (context) {
     cancelInvite: [ inviteId ],
     create: [ mission, access, lane ],
     invite: [ player, roles ],
-    join: [ playerOrUser, roles ],
+    join: [ user, roles ],
     leave: [ user ],
     kick: [ player ],
     play: [ trigger, user, scopes ],
