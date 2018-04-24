@@ -79,8 +79,10 @@ export default function accepts (context) {
   const scopes = { arg: 'scopes', type: 'array', default: [], description: 'Scopes of scores to be counted' };
   
   const inviteId = { arg: 'inviteId', type: 'string', required: true, description: 'Invite id' };
+  const requestId = { arg: 'requestId', type: 'string', required: true, description: 'Request id' };
 
   return {
+    approval: [ requestId ],
     cancelInvite: [ inviteId ],
     create: [ mission, access, lane ],
     invite: [ player, roles ],

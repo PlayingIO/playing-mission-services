@@ -71,6 +71,46 @@ export class UserMissionService extends Service {
   }
 
   /**
+   * Approve mission join or role change request
+   */
+  async approval (id, data, params, original) {
+    assert(original, 'User mission not exists.');
+
+    // must be owner of the mission
+    if (!fp.idEquals(original.owner, data.user)) {
+      throw new Error('Only owner of the mission can approval the request.');
+    }
+
+    // check for pending requests
+    const svcFeeds = this.app.service('feeds');
+    const notification = `notification:${data.user}`;
+    const requests = await svcFeeds.action('activities').get(notification, {
+      $match: {
+        _id: data.requestId
+      }
+    });
+    if (fp.isEmpty(requests.data) || requests.data[0].state !== 'PENDING') {
+      throw new Error('No pending request is found for this request id.');
+    }
+
+    const request = requests.data[0];
+    if (request.verb === 'mission.join.request') {
+      const user = helpers.getId(request.actor);
+      const roles = request.roles;
+      await this.join(original.id, { user, roles }, {}, original);
+    }
+    if (request.verb === 'mission.roles.request') {
+      const user = helpers.getId(request.actor);
+      const roles = request.roles;
+      await this.roles(original.id, { user, roles }, {}, original);
+    }
+    const activity = fp.assoc('state', 'ACCEPTED', request);
+    await svcFeeds.action('updateActivity').patch(notification, activity);
+
+    return original;
+  }
+
+  /**
    * List invitations sent out for a mission
    */
   async invites (id, data, params, original) {
