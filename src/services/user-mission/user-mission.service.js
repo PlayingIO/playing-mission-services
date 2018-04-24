@@ -61,7 +61,7 @@ export class UserMissionService extends Service {
     const svcFeeds = this.app.service('feeds');
     const invitations = await svcFeeds.action('activities').get(`notification:${original.owner}`, {
       $match: {
-        verb: 'mission.join.request',
+        verb: { $in: ['mission.join.request', 'mission.roles.request'] },
         object: `userMission:${original.id}`,
         state: 'PENDING'
       }
