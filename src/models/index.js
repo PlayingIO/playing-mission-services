@@ -1,3 +1,4 @@
+import { camelCase } from 'mostly-func';
 import glob from 'glob';
 import path from 'path';
 import { activity } from './activity.schema';
@@ -9,6 +10,6 @@ export default Object.assign({
   activities: { schema: [activity] },
   notify: { schema: notify }
 }, ...modelFiles.map(file => {
-  const name = path.basename(file, '.model.js');
+  const name = camelCase(path.basename(file, '.model.js'));
   return { [name]: require(file).default };
 }));
