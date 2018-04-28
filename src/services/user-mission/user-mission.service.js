@@ -116,7 +116,7 @@ export class UserMissionService extends Service {
   async invites (id, data, params, original) {
     assert(original, 'User mission not exists.');
 
-    // check for pending invitation
+    // Only invitations sent out by current user will be listed.
     const svcFeeds = this.app.service('feeds');
     const invitations = await svcFeeds.action('activities').get(`user:${params.user.id}`, {
       query: {
@@ -146,10 +146,10 @@ export class UserMissionService extends Service {
       throw new Error('Requested player is already a part of the mission.');
     }
 
-    // check for pending invitation
+    // check for pending invitation sent by current user
     const svcFeeds = this.app.service('feeds');
-    const invitations = await svcFeeds.action('activities').get(`notification:${data.player}`, {
-      $match: {
+    const invitations = await svcFeeds.action('activities').get(`user:${data.user}`, {
+      query: {
         verb: 'mission.invite',
         object: `userMission:${original.id}`,
         invitee: `user:${data.player}`,
@@ -170,7 +170,7 @@ export class UserMissionService extends Service {
   async cancelInvite (id, data, params, original) {
     assert(original, 'User mission not exists.');
 
-    // check for pending invitation
+    // check for pending invitation sent
     const svcFeeds = this.app.service('feeds');
     const notification = `notification:${data.user}`;
     const invitations = await svcFeeds.action('activities').get(notification, {
@@ -182,8 +182,10 @@ export class UserMissionService extends Service {
       throw new Error('No pending invitation is found for this invite id.');
     }
     if (invitations.data[0].state === 'PENDING') {
-      const activities = fp.map(fp.assoc('state', 'CANCELED'), invitations.data);
-      await svcFeeds.action('updateActivity').patch(notification, { activities });
+      const activities = fp.map(activity => {
+        return { id: activity.id, state: 'CANCELED' };
+      }, invitations.data);
+      await svcFeeds.action('updateMany').patch(notification, activities);
     }
 
     // send mission.invite in notifier

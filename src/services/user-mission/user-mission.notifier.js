@@ -65,7 +65,7 @@ export default function (event) {
           state: 'PENDING'
         };
         createActivity(userMission, event, custom,
-          `user:${actor}`,                 // add to player's activity log
+          `user:${actor}`,                 // add to actor's activity log
           `notification:${player}`         // add to invited player's notification stream
         );
         break;
