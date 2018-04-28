@@ -41,7 +41,7 @@ export default function (options = {}) {
     },
     after: {
       all: [
-        iff(hooks.isAction('activities', 'approvals', 'invites'),
+        iff(hooks.isAction('activities', 'approvals', 'invites', 'cancelInvite'),
           hooks.populate('actor', { retained: false }),
           hooks.populate('mission', { retained: false }),
           hooks.populate('object', { retained: false }),

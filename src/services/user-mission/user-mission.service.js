@@ -174,23 +174,19 @@ export class UserMissionService extends Service {
     const svcFeeds = this.app.service('feeds');
     const invitations = await svcFeeds.action('activities').get(`user:${data.user}`, {
       query: {
-        id: data.invite
+        id: data.invite,
+        state: 'PENDING'
       }
     });
     if (fp.isEmpty(invitations.data)) {
       throw new Error('No pending invitation is found for this invite id.');
     }
-    if (invitations.data[0].state === 'PENDING') {
-      const activities = fp.map(fp.compose(
-        fp.assoc('state', 'CANCELED'),
-        fp.pick(['id', 'invitee'])
-      ), invitations.data);
-      // cancel from invitor's feed
-      await svcFeeds.action('updateMany').patch(`user:${data.user}`, activities);
-    }
-
-    // send mission.invite in notifier
-    return original;
+    // cancel from invitor's feed
+    const invitation = invitations.data[0];
+    return svcFeeds.action('updateActivity').patch(`user:${data.user}`, {
+      id: invitation.id,
+      state: 'CANCELED'
+    });
   }
 
   /**
