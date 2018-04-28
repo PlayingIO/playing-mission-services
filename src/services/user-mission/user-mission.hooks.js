@@ -53,7 +53,7 @@ export default function (options = {}) {
           populateTasks()
         ),
         cache(options.cache),
-        iff(hooks.isAction('activities', 'approvals', 'invites'),
+        iff(hooks.isAction('activities', 'approvals', 'invites', 'cancelInvite'),
           hooks.presentEntity(feeds.activity, options.entities))
         .else(
           hooks.presentEntity(UserMissionEntity, options.entities)
