@@ -3,11 +3,11 @@ import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authenticat
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
-import { entities as feeds } from 'playing-feed-services';
+import { entities as feedsEntities, hooks as feeds } from 'playing-feed-services';
 
 import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
-import notifier from './user-mission.notifier';
+import notifiers from './user-mission.notifiers';
 import accepts from './user-mission.accepts';
 
 export default function (options = {}) {
@@ -54,25 +54,25 @@ export default function (options = {}) {
         ),
         cache(options.cache),
         iff(hooks.isAction('activities', 'approvals', 'invites', 'cancelInvite'),
-          hooks.presentEntity(feeds.activity, options.entities))
+          hooks.presentEntity(feedsEntities.activity, options.entities))
         .else(
           hooks.presentEntity(UserMissionEntity, options.entities)
         ),
         hooks.responder()
       ],
       create: [
-        notifier('mission.create')
+        iff(hooks.isAction('create', feeds.notify('mission.create', notifiers)))
       ],
       patch: [
-        iff(hooks.isAction('invite'), notifier('mission.invite')),
-        iff(hooks.isAction('join'), notifier('mission.join')),
-        iff(hooks.isAction('leave'), notifier('mission.leave')),
-        iff(hooks.isAction('play'), notifier('mission.play')),
-        iff(hooks.isAction('roles'), notifier('mission.roles')),
-        iff(hooks.isAction('transfer'), notifier('mission.transfer'))
+        iff(hooks.isAction('invite'), feeds.notify('mission.invite', notifiers)),
+        iff(hooks.isAction('join'), feeds.notify('mission.join', notifiers)),
+        iff(hooks.isAction('leave'), feeds.notify('mission.leave', notifiers)),
+        iff(hooks.isAction('play'), feeds.notify('mission.play', notifiers)),
+        iff(hooks.isAction('roles'), feeds.notify('mission.roles', notifiers)),
+        iff(hooks.isAction('transfer'), feeds.notify('mission.transfer', notifiers))
       ],
       remove: [
-        notifier('mission.delete')
+        iff(hooks.isAction('create', feeds.notify('mission.delete')))
       ]
     }
   };
