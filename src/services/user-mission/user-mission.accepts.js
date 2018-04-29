@@ -78,14 +78,11 @@ export default function accepts (context) {
   const trigger = { arg: 'trigger', type: 'string', required: true, description: 'Id of trigger' };
   const scopes = { arg: 'scopes', type: 'array', default: [], description: 'Scopes of scores to be counted' };
   
-  const invite = { arg: 'invite', type: 'string', required: true, description: 'Invite id' };
   const requestId = { arg: 'requestId', type: 'string', required: true, description: 'Request id' };
 
   return {
     approval: [ requestId ],
-    cancelInvite: [ invite ],
     create: [ mission, access, lane ],
-    invite: [ player, roles ],
     join: [ user, roles ],
     leave: [ user ],
     kick: [ player ],
