@@ -2,20 +2,26 @@ import fp from 'mostly-func';
 import { helpers } from 'mostly-feathers-validate';
 
 const rolesExists = (service, id, message) => async (val, params) => {
-  const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
-  const lanes = fp.keys(val), roles = fp.values(val);
-  if (userMission && userMission.mission && userMission.mission.lanes) {
-    if (fp.includesAll(lanes, fp.map(fp.prop('name'), userMission.mission.lanes))
-      && fp.includesAll(roles, ['player', 'observer'])) return;
+  const targetId = fp.dotPath(id, params);
+  if (targetId) {
+    const userMission = await service.get(targetId, { query: { $select: 'mission,*' } });
+    const lanes = fp.keys(val), roles = fp.values(val);
+    if (userMission && userMission.mission && userMission.mission.lanes) {
+      if (fp.includesAll(lanes, fp.map(fp.prop('name'), userMission.mission.lanes))
+        && fp.includesAll(roles, ['player', 'observer'])) return;
+    }
   }
   return message;
 };
 
 const defaultRoles = (service, id) => async (params) => {
-  const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
-  if (userMission && userMission.mission && userMission.mission.lanes) {
-    const lane = fp.find(fp.propEq('default', true), userMission.mission.lanes);
-    return lane? { [lane.name] : 'player' } : null;
+  const targetId = fp.dotPath(id, params);
+  if (targetId) {
+    const userMission = await service.get(targetId, { query: { $select: 'mission,*' } });
+    if (userMission && userMission.mission && userMission.mission.lanes) {
+      const lane = fp.find(fp.propEq('default', true), userMission.mission.lanes);
+      return lane? { [lane.name] : 'player' } : null;
+    }
   }
   return null;
 };
@@ -27,8 +33,8 @@ export default function accepts (context) {
   // validation rules
   const roles = { arg: 'roles', type: 'object',
     validates: {
-      exists: rolesExists(svcUserMissions, 'id', 'Roles is invalid') },
-    default: defaultRoles(svcUserMissions, 'id'),
+      exists: rolesExists(svcUserMissions, 'origin.id', 'Roles is invalid') },
+    default: defaultRoles(svcUserMissions, 'origin.id'),
     required: true, description: 'Role and lanes ' };
 
   const player = { arg: 'player', type: 'string',
