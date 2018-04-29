@@ -12,7 +12,10 @@ import { walkThroughTasks } from '../../helpers';
 const debug = makeDebug('playing:mission-services:user-missions');
 
 const defaultOptions = {
-  name: 'user-missions'
+  name: 'user-missions',
+  actions: {
+    invites: 'user-mission-invites'
+  }
 };
 
 export class UserMissionService extends Service {
@@ -33,7 +36,7 @@ export class UserMissionService extends Service {
       user: data.owner,
       lanes: { [data.lane]: 'player' }
     }];
-    return super.create(data);
+    return super.create(data, params);
   }
 
   /**
@@ -110,9 +113,6 @@ export class UserMissionService extends Service {
     return original;
   }
 
-  /**
-   * List invitations sent out for a mission
-   */
   async invites (id, data, params, original) {
     assert(original, 'User mission not exists.');
 
