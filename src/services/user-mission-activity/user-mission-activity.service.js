@@ -15,7 +15,7 @@ const defaultOptions = {
 
 export class UserMissionActivityService {
   constructor (options) {
-    this.options = Object.assign({}, defaultOptions, options);
+    this.options = fp.assign(defaultOptions, options);
     this.name = this.options.name;
   }
 
