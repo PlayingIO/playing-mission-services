@@ -2,6 +2,8 @@ import fp from 'mostly-func';
 import { helpers } from 'mostly-feathers-mongoose';
 import { helpers as feeds } from 'playing-feed-services';
 
+import { performersNotifications } from '../../helpers';
+
 const createActivity = (context, custom) => {
   const result = helpers.getHookData(context);
   return {
@@ -11,15 +13,6 @@ const createActivity = (context, custom) => {
     mission: `mission:${result.mission}`,
     ...custom
   };
-};
-
-// notification feeds of all performers
-const performersNotifications = function (userMission, excepts = []) {
-  const performers = fp.without(
-    fp.map(fp.toString, [].concat(excepts)),
-    fp.map(fp.pipe(fp.prop('user'), fp.toString), userMission.performers || [])
-  );
-  return fp.map(fp.concat('notification:'), performers);
 };
 
 // create mission actvitiy
@@ -145,8 +138,8 @@ const rolesMission = (context) => {
     return [
       createActivity(context, custom),
       `user:${player}`,              // add to player's activity log
-      `user:${result.owner}`,   // add to owner's activity log
-      `mission:${result.id}`,   // add to mission's activity log
+      `user:${result.owner}`,        // add to owner's activity log
+      `mission:${result.id}`,        // add to mission's activity log
       notifications                  // add to all performers' notification stream
     ];
   } else {
@@ -182,7 +175,7 @@ const transferMission = (context) => {
     createActivity(context, custom),
     `user:${actor}`,               // add to old owner's activity log
     `user:${owner}`,               // add to new owner's activity log
-    `mission:${result.id}`,   // add to mission's activity log
+    `mission:${result.id}`,        // add to mission's activity log
     notifications                  // add to all performers' notification stream
   ];
 };

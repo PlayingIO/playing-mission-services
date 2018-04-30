@@ -102,3 +102,12 @@ export const getRecursiveRewards = (path) => (activities) => {
     }
   }, [], activities);
 };
+
+// notification feeds of all performers
+export const performersNotifications = function (performers, excepts = []) {
+  const users = fp.without(
+    fp.map(fp.toString, [].concat(excepts)),
+    fp.map(fp.pipe(fp.prop('user'), fp.toString), performers || [])
+  );
+  return fp.map(fp.concat('notification:'), users);
+};
