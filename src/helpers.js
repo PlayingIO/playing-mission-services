@@ -114,7 +114,7 @@ export const defaultLane = (service, id) => async (params) => {
 };
 
 // validator for roles
-const rolesExists = (service, id, message) => async (val, params) => {
+export const rolesExists = (service, id, message) => async (val, params) => {
   const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
   const lanes = fp.keys(val), roles = fp.values(val);
   if (userMission && userMission.mission && userMission.mission.lanes) {
@@ -125,7 +125,7 @@ const rolesExists = (service, id, message) => async (val, params) => {
 };
 
 // default roles
-const defaultRoles = (service, id) => async (params) => {
+export const defaultRoles = (service, id) => async (params) => {
   const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
   if (userMission && userMission.mission && userMission.mission.lanes) {
     const lane = fp.find(fp.propEq('default', true), userMission.mission.lanes);

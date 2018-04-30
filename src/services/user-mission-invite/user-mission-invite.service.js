@@ -118,7 +118,6 @@ export class UserMissionInviteService {
 }
 
 export default function init (app, options, hooks) {
-  options = Object.assign({ ModelName: 'user-mission-invite' }, options);
   return new UserMissionInviteService(options);
 }
 
