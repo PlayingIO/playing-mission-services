@@ -41,6 +41,6 @@ export default function accepts (context) {
 
   return {
     remove: [ invite ],
-    create: [ player, roles ],
+    create: [ user, player, roles ],
   };
 }

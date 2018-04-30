@@ -3,6 +3,7 @@ import makeDebug from 'debug';
 import fp from 'mostly-func';
 import { helpers as metrics } from 'playing-metric-services';
 import { helpers as rules } from 'playing-rule-services';
+import { helpers as feeds } from 'playing-feed-services';
 
 import defaultHooks from './user-mission-invite.hooks';
 
@@ -58,13 +59,14 @@ export class UserMissionInviteService {
    */
   async create (data, params) {
     assert(params.origin, 'User mission not exists.');
+    const userMission = params.origin;
 
     // must be owner of the mission
-    if (!fp.idEquals(params.origin.owner, data.user)) {
+    if (!fp.idEquals(userMission.owner, data.user)) {
       throw new Error('Only mission owner can send invites.');
     }
 
-    const performer = fp.find(fp.idPropEq('user', data.player), params.origin.performers || []);
+    const performer = fp.find(fp.idPropEq('user', data.player), userMission.performers || []);
     if (performer) {
       throw new Error('Requested player is already a part of the mission.');
     }
@@ -74,7 +76,7 @@ export class UserMissionInviteService {
     const invitations = await svcFeeds.action('activities').get(`user:${data.user}`, {
       query: {
         verb: 'mission.invite',
-        object: `userMission:${params.origin.id}`,
+        object: `userMission:${userMission.id}`,
         invitee: `user:${data.player}`,
         state: 'PENDING'
       }
@@ -83,7 +85,21 @@ export class UserMissionInviteService {
       throw new Error('An invitation is already pending for the requested player.');
     }
 
-    return invitations;
+    const activity = {
+      actor: `user:${data.user}`,
+      verb: 'mission.invite',
+      object: `userMission:${userMission.id}`,
+      foreignId: `userMission:${userMission.id}`,
+      mission: `mission:${userMission.mission}`,
+      message: 'Invite a player to join the mission',
+      invitee: `user:${data.player}`,
+      roles: data.roles,
+      state: 'PENDING'
+    };
+    return feeds.addActivity(this.app, activity,
+      `user:${data.user}`,                 // add to actor's activity log
+      `notification:${data.player}`        // add to invited player's notification stream
+    );
   }
 
   /**
