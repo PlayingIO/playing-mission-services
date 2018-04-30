@@ -45,21 +45,11 @@ export class UserMissionInviteService {
   }
 
   /**
-   * Get a user mission's activity feed
-   */
-  async get (id, params) {
-    assert(params.origin, 'User mission not exists.');
-
-    const svcFeeds = this.app.service('feeds');
-    return svcFeeds.action('activities').get(`mission:${params.origin.id}`, params);
-  }
-
-  /**
    * Invite a player to join a mission
    */
   async create (data, params) {
-    assert(params.origin, 'User mission not exists.');
     const userMission = params.origin;
+    assert(userMission, 'User mission not exists.');
 
     // must be owner of the mission
     if (!fp.idEquals(userMission.owner, data.user)) {
@@ -85,6 +75,7 @@ export class UserMissionInviteService {
       throw new Error('An invitation is already pending for the requested player.');
     }
 
+    // create mission invite activity
     const activity = {
       actor: `user:${data.user}`,
       verb: 'mission.invite',
@@ -105,23 +96,21 @@ export class UserMissionInviteService {
   /**
    * Cancel a pending invite sent out by the current user
    */
-  async remove (id, data, params, original) {
-    assert(params.origin, 'User mission not exists.');
+  async remove (id, params) {
+    const userMission = params.origin;
+    assert(userMission, 'User mission not exists.');
 
     // check for pending invitation sent
     const svcFeeds = this.app.service('feeds');
-    const invitations = await svcFeeds.action('activities').get(`user:${data.user}`, {
-      query: {
-        id: data.invite,
-        state: 'PENDING'
-      }
+    const invitations = await svcFeeds.action('activities').get(`user:${params.user.id}`, {
+      query: { id, state: 'PENDING' }
     });
     if (fp.isEmpty(invitations.data)) {
       throw new Error('No pending invitation is found for this invite id.');
     }
     // cancel from invitor's feed
     const invitation = invitations.data[0];
-    return svcFeeds.action('updateActivity').patch(`user:${data.user}`, {
+    return svcFeeds.action('updateActivity').patch(`user:${params.user.id}`, {
       id: invitation.id,
       state: 'CANCELED'
     });
