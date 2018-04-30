@@ -14,6 +14,7 @@ const debug = makeDebug('playing:mission-services:user-missions');
 const defaultOptions = {
   name: 'user-missions',
   actions: {
+    activities: 'user-mission-activities',
     invites: 'user-mission-invites'
   }
 };
@@ -37,16 +38,6 @@ export class UserMissionService extends Service {
       lanes: { [data.lane]: 'player' }
     }];
     return super.create(data, params);
-  }
-
-  /**
-   * Get a user mission's activity feed
-   */
-  async activities (id, data, params, original) {
-    assert(original, 'User mission not exists.');
-
-    const svcFeeds = this.app.service('feeds');
-    return svcFeeds.action('activities').get(`mission:${original.id}`, params);
   }
 
   /**
