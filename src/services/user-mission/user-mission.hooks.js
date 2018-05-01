@@ -41,7 +41,7 @@ export default function (options = {}) {
     },
     after: {
       all: [
-        iff(hooks.isAction('activities', 'approvals', 'invites', 'cancelInvite'),
+        iff(hooks.isAction('approvals'),
           hooks.populate('actor', { retained: false }),
           hooks.populate('mission', { retained: false }),
           hooks.populate('object', { retained: false }),
@@ -53,7 +53,7 @@ export default function (options = {}) {
           populateTasks()
         ),
         cache(options.cache),
-        iff(hooks.isAction('activities', 'approvals', 'invites', 'cancelInvite'),
+        iff(hooks.isAction('approvals'),
           hooks.presentEntity(feedsEntities.activity, options.entities))
         .else(
           hooks.presentEntity(UserMissionEntity, options.entities)
