@@ -10,7 +10,7 @@ import defaultHooks from './user-mission-activity.hooks';
 const debug = makeDebug('playing:mission-services:user-mission-activities');
 
 const defaultOptions = {
-  name: 'user-mission-activities'
+  name: 'user-missions/activities'
 };
 
 export class UserMissionActivityService {
@@ -28,11 +28,10 @@ export class UserMissionActivityService {
    * Get a user mission's activity feed
    */
   async find (params) {
-    const userMission = params.origin;
-    assert(userMission, 'User mission not exists.');
+    assert(params.sid, 'User mission id not provided.');
 
     const svcFeeds = this.app.service('feeds');
-    return svcFeeds.action('activities').get(`mission:${userMission.id}`, params);
+    return svcFeeds.action('activities').get(`mission:${params.sid}`, params);
   }
 }
 
