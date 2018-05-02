@@ -10,7 +10,7 @@ import defaultHooks from './user-mission-invite.hooks';
 const debug = makeDebug('playing:mission-services:user-mission-invites');
 
 const defaultOptions = {
-  name: 'user-mission-invites'
+  name: 'user-missions/invites'
 };
 
 export class UserMissionInviteService {
@@ -28,7 +28,7 @@ export class UserMissionInviteService {
    * List invitations sent out for a mission
    */
   async find (params) {
-    assert(params.origin, 'User mission not exists.');
+    assert(params.sid, 'User mission id not provided.');
 
     // Only invitations sent out by current user will be listed.
     const svcFeeds = this.app.service('feeds');
@@ -36,7 +36,7 @@ export class UserMissionInviteService {
       query: {
         verb: 'mission.invite',
         actor: `user:${params.user.id}`,
-        object: `userMission:${params.origin.id}`,
+        object: `userMission:${params.sid}`,
         state: 'PENDING'
       }
     });
@@ -48,7 +48,7 @@ export class UserMissionInviteService {
    * Invite a player to join a mission
    */
   async create (data, params) {
-    const userMission = params.origin;
+    const userMission = params.userMission;
     assert(userMission, 'User mission not exists.');
 
     // must be owner of the mission
@@ -97,9 +97,6 @@ export class UserMissionInviteService {
    * Cancel a pending invite sent out by the current user
    */
   async remove (id, params) {
-    const userMission = params.origin;
-    assert(userMission, 'User mission not exists.');
-
     // check for pending invitation sent
     const svcFeeds = this.app.service('feeds');
     const invitations = await svcFeeds.action('activities').get(`user:${params.user.id}`, {
