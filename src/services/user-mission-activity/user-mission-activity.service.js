@@ -1,13 +1,10 @@
 import assert from 'assert';
 import makeDebug from 'debug';
 import fp from 'mostly-func';
-import { helpers as metrics } from 'playing-metric-services';
-import { helpers as rules } from 'playing-rule-services';
-import { helpers as feeds } from 'playing-feed-services';
 
 import defaultHooks from './user-mission-activity.hooks';
 
-const debug = makeDebug('playing:mission-services:user-mission-activities');
+const debug = makeDebug('playing:mission-services:user-missions/activities');
 
 const defaultOptions = {
   name: 'user-missions/activities'
