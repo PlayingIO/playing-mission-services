@@ -17,7 +17,7 @@ export default function (options = {}) {
       create: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.nestServiceObject('userMission', { service: 'user-missions' }),
+        hooks.primaryResource('userMission', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),
       ],
