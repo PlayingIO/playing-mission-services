@@ -85,28 +85,6 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Leave a mission.
-   */
-  async leave (id, data, params, original) {
-    assert(original, 'User mission not exists.');
-
-    // the owner himself cannot leave
-    if (fp.idEquals(original.owner, data.user)) {
-      throw new Error('Owner of the mission cannot leave yourself.');
-    }
-    const performer = fp.find(fp.idPropEq('user', data.user), original.performers || []);
-    if (!performer) {
-      throw new Error('You are not a performer of this mission.');
-    }
-
-    return super.patch(id, {
-      $pull: {
-        'performers': { user: data.user }
-      }
-    }, params);
-  }
-
-  /**
    * Kick out a performer from the mission.
    */
   async kick (id, data, params, original) {

@@ -14,8 +14,11 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       create: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' })),
+        hooks.primaryResource('userMission', { service: 'user-missions' }),
+        sanitize(accepts),
+        validate(accepts),
+      ],
+      remove: [
         hooks.primaryResource('userMission', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),

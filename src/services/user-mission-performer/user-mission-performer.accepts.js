@@ -20,8 +20,8 @@ export default function accepts (context) {
   const user = { arg: 'user', type: 'string', required: true, description: 'Current user' };
 
   return {
-    create: [ user, roles ],
-    remove: [ user ],
+    create: [ roles ],
+    remove: [ ],
     kick: [ player ]
   };
 }

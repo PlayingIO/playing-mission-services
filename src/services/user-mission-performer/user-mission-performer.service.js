@@ -29,7 +29,7 @@ export class UserMissionPerformerService {
     assert(userMission, 'User mission not exists.');
     assert(userMission.access !== 'PRIVATE', 'The mission is private, cannot join.');
 
-    const performer = fp.find(fp.idPropEq('user', data.user), userMission.performers || []);
+    const performer = fp.find(fp.idPropEq('user', params.user.id), userMission.performers || []);
     if (performer) {
       throw new Error('Performer is already a part of the mission.');
     }
@@ -40,7 +40,7 @@ export class UserMissionPerformerService {
       return svcUserMissions.patch(userMission.id, {
         $addToSet: {
           performers: {
-            user: data.user,
+            user: params.user.id,
             lanes: data.roles
           }
         }
@@ -49,6 +49,30 @@ export class UserMissionPerformerService {
       // send mission.join.request in notifier
       return userMission;
     }
+  }
+
+  /**
+   * Leave a mission.
+   */
+  async remove (id, params) {
+    const userMission = params.userMission;
+    assert(userMission, 'User mission not exists.');
+
+    // the owner himself cannot leave
+    if (fp.idEquals(userMission.owner, params.user.id)) {
+      throw new Error('Owner of the mission cannot leave yourself.');
+    }
+    const performer = fp.find(fp.idPropEq('user', params.user.id), userMission.performers || []);
+    if (!performer) {
+      throw new Error('You are not a performer of this mission.');
+    }
+
+    const svcUserMissions = this.app.service('user-missions');
+    return svcUserMissions.patch(userMission.id, {
+      $pull: {
+        'performers': { user: params.user.id }
+      }
+    }, params);
   }
 }
 
