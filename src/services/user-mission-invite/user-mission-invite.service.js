@@ -108,9 +108,10 @@ export class UserMissionInviteService {
     }
     // cancel from invitor's feed
     const invitation = invitations.data[0];
-    return svcFeedsActivities.action('updateActivity').patch(`user:${params.user.id}`, {
-      id: invitation.id,
+    return svcFeedsActivities.patch(invitation.id, {
       state: 'CANCELED'
+    }, {
+      primary: `user:${params.user.id}`
     });
   }
 }

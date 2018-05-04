@@ -89,19 +89,22 @@ export class UserMissionService extends Service {
       throw new Error('No pending request is found for this request id.');
     }
 
-    const request = requests.data[0];
-    if (request.verb === 'mission.join.request') {
-      const user = helpers.getId(request.actor);
-      const roles = request.roles;
+    const activity = requests.data[0];
+    if (activity.verb === 'mission.join.request') {
+      const user = helpers.getId(activity.actor);
+      const roles = activity.roles;
       await this.join(original.id, { user, roles }, {}, original);
     }
-    if (request.verb === 'mission.roles.request') {
-      const user = helpers.getId(request.actor);
-      const roles = request.roles;
+    if (activity.verb === 'mission.roles.request') {
+      const user = helpers.getId(activity.actor);
+      const roles = activity.roles;
       await this.roles(original.id, { user, roles }, {}, original);
     }
-    const activity = fp.assoc('state', 'ACCEPTED', request);
-    await svcFeedsActivities.patch(notification, activity);
+    await svcFeedsActivities.patch(activity.id, {
+      state: 'ACCEPTED'
+    }, {
+      primary: notification
+    });
 
     return original;
   }
