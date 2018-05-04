@@ -41,31 +41,6 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * List pending mission join or role change requests
-   */
-  async approvals (id, data, params, original) {
-    assert(original, 'User mission not exists.');
-
-    // must be owner of the mission
-    if (!fp.idEquals(original.owner, params.user.id)) {
-      throw new Error('Only mission owner can list pending requests.');
-    }
-
-    // check for pending invitation
-    const svcFeedsActivities = this.app.service('feeds/activities');
-    const invitations = await svcFeedsActivities.find({
-      primary: `notification:${original.owner}`,
-      $match: {
-        verb: { $in: ['mission.join.request', 'mission.roles.request'] },
-        object: `userMission:${original.id}`,
-        state: 'PENDING'
-      }
-    });
-
-    return invitations;
-  }
-
-  /**
    * Approve mission join or role change request
    */
   async approval (id, data, params, original) {
