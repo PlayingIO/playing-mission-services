@@ -4,13 +4,13 @@ import fp from 'mostly-func';
 
 import defaultHooks from './user-mission-role.hooks';
 
-const debug = makeDebug('playing:mission-services:user-missions/roles');
+const debug = makeDebug('playing:mission-services:user-missions/players');
 
 const defaultOptions = {
-  name: 'user-missions/roles'
+  name: 'user-missions/players'
 };
 
-export class UserMissionRoleService {
+export class UserMissionPlayerService {
   constructor (options) {
     this.options = fp.assign(defaultOptions, options);
     this.name = this.options.name;
@@ -23,7 +23,7 @@ export class UserMissionRoleService {
 }
 
 export default function init (app, options, hooks) {
-  return new UserMissionRoleService(options);
+  return new UserMissionPlayerService(options);
 }
 
-init.Service = UserMissionRoleService;
+init.Service = UserMissionPlayerService;
