@@ -14,7 +14,11 @@ export default function (options = {}) {
   return {
     before: {
       all: [
-        hooks.authenticate('jwt', options.auth, 'scores,actions'),
+        iff(hooks.isAction('play'),
+          hooks.authenticate('jwt', options.auth, 'scores,actions')
+        ).else(
+          hooks.authenticate('jwt', options.auth)
+        ),
         cache(options.cache)
       ],
       create: [
