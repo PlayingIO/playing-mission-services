@@ -180,14 +180,12 @@ const transferMission = (context) => {
   ];
 };
 
-export default function (context) {
-  return {
-    'mission.create': createMission(context),
-    'mission.remove': deleteMission(context),
-    'mission.join': joinMission(context),
-    'mission.leave': leaveMission(context),
-    'mission.play': playMission(context),
-    'mission.roles': rolesMission(context),
-    'mission.transfer': transferMission(context)
-  };
-}
+export default {
+  'mission.create': createMission,
+  'mission.remove': deleteMission,
+  'mission.join': joinMission,
+  'mission.leave': leaveMission,
+  'mission.play': playMission,
+  'mission.roles': rolesMission,
+  'mission.transfer': transferMission
+};
