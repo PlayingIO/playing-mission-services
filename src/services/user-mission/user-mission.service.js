@@ -52,8 +52,9 @@ export class UserMissionService extends Service {
     }
 
     // check for pending invitation
-    const svcFeeds = this.app.service('feeds');
-    const invitations = await svcFeeds.action('activities').get(`notification:${original.owner}`, {
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const invitations = await svcFeedsActivities.find({
+      primary: `notification:${original.owner}`,
       $match: {
         verb: { $in: ['mission.join.request', 'mission.roles.request'] },
         object: `userMission:${original.id}`,
@@ -76,9 +77,10 @@ export class UserMissionService extends Service {
     }
 
     // check for pending requests
-    const svcFeeds = this.app.service('feeds');
+    const svcFeedsActivities = this.app.service('feeds/activities');
     const notification = `notification:${data.user}`;
-    const requests = await svcFeeds.action('activities').get(notification, {
+    const requests = await svcFeedsActivities.find({
+      primary: notification,
       $match: {
         _id: data.requestId
       }
@@ -99,7 +101,7 @@ export class UserMissionService extends Service {
       await this.roles(original.id, { user, roles }, {}, original);
     }
     const activity = fp.assoc('state', 'ACCEPTED', request);
-    await svcFeeds.action('updateActivity').patch(notification, activity);
+    await svcFeedsActivities.patch(notification, activity);
 
     return original;
   }

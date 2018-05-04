@@ -29,8 +29,9 @@ export class UserMissionInviteService {
     assert(params.primary, 'User mission id not provided.');
 
     // Only invitations sent out by current user will be listed.
-    const svcFeeds = this.app.service('feeds');
-    const invitations = await svcFeeds.action('activities').get(`user:${params.user.id}`, {
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const invitations = await svcFeedsActivities.find({
+      primary: `user:${params.user.id}`,
       query: {
         verb: 'mission.invite',
         actor: `user:${params.user.id}`,
@@ -60,8 +61,9 @@ export class UserMissionInviteService {
     }
 
     // check for pending invitation sent by current user
-    const svcFeeds = this.app.service('feeds');
-    const invitations = await svcFeeds.action('activities').get(`user:${data.user}`, {
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const invitations = await svcFeedsActivities.find({
+      primary: `user:${data.user}`,
       query: {
         verb: 'mission.invite',
         object: `userMission:${userMission.id}`,
@@ -96,8 +98,9 @@ export class UserMissionInviteService {
    */
   async remove (id, params) {
     // check for pending invitation sent
-    const svcFeeds = this.app.service('feeds');
-    const invitations = await svcFeeds.action('activities').get(`user:${params.user.id}`, {
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const invitations = await svcFeedsActivities.find({
+      primary: `user:${params.user.id}`,
       query: { id, state: 'PENDING' }
     });
     if (fp.isEmpty(invitations.data)) {
@@ -105,7 +108,7 @@ export class UserMissionInviteService {
     }
     // cancel from invitor's feed
     const invitation = invitations.data[0];
-    return svcFeeds.action('updateActivity').patch(`user:${params.user.id}`, {
+    return svcFeedsActivities.action('updateActivity').patch(`user:${params.user.id}`, {
       id: invitation.id,
       state: 'CANCELED'
     });

@@ -25,10 +25,10 @@ export class UserMissionActivityService {
    * Get a user mission's activity feed
    */
   async find (params) {
-    assert(params.primary, 'User mission id not provided.');
-
-    const svcFeeds = this.app.service('feeds');
-    return svcFeeds.action('activities').get(`mission:${params.primary}`, params);
+    assert(params.primary !== null, 'User mission id not provided.');
+    params.primary = `mission:${params.primary}`;
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    return svcFeedsActivities.find(params);
   }
 }
 
