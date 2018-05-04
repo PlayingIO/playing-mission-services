@@ -1,6 +1,8 @@
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 
+import accepts from './user-mission-player.accepts';
+
 export default function (options = {}) {
   return {
     before: {
