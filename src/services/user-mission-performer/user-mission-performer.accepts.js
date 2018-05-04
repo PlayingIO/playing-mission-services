@@ -9,8 +9,8 @@ export default function accepts (context) {
   // validation rules
   const roles = { arg: 'roles', type: 'object',
     validates: {
-      exists: rolesExists(svcUserMissions, 'id', 'Roles is invalid') },
-    default: defaultRoles(svcUserMissions, 'id'),
+      exists: rolesExists(svcUserMissions, 'primary', 'Roles is invalid') },
+    default: defaultRoles(svcUserMissions, 'primary'),
     required: true, description: 'Role and lanes ' };
 
   const player = { arg: 'player', type: 'string',

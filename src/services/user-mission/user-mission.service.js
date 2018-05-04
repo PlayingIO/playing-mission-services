@@ -85,34 +85,6 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Join a mission with specified the role and lanes.
-   */
-  async join (id, data, params, original) {
-    assert(original, 'User mission not exists.');
-    assert(original.access !== 'PRIVATE', 'The mission is private, cannot join.');
-
-    const performer = fp.find(fp.idPropEq('user', data.user), original.performers || []);
-    if (performer) {
-      throw new Error('Player is already a part of the mission.');
-    }
-
-    // process the join for public mission
-    if (original.access === 'PUBLIC') {
-      return super.patch(id, {
-        $addToSet: {
-          performers: {
-            user: data.user,
-            lanes: data.roles
-          }
-        }
-      }, params);
-    } else {
-      // send mission.join.request in notifier
-      return original;
-    }
-  }
-
-  /**
    * Leave a mission.
    */
   async leave (id, data, params, original) {

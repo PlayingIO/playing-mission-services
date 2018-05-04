@@ -20,6 +20,36 @@ export class UserMissionPerformerService {
     this.app = app;
     this.hooks(defaultHooks(this.options));
   }
+
+  /**
+   * Join a mission with specified the role and lanes.
+   */
+  async create (data, params) {
+    const userMission = params.userMission;
+    assert(userMission, 'User mission not exists.');
+    assert(userMission.access !== 'PRIVATE', 'The mission is private, cannot join.');
+
+    const performer = fp.find(fp.idPropEq('user', data.user), userMission.performers || []);
+    if (performer) {
+      throw new Error('Performer is already a part of the mission.');
+    }
+
+    // process the join for public mission
+    const svcUserMissions = this.app.service('user-missions');
+    if (userMission.access === 'PUBLIC') {
+      return svcUserMissions.patch(userMission.id, {
+        $addToSet: {
+          performers: {
+            user: data.user,
+            lanes: data.roles
+          }
+        }
+      }, params);
+    } else {
+      // send mission.join.request in notifier
+      return userMission;
+    }
+  }
 }
 
 export default function init (app, options, hooks) {
