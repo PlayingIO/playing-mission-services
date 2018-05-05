@@ -24,11 +24,10 @@ export default function populateTasks (target, getRequires) {
 
     const svcMissions = this.app.service('missions');
 
-    let data = helpers.getHookDataAsArray(context);
+    const data = helpers.getHookDataAsArray(context);
+    if (fp.isEmpty(data)) return context;
 
-    const missionIds = fp.uniq(
-      fp.reject(fp.isNil,
-      fp.map(helpers.pathId('mission'), data)));
+    const missionIds = fp.uniq(fp.reject(fp.isNil, fp.map(helpers.pathId('mission'), data)));
     const missions = await svcMissions.find ({
       query: {
         id: { $in: missionIds },
@@ -36,7 +35,7 @@ export default function populateTasks (target, getRequires) {
       },
       paginate: false
     });
-    for (let userMission of data) {
+    for (const userMission of data) {
       const mission = fp.find(fp.propEq('id', helpers.getId(userMission.mission)), missions);
       if (mission && mission.activities) {
         userMission.tasks = walkThroughTasks(context.params.user, userMission.tasks)(mission.activities);
