@@ -8,7 +8,7 @@ import { createActivity, performersNotifications } from '../../helpers';
 const createMission = (context) => {
   const result = helpers.getHookData(context);
   const actor = context.data.owner;
-  const notifications = performersNotifications(result);
+  const notifications = performersNotifications(result.performers);
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.create',
@@ -25,7 +25,7 @@ const createMission = (context) => {
 const deleteMission = (context) => {
   const result = helpers.getHookData(context);
   const actor = context.data.owner;
-  const notifications = performersNotifications(result);
+  const notifications = performersNotifications(result.performers);
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.delete',
@@ -42,7 +42,7 @@ const deleteMission = (context) => {
 const playMission = (context) => {
   const result = helpers.getHookData(context);
   const actor = context.data.user;
-  const notifications = performersNotifications(result);
+  const notifications = performersNotifications(result.performers);
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.leave',
@@ -64,7 +64,7 @@ const rolesMission = (context) => {
   const actor = context.data.user;
   const player = context.data.player || context.data.user;
   if (result.access === 'PUBLIC') {
-    const notifications = performersNotifications(result);
+    const notifications = performersNotifications(result.performers);
     const custom = {
       actor: `user:${actor}`,
       verb: 'mission.roles',
@@ -100,7 +100,7 @@ const transferMission = (context) => {
   const result = helpers.getHookData(context);
   const actor = context.data.user;
   const owner = context.data.player;
-  const notifications = performersNotifications(result);
+  const notifications = performersNotifications(result.performers);
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.transfer',

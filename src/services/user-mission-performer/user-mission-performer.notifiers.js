@@ -9,7 +9,7 @@ const joinMission = (context) => {
   const result = helpers.getHookData(context);
   const actor = context.params.user.id;
   if (result.access === 'PUBLIC') {
-    const notifications = performersNotifications(result);
+    const notifications = performersNotifications(result.performers);
     const custom = {
       actor: `user:${actor}`,
       verb: 'mission.join',
@@ -42,7 +42,7 @@ const joinMission = (context) => {
 const leaveMission = (context) => {
   const result = helpers.getHookData(context);
   const actor = context.params.user.id;
-  const notifications = performersNotifications(result);
+  const notifications = performersNotifications(result.performers);
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.leave',
