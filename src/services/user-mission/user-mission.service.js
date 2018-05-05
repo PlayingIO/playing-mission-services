@@ -85,33 +85,6 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Kick out a performer from the mission.
-   */
-  async kick (id, data, params, original) {
-    assert(original, 'User mission not exists');
-
-    // must be owner of the mission
-    if (!fp.idEquals(original.owner, data.user)) {
-      throw new Error('Only owner of the mission can kick a player.');
-    }
-    // the owner cannot kicked out himself
-    if (fp.idEquals(original.owner, data.player)) {
-      throw new Error('Owner of the mission cannot kick yourself.');
-    }
-
-    const performer = fp.find(fp.idPropEq('user', data.player), original.performers || []);
-    if (!performer) {
-      throw new Error('Player is not a member of the mission');
-    }
-
-    return super.patch(id, {
-      $pull: {
-        'performers': { user: data.player }
-      }
-    }, params);
-  }
-
-  /**
    * Play a mission. Playing a mission causes its state to change.
    */
   async play (id, data, params, original) {

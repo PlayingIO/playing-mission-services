@@ -88,6 +88,36 @@ export class UserMissionPerformerService {
       }
     }, params);
   }
+
+  /**
+   * Kick out a performer from the mission.
+   */
+  async kick (id, params) {
+    const userMission = params.userMission;
+    assert(userMission, 'User mission not exists');
+
+    // must be owner of the mission
+    if (!fp.idEquals(userMission.owner, params.user.id)) {
+      throw new Error('Only owner of the mission can kick a player.');
+    }
+    // the owner cannot kicked out himself
+    if (fp.idEquals(userMission.owner, id)) {
+      throw new Error('Owner of the mission cannot kick yourself.');
+    }
+
+    const performer = fp.find(fp.idPropEq('user', id), userMission.performers || []);
+    if (!performer) {
+      throw new Error('Player is not a member of the mission');
+    }
+
+    const svcUserMissions = this.app.service('user-missions');
+    return svcUserMissions.patch(userMission.id, {
+      $pull: {
+        'performers': { user: id }
+      }
+    }, params);
+  }
+
 }
 
 export default function init (app, options, hooks) {
