@@ -1,4 +1,5 @@
 import fp from 'mostly-func';
+import { helpers } from 'mostly-feathers-mongoose';
 import { helpers as rules } from 'playing-rule-services';
 
 export const fulfillActivityRequires = (activity, user) => {
@@ -144,6 +145,18 @@ export const defaultRoles = (service, id) => async (params) => {
   } catch (err) {
     return null;
   }
+};
+
+// create a user mission activity
+export const createActivity = (context, custom) => {
+  const result = helpers.getHookData(context);
+  return {
+    actor: `user:${result.owner}`,
+    object: `userMission:${result.id}`,
+    foreignId: `userMission:${result.id}`,
+    mission: `mission:${result.mission}`,
+    ...custom
+  };
 };
 
 // notification feeds of all performers
