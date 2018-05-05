@@ -1,10 +1,10 @@
-import { iff, isProvider } from 'feathers-hooks-common';
-import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authentication-hooks';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
+import { hooks as feeds } from 'playing-feed-services';
 
 import accepts from './user-mission-performer.accepts';
+import notifiers from './user-mission-performer.notifiers';
 
 export default function (options = {}) {
   return {
@@ -28,6 +28,12 @@ export default function (options = {}) {
       all: [
         cache(options.cache),
         hooks.responder()
+      ],
+      create: [
+        feeds.notify('mission.join', notifiers)
+      ],
+      remove: [
+        feeds.notify('mission.leave', notifiers)
       ]
     }
   };
