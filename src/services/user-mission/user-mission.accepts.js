@@ -42,12 +42,6 @@ export default function accepts (context) {
       atLeastOneOf: helpers.atLeastOneOf('player', 'user') },
     description: 'Player or current user' };
 
-  const role = { arg: 'role', type: 'string',
-    validates: {
-      isIn: helpers.isIn('role', ['player', 'observer', 'false']) },
-    default: 'player',
-    required: true, description: 'Role of the player' };
-
   const trigger = { arg: 'trigger', type: 'string', required: true, description: 'Id of trigger' };
   const scopes = { arg: 'scopes', type: 'array', default: [], description: 'Scopes of scores to be counted' };
   
@@ -56,9 +50,6 @@ export default function accepts (context) {
   return {
     approval: [ requestId ],
     create: [ mission, access, lane ],
-    join: [ user, roles ],
-    leave: [ user ],
-    kick: [ player ],
     play: [ trigger, user, scopes ],
     roles: [ roles, playerOrUser, scopes ],
     transfer: [ player, roles ]

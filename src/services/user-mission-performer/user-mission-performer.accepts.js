@@ -21,7 +21,7 @@ export default function accepts (context) {
 
   return {
     create: [ roles ],
-    remove: [ ],
+    remove: [],
     kick: [ player ]
   };
 }
