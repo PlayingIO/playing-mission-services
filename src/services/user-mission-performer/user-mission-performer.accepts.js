@@ -8,20 +8,17 @@ export default function accepts (context) {
 
   // validation rules
   const roles = { arg: 'roles', type: 'object',
-    validates: {
-      exists: rolesExists(svcUserMissions, 'primary', 'Roles is invalid') },
+    validates: { exists: rolesExists(svcUserMissions, 'primary', 'Roles is invalid') },
     default: defaultRoles(svcUserMissions, 'primary'),
     required: true, description: 'Role and lanes ' };
 
-  const player = { arg: 'player', type: 'string',
-    validates: {
-      exists: helpers.idExists(svcUsers, 'player', 'Player is not exists') },
-    required: true, description: 'Player' };
-  const user = { arg: 'user', type: 'string', required: true, description: 'Current user' };
+  const performer = { arg: 'id', type: 'string',
+    validates: { exists: helpers.idExists(svcUsers, 'id', 'Performer is not exists') },
+    required: true, description: 'Performer Id' };
 
   return {
     create: [ roles ],
-    remove: [],
-    kick: [ player ]
+    remove: [ performer ],
+    kick: [ performer ]
   };
 }
