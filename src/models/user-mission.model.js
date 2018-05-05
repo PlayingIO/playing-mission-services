@@ -21,7 +21,7 @@ const task = {
   limit: { type: rules.limit.schema },            // rate limiting data
   performers: [{                                  // players within this task who have performed this task at least once
     _id: false,
-    user: { type: 'ObjectId' },                   // id of the performer
+    user: { type: String },                       // id of the performer
     scopes: [{ type: String }]                    // custom leaderboard scopes which the task performed with
   }]
 };
@@ -42,10 +42,10 @@ const fields = {
   tasks: [task],                                  // tasks in this mission (defined by activities)
   performers: [{                                  // players within this task who have performed this task at least once
     _id: false,
-    user: { type: 'ObjectId' },                   // id of the performer
+    user: { type: String },                       // id of the performer
     lanes: { type: 'Mixed' }                      // lane/role map of the performer
   }],
-  owner: { type: 'ObjectId' },                    // owner of the mission
+  owner: { type: String },                        // owner of the mission
 };
 
 export default function model (app, name) {

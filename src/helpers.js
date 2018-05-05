@@ -161,9 +161,6 @@ export const createActivity = (context, custom) => {
 
 // notification feeds of all performers
 export const performersNotifications = function (performers, excepts = []) {
-  const users = fp.without(
-    fp.map(fp.toString, [].concat(excepts)),
-    fp.map(fp.pipe(fp.prop('user'), fp.toString), performers || [])
-  );
+  const users = fp.without(excepts, fp.map(fp.prop('user'), performers || []));
   return fp.map(fp.concat('notification:'), users);
 };
