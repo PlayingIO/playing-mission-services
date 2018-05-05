@@ -46,6 +46,20 @@ export class UserMissionPerformerService {
         }
       }, params);
     } else {
+      // check for pending join request sent by current user
+      const svcFeedsActivities = this.app.service('feeds/activities');
+      const invitations = await svcFeedsActivities.find({
+        primary: `notification:${userMission.owner}`,
+        $match: {
+          actor: `user:${params.user.id}`,
+          verb: 'mission.join.request',
+          object: `userMission:${userMission.id}`,
+          state: 'PENDING'
+        }
+      });
+      if (fp.isNotEmpty(invitations.data)) {
+        throw new Error('An join request is already pending for the current user.');
+      }
       // send mission.join.request in notifier
       return userMission;
     }
