@@ -1,6 +1,5 @@
 import fp from 'mostly-func';
 import { helpers } from 'mostly-feathers-mongoose';
-import { helpers as feeds } from 'playing-feed-services';
 
 import { createActivity, performersNotifications } from '../../helpers';
 

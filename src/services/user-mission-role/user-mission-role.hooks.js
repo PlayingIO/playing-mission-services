@@ -4,6 +4,7 @@ import { sanitize, validate } from 'mostly-feathers-validate';
 import { hooks as feeds } from 'playing-feed-services';
 
 import accepts from './user-mission-role.accepts';
+import notifiers from './user-mission-role.notifiers';
 
 export default function (options = {}) {
   return {
@@ -22,7 +23,10 @@ export default function (options = {}) {
       all: [
         cache(options.cache),
         hooks.responder()
-      ]
+      ],
+      patch: [
+        feeds.notify('mission.roles', notifiers),
+      ],
     }
   };
 }
