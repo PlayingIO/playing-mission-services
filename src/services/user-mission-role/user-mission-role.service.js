@@ -28,16 +28,18 @@ export class UserMissionRoleService {
     const userMission = params.userMission;
     assert(userMission, 'User mission not exists.');
 
-    // must be owner of the mission for other player
-    if (data.player && !fp.idEquals(userMission.owner, params.user.id)) {
-      throw new Error('Only owner of the mission can change roles of a player.');
+    // performer id is not current player, only if current owner of the missions
+    if (!fp.idEquals(id, params.user.id) && !fp.idEquals(userMission.owner, params.user.id)) {
+      throw new Error('Only owner of the mission can change roles of other player.');
     }
 
     // whether the id is one of the performers
     const performer = fp.find(fp.idPropEq('user', id), userMission.performers || []);
     if (!performer) {
-      throw new Error('Player is not members of this mission, please join the mission first.');
+      throw new Error('Performer id is not members of this mission, please join the mission first.');
     }
+
+    const svcUserMissions = this.app.service('user-missions');
 
     // process the change if owner or it's a public mission
     if (fp.idEquals(userMission.owner, params.user.id) || userMission.access === 'PUBLIC') {
@@ -54,8 +56,23 @@ export class UserMissionRoleService {
         }
         return acc;
       }, {}, fp.keys(data.roles));
-      return super.patch(id, updates, params);
+      return svcUserMissions.patch(userMission.id, updates, params);
     } else {
+      // check for pending roles request sent by current user
+      const svcFeedsActivities = this.app.service('feeds/activities');
+      const invitations = await svcFeedsActivities.find({
+        primary: `notification:${userMission.owner}`,
+        $match: {
+          actor: `user:${params.user.id}`,
+          verb: 'mission.roles.request',
+          object: `userMission:${userMission.id}`,
+          state: 'PENDING'
+        }
+      });
+      if (fp.isNotEmpty(invitations.data)) {
+        throw new Error('An roles change request is already pending for the current user.');
+      }
+
       // send mission.role in notifier
       return userMission;
     }

@@ -1,5 +1,9 @@
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
+import { sanitize, validate } from 'mostly-feathers-validate';
+import { hooks as feeds } from 'playing-feed-services';
+
+import accepts from './user-mission-role.accepts';
 
 export default function (options = {}) {
   return {
@@ -7,7 +11,12 @@ export default function (options = {}) {
       all: [
         hooks.authenticate('jwt', options.auth),
         cache(options.cache)
-      ]
+      ],
+      patch: [
+        hooks.primaryResource('userMission', { service: 'user-missions' }),
+        sanitize(accepts),
+        validate(accepts),
+      ],
     },
     after: {
       all: [
