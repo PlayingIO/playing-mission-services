@@ -162,17 +162,18 @@ export class UserMissionService extends Service {
   /**
    * Transfer mission ownership to existing performer or any other player
    */
-  async transfer (id, data, params, original) {
-    assert(original, 'User mission not exists.');
+  async transfer (id, data, params) {
+    const userMission = params.userMission;
+    assert(userMission, 'User mission is not exists.');
 
     // must be owner of the mission
-    if (!fp.idEquals(original.owner, data.user)) {
+    if (!fp.idEquals(userMission.owner, data.user)) {
       throw new Error('Only owner of the mission can transfer ownership.');
     }
-    if (fp.idEquals(original.owner, data.player)) {
+    if (fp.idEquals(userMission.owner, data.player)) {
       throw new Error('Already owner of the mission.');
     }
-    const performer = fp.find(fp.idPropEq('user', data.player), original.performers || []);
+    const performer = fp.find(fp.idPropEq('user', data.player), userMission.performers || []);
 
     if (performer) {
       params.query = fp.assign(params.query, {
