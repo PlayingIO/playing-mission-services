@@ -5,7 +5,6 @@ import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
 import { hooks as feeds, entities as feedsEntities } from 'playing-feed-services';
 
-import { populateTasks } from '../../hooks';
 import UserMissionEntity from '../../entities/user-mission.entity';
 import notifiers from './user-mission.notifiers';
 import accepts from './user-mission.accepts';
@@ -55,8 +54,7 @@ export default function (options = {}) {
         ).else(
           hooks.populate('mission', { service: 'missions' }),
           hooks.populate('owner', { service: 'users' }),
-          hooks.populate('performers.user', { service: 'users' }),
-          populateTasks()
+          hooks.populate('performers.user', { service: 'users' })
         ),
         cache(options.cache),
         iff(hooks.isAction('approvals'),
