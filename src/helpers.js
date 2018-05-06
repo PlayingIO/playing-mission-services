@@ -121,6 +121,8 @@ export const rolesExists = (service, id, message) => async (val, params) => {
   if (userMission && userMission.mission && userMission.mission.lanes) {
     if (fp.includesAll(lanes, fp.map(fp.prop('name'), userMission.mission.lanes))
       && fp.includesAll(roles, ['player', 'observer'])) return;
+  } else {
+    message = 'User mission is not exists';
   }
   return message;
 };
