@@ -9,8 +9,7 @@ export default function accepts (context) {
 
   // validation rules
   const mission = { arg: 'mission', type: 'string',
-    validates: {
-      exists: helpers.idExists(svcMissions, 'mission', 'Mission is not exists') },
+    validates: { exists: helpers.idExists(svcMissions, 'mission', 'Mission is not exists') },
     required: true, description: 'Mission definition' };
 
   const access = { arg: 'access', type: 'string',
@@ -26,32 +25,24 @@ export default function accepts (context) {
     default: defaultLane(svcMissions, 'mission'),
     required: true, description: 'Lane of the mission' };
   const roles = { arg: 'roles', type: 'object',
-    validates: {
-      exists: rolesExists(svcUserMissions, 'id', 'Roles is invalid') },
+    validates: { exists: rolesExists(svcUserMissions, 'id', 'Roles is invalid') },
     default: defaultRoles(svcUserMissions, 'id'),
     required: true, description: 'Role and lanes ' };
 
   const player = { arg: 'player', type: 'string',
-    validates: {
-      exists: helpers.idExists(svcUsers, 'player', 'Player is not exists') },
+    validates: { exists: helpers.idExists(svcUsers, 'player', 'Player is not exists') },
     required: true, description: 'Player' };
   const user = { arg: 'user', type: 'string', required: true, description: 'Current user' };
-  const playerOrUser = { arg: ['player', 'user'], type: 'string',
-    validates: {
-      exists: helpers.idExists(svcUsers, ['player', 'user'], 'Player is not exists'),
-      atLeastOneOf: helpers.atLeastOneOf('player', 'user') },
-    description: 'Player or current user' };
 
   const trigger = { arg: 'trigger', type: 'string', required: true, description: 'Id of trigger' };
   const scopes = { arg: 'scopes', type: 'array', default: [], description: 'Scopes of scores to be counted' };
-  
+
   const requestId = { arg: 'requestId', type: 'string', required: true, description: 'Request id' };
 
   return {
     approval: [ requestId ],
     create: [ mission, access, lane ],
     play: [ trigger, user, scopes ],
-    roles: [ roles, playerOrUser, scopes ],
     transfer: [ player, roles ]
   };
 }
