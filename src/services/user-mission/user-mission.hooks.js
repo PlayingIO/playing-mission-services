@@ -70,9 +70,7 @@ export default function (options = {}) {
         iff(hooks.isAction('create', feeds.notify('mission.create', notifiers)))
       ],
       patch: [
-        iff(hooks.isAction('invite'), feeds.notify('mission.invite', notifiers)),
         iff(hooks.isAction('play'), feeds.notify('mission.play', notifiers)),
-        iff(hooks.isAction('roles'), feeds.notify('mission.roles', notifiers)),
         iff(hooks.isAction('transfer'), feeds.notify('mission.transfer', notifiers))
       ],
       remove: [
