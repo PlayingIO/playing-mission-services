@@ -39,50 +39,6 @@ export class UserMissionService extends Service {
   }
 
   /**
-   * Approve mission join or role change request
-   */
-  async approval (id, data, params, original) {
-    assert(original, 'User mission not exists.');
-
-    // must be owner of the mission
-    if (!fp.idEquals(original.owner, data.user)) {
-      throw new Error('Only owner of the mission can approval the request.');
-    }
-
-    // check for pending requests
-    const svcFeedsActivities = this.app.service('feeds/activities');
-    const notification = `notification:${data.user}`;
-    const requests = await svcFeedsActivities.find({
-      primary: notification,
-      $match: {
-        _id: data.requestId
-      }
-    });
-    if (fp.isEmpty(requests.data) || requests.data[0].state !== 'PENDING') {
-      throw new Error('No pending request is found for this request id.');
-    }
-
-    const activity = requests.data[0];
-    if (activity.verb === 'mission.join.request') {
-      const user = helpers.getId(activity.actor);
-      const roles = activity.roles;
-      await this.join(original.id, { user, roles }, {}, original);
-    }
-    if (activity.verb === 'mission.roles.request') {
-      const user = helpers.getId(activity.actor);
-      const roles = activity.roles;
-      await this.roles(original.id, { user, roles }, {}, original);
-    }
-    await svcFeedsActivities.patch(activity.id, {
-      state: 'ACCEPTED'
-    }, {
-      primary: notification
-    });
-
-    return original;
-  }
-
-  /**
    * Transfer mission ownership to existing performer or any other player
    */
   async transfer (id, data, params) {
