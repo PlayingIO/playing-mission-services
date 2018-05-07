@@ -28,9 +28,11 @@ export class UserMissionRoleService {
     const userMission = params.userMission;
     assert(userMission, 'User mission not exists.');
 
-    // performer id is not current player, only if current owner of the missions
-    if (!fp.idEquals(id, params.user.id) && !fp.idEquals(userMission.owner, params.user.id)) {
-      throw new Error('Only owner of the mission can change roles of other player.');
+    const isOwner = fp.idEquals(userMission.owner, params.user.id);
+    if (!fp.idEquals(id, params.user.id)) { // change roles by owner
+      if (!isOwner) {
+        throw new Error('Only owner of the mission can change roles of other player.');
+      }
     }
 
     // whether the id is one of the performers
@@ -42,7 +44,7 @@ export class UserMissionRoleService {
     const svcUserMissions = this.app.service('user-missions');
 
     // process the change if owner or it's a public mission
-    if (fp.idEquals(userMission.owner, params.user.id) || userMission.access === 'PUBLIC') {
+    if (isOwner || userMission.access === 'PUBLIC') {
       // remove a performer from the lane
       params.query = fp.assign(params.query, {
         'performers.user': id
