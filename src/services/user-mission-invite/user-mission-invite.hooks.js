@@ -17,7 +17,7 @@ export default function (options = {}) {
       create: [
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
-        hooks.primaryResource('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('userMission', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),
       ],

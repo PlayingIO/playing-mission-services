@@ -14,11 +14,11 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       find: [
-        hooks.primaryResource('userMission', { service: 'user-missions',
+        hooks.addRouteObject('userMission', { service: 'user-missions',
           select: 'mission.activities.requires,mission.activities.rewards,*' }),
       ],
       create: [
-        hooks.primaryResource('userMission', { service: 'user-missions',
+        hooks.addRouteObject('userMission', { service: 'user-missions',
           select: 'mission.activities.requires,mission.activities.rewards,*' }),
         sanitize(accepts),
         validate(accepts),

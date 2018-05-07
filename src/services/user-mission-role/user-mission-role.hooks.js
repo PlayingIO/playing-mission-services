@@ -14,7 +14,7 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       patch: [
-        hooks.primaryResource('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('userMission', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),
       ],

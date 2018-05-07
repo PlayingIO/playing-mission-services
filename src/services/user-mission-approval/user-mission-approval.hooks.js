@@ -9,10 +9,10 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       find: [
-        hooks.primaryResource('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('userMission', { service: 'user-missions' }),
       ],
       patch: [
-        hooks.primaryResource('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('userMission', { service: 'user-missions' }),
       ]
     },
     after: {
