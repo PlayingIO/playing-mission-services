@@ -1,3 +1,4 @@
+import { iff } from 'feathers-hooks-common';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
@@ -33,7 +34,11 @@ export default function (options = {}) {
         feeds.notify('mission.join', notifiers)
       ],
       remove: [
-        feeds.notify('mission.leave', notifiers)
+        iff(hooks.isAction('kick'),
+          feeds.notify('mission.kick', notifiers))
+        .else(
+          feeds.notify('mission.leave', notifiers)
+        )
       ]
     }
   };

@@ -72,6 +72,11 @@ export class UserMissionPerformerService {
     const userMission = params.userMission;
     assert(userMission, 'User mission not exists.');
 
+    // kick intead leave
+    if (params.action === 'kick') {
+      return this.kick(id, params);
+    }
+
     // the owner himself cannot leave
     if (fp.idEquals(userMission.owner, params.user.id)) {
       throw new Error('Owner of the mission cannot leave yourself.');
