@@ -71,16 +71,19 @@ export class UserMissionApprovalService {
       throw new Error('No pending request is found for this request id.');
     }
 
+    const svcUserMissions = this.app.service('user-missions');
     const activity = requests.data[0];
+    const user = helpers.getId(activity.actor);
+    const roles = activity.roles;
     if (activity.verb === 'mission.join.request') {
-      const user = helpers.getId(activity.actor);
-      const roles = activity.roles;
-      await this.join(userMission.id, { user, roles }, {}, userMission);
-    }
-    if (activity.verb === 'mission.roles.request') {
-      const user = helpers.getId(activity.actor);
-      const roles = activity.roles;
-      await this.roles(userMission.id, { user, roles }, {}, userMission);
+      await svcUserMissions.patch(userMission.id, {
+        $addToSet: {
+          performers: {
+            user: user,
+            lanes: roles
+          }
+        }
+      });
     }
     await svcFeedsActivities.patch(activity.id, {
       state: 'ACCEPTED'
