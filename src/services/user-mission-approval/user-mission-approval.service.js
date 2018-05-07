@@ -1,5 +1,6 @@
 import assert from 'assert';
 import makeDebug from 'debug';
+import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 
 import defaultHooks from './user-mission-approval.hooks';
@@ -45,6 +46,49 @@ export class UserMissionApprovalService {
     });
 
     return invitations;
+  }
+
+  /**
+   * Approve mission join or role change request
+   */
+  async patch (id, data, params) {
+    const userMission = params.userMission;
+    assert(userMission, 'User mission not exists.');
+
+    // must be owner of the mission
+    if (!fp.idEquals(userMission.owner, params.user.id)) {
+      throw new Error('Only owner of the mission can approval the request.');
+    }
+
+    // check for pending requests
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const notification = `notification:${params.user.id}`;
+    const requests = await svcFeedsActivities.find({
+      primary: notification,
+      $match: { _id: id }
+    });
+    if (fp.isEmpty(requests.data) || requests.data[0].state !== 'PENDING') {
+      throw new Error('No pending request is found for this request id.');
+    }
+
+    const activity = requests.data[0];
+    if (activity.verb === 'mission.join.request') {
+      const user = helpers.getId(activity.actor);
+      const roles = activity.roles;
+      await this.join(userMission.id, { user, roles }, {}, userMission);
+    }
+    if (activity.verb === 'mission.roles.request') {
+      const user = helpers.getId(activity.actor);
+      const roles = activity.roles;
+      await this.roles(userMission.id, { user, roles }, {}, userMission);
+    }
+    await svcFeedsActivities.patch(activity.id, {
+      state: 'ACCEPTED'
+    }, {
+      primary: notification
+    });
+
+    return userMission;
   }
 
 }
