@@ -10,6 +10,9 @@ export default function (options = {}) {
       ],
       find: [
         hooks.primaryResource('userMission', { service: 'user-missions' }),
+      ],
+      patch: [
+        hooks.primaryResource('userMission', { service: 'user-missions' }),
       ]
     },
     after: {
