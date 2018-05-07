@@ -85,6 +85,13 @@ export class UserMissionApprovalService {
         }
       });
     }
+    if (activity.verb === 'mission.roles.request') {
+      await svcUserMissions.patch(userMission.id, {
+        'performers.$.lanes': roles,
+      }, {
+        'performers.user': user
+      });
+    }
     await svcFeedsActivities.patch(activity.id, {
       state: 'ACCEPTED'
     }, {

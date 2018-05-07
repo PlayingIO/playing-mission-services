@@ -22,7 +22,7 @@ export class UserMissionRoleService {
   }
 
   /**
-   * Change own roles or roles of a performer in mission.
+   * Change own roles in mission.
    */
   async patch (id, data, params) {
     const userMission = params.userMission;
