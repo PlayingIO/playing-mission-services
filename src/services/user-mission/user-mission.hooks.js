@@ -54,13 +54,13 @@ export default function (options = {}) {
         hooks.responder()
       ],
       create: [
-        iff(hooks.isAction('create', feeds.notify('mission.create', notifiers)))
+        feeds.notify('mission.create', notifiers)
       ],
       patch: [
         iff(hooks.isAction('transfer'), feeds.notify('mission.transfer', notifiers))
       ],
       remove: [
-        iff(hooks.isAction('create', feeds.notify('mission.delete')))
+        feeds.notify('mission.delete')
       ]
     }
   };
