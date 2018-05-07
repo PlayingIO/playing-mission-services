@@ -1,8 +1,10 @@
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
+import { hooks as feeds } from 'playing-feed-services';
 
 import accepts from './user-mission-task.accepts';
+import notifiers from './user-mission-task.notifiers';
 
 export default function (options = {}) {
   return {
@@ -26,6 +28,9 @@ export default function (options = {}) {
       all: [
         cache(options.cache),
         hooks.responder()
+      ],
+      create: [
+        feeds.notify('mission.play', notifiers),
       ]
     }
   };

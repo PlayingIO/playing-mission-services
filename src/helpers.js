@@ -138,13 +138,14 @@ export const defaultRoles = (service, id) => async (params) => {
 };
 
 // create a user mission activity
-export const createActivity = (context, custom) => {
-  const result = helpers.getHookData(context);
+export const createMissionActivity = (context, userMission, custom) => {
+  const actor = helpers.getId(userMission.owner);
+  const mission = helpers.getId(userMission.mission);
   return {
-    actor: `user:${result.owner}`,
-    object: `userMission:${result.id}`,
-    foreignId: `userMission:${result.id}`,
-    mission: `mission:${result.mission}`,
+    actor: `user:${actor}`,
+    object: `userMission:${userMission.id}`,
+    foreignId: `userMission:${userMission.id}`,
+    mission: `mission:${mission}`,
     ...custom
   };
 };

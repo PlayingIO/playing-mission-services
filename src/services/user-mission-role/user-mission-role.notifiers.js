@@ -1,15 +1,15 @@
 import fp from 'mostly-func';
 import { helpers } from 'mostly-feathers-mongoose';
 
-import { createActivity, performersNotifications } from '../../helpers';
+import { createMissionActivity, performersNotifications } from '../../helpers';
 
 // change roles mission activity
 const rolesMission = (context) => {
-  const result = helpers.getHookData(context);
+  const userMission = helpers.getHookData(context);
   const actor = context.params.user.id;
   const player = context.id;
-  if (result.access === 'PUBLIC') {
-    const notifications = performersNotifications(result.performers);
+  if (userMission.access === 'PUBLIC') {
+    const notifications = performersNotifications(userMission.performers);
     const custom = {
       actor: `user:${actor}`,
       verb: 'mission.roles',
@@ -18,10 +18,10 @@ const rolesMission = (context) => {
       player: `user:${player}`
     };
     return [
-      createActivity(context, custom),
+      createMissionActivity(context, userMission, custom),
       `user:${player}`,              // add to player's activity log
-      `user:${result.owner}`,        // add to owner's activity log
-      `mission:${result.id}`,        // add to mission's activity log
+      `user:${userMission.owner}`,   // add to owner's activity log
+      `mission:${userMission.id}`,   // add to mission's activity log
       notifications                  // add to all performers' notification stream
     ];
   } else {
@@ -34,8 +34,8 @@ const rolesMission = (context) => {
       player: `user:${player}`
     };
     return [
-      createActivity(context, custom),
-      `notification:${result.owner}` // notify owner of the mission to approve requests
+      createMissionActivity(context, userMission, custom),
+      `notification:${userMission.owner}` // notify owner of the mission to approve requests
     ];
   }
 };
