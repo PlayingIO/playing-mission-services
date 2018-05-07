@@ -64,7 +64,7 @@ export class UserMissionRoleService {
       const svcFeedsActivities = this.app.service('feeds/activities');
       const invitations = await svcFeedsActivities.find({
         primary: `notification:${userMission.owner}`,
-        $match: {
+        query: {
           actor: `user:${params.user.id}`,
           verb: 'mission.roles.request',
           object: `userMission:${userMission.id}`,

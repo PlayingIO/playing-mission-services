@@ -38,7 +38,7 @@ export class UserMissionApprovalService {
     const svcFeedsActivities = this.app.service('feeds/activities');
     const invitations = await svcFeedsActivities.find({
       primary: `notification:${userMission.owner}`,
-      $match: {
+      query: {
         verb: { $in: ['mission.join.request', 'mission.roles.request'] },
         object: `userMission:${userMission.id}`,
         state: 'PENDING'
@@ -65,7 +65,7 @@ export class UserMissionApprovalService {
     const notification = `notification:${params.user.id}`;
     const requests = await svcFeedsActivities.find({
       primary: notification,
-      $match: { _id: id }
+      query: { _id: id }
     });
     if (fp.isEmpty(requests.data) || requests.data[0].state !== 'PENDING') {
       throw new Error('No pending request is found for this request id.');

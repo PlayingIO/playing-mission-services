@@ -50,7 +50,7 @@ export class UserMissionPerformerService {
       const svcFeedsActivities = this.app.service('feeds/activities');
       const invitations = await svcFeedsActivities.find({
         primary: `notification:${userMission.owner}`,
-        $match: {
+        query: {
           actor: `user:${params.user.id}`,
           verb: 'mission.join.request',
           object: `userMission:${userMission.id}`,
