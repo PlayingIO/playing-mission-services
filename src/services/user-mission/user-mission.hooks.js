@@ -46,22 +46,11 @@ export default function (options = {}) {
     },
     after: {
       all: [
-        iff(hooks.isAction('approvals'),
-          hooks.populate('actor', { retained: false }),
-          hooks.populate('mission', { retained: false }),
-          hooks.populate('object', { retained: false }),
-          hooks.populate('target', { retained: false })
-        ).else(
-          hooks.populate('mission', { service: 'missions' }),
-          hooks.populate('owner', { service: 'users' }),
-          hooks.populate('performers.user', { service: 'users' })
-        ),
+        hooks.populate('mission', { service: 'missions' }),
+        hooks.populate('owner', { service: 'users' }),
+        hooks.populate('performers.user', { service: 'users' }),
         cache(options.cache),
-        iff(hooks.isAction('approvals'),
-          hooks.presentEntity(feedsEntities.activity, options.entities))
-        .else(
-          hooks.presentEntity(UserMissionEntity, options.entities)
-        ),
+        hooks.presentEntity(UserMissionEntity, options.entities),
         hooks.responder()
       ],
       create: [
