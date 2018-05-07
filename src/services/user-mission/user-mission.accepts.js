@@ -32,17 +32,12 @@ export default function accepts (context) {
   const player = { arg: 'player', type: 'string',
     validates: { exists: helpers.idExists(svcUsers, 'player', 'Player is not exists') },
     required: true, description: 'Player' };
-  const user = { arg: 'user', type: 'string', required: true, description: 'Current user' };
-
-  const trigger = { arg: 'trigger', type: 'string', required: true, description: 'Id of trigger' };
-  const scopes = { arg: 'scopes', type: 'array', default: [], description: 'Scopes of scores to be counted' };
 
   const requestId = { arg: 'requestId', type: 'string', required: true, description: 'Request id' };
 
   return {
     approval: [ requestId ],
     create: [ mission, access, lane ],
-    play: [ trigger, user, scopes ],
     transfer: [ player, roles ]
   };
 }
