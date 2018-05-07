@@ -11,6 +11,10 @@ export default function (options = {}) {
       find: [
         hooks.primaryResource('userMission', { service: 'user-missions',
           select: 'mission.activities.requires,mission.activities.rewards,*' }),
+      ],
+      create: [
+        hooks.primaryResource('userMission', { service: 'user-missions',
+          select: 'mission.activities.requires,mission.activities.rewards,*' }),
       ]
     },
     after: {

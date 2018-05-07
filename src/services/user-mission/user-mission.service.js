@@ -2,8 +2,6 @@ import assert from 'assert';
 import makeDebug from 'debug';
 import { Service, helpers, createService } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
-import { helpers as metrics } from 'playing-metric-services';
-import { helpers as rules } from 'playing-rule-services';
 
 import UserMissionModel from '../../models/user-mission.model';
 import defaultHooks from './user-mission.hooks';
@@ -82,81 +80,6 @@ export class UserMissionService extends Service {
     });
 
     return original;
-  }
-
-  /**
-   * Play a mission. Playing a mission causes its state to change.
-   */
-  async play (id, data, params, original) {
-    assert(original, 'User mission not exists.');
-
-    // whether the user is one of the performers
-    const performer = fp.find(fp.idPropEq('user', params.user.id), original.performers || []);
-    if (!performer) {
-      throw new Error('data.user is not members of this mission, please join the mission first.');
-    }
-
-    // get mission activities
-    const svcMissions = this.app.service('missions');
-    const mission = await svcMissions.get(helpers.getId(original.mission), {
-      query: { $select: 'activities.requires,activities.rewards,*' }
-    });
-    assert(mission && mission.activities, 'Mission activities not exists.');
-
-    // verify and get new tasks, TODO: task lane?
-    const tasks = walkThroughTasks(params.user, original.tasks)(mission.activities);
-    const task = fp.find(fp.propEq('key', data.trigger), tasks);
-    const activity = fp.dotPath(data.trigger, mission.activities);
-
-    // check the state of the corresponding task
-    if (!task || !activity || task.name !== activity.name) {
-      throw new Error('Requirements not meet, You can not play the trigger yet.');
-    }
-    if (task.state === 'COMPLETED') {
-      throw new Error('Task has already been completed.');
-    }
-    let state = 'COMPLETED';
-    if (activity.loop) {
-      const loop = task.loop || 0;
-      if (loop >= activity.loop) {
-        throw new Error(`Number of times exceeds, task can only performed ${activity.loop} times.`);
-      } else {
-        state = (loop + 1 >= activity.loop)? 'COMPLETED' : 'ACTIVE';
-      }
-    }
-
-    // add task to the mission if not exists
-    await super.patch(id, {
-      $push: { tasks: task }
-    }, {
-      query: { 'tasks.key': { $ne: task.key } }
-    });
-
-    let updateTask = {
-      $inc: { 'tasks.$.loop': 1 },
-      $set: { 'tasks.$.state': state },
-      $addToSet: { 'tasks.$.performers': { user: data.user, scopes: data.scopes } }
-    };
-
-    // rate limiting the task
-    if (activity.rate && activity.rate.frequency) {
-      let { count, firstRequest, lastRequest, expiredAt } = rules.checkRateLimit(activity.rate, task.limit || {});
-      updateTask.$inc['tasks.$.limit.count'] = count;
-      updateTask.$set['tasks.$.limit.firstRequest'] = firstRequest;
-      updateTask.$set['tasks.$.limit.lastRequest'] = lastRequest;
-      updateTask.$set['tasks.$.limit.expiredAt'] = expiredAt;
-    }
-
-    // update task state and performers
-    const userMission = await super.patch(id, updateTask, {
-      query: { 'tasks.key': task.key }
-    });
-    userMission.currentTask = task;
-
-    // create reward for this task
-    userMission.currentRewards = await metrics.createUserMetrics(this.app, data.user, task.rewards || []);
-
-    return userMission;
   }
 
   /**
