@@ -5,24 +5,30 @@ import { createMissionActivity, performersNotifications } from '../../helpers';
 
 // request accept activity
 const acceptMission = (context) => {
-  const userMission = helpers.getHookData(context);
-  const { activity } = context.params.locals;
+  const { userMission, activity } = context.params.locals;
+  if (!activity || activity.state !== 'ACCEPTED') return [];
+
   const actor = context.params.user.id;
   const player = helpers.getId(activity.actor);
   const notifications = performersNotifications(userMission.performers);
-  const custom = {
+  let custom = {
     actor: `user:${actor}`,
-    player: `user:${player}`
+    player: `user:${player}`,
+    roles: activity.roles
   };
   if (activity.verb === 'mission.roles.request') {
-    custom.verb = 'mission.roles.accept';
-    custom.message = 'Change roles request accept';
-    custom.roles = activity.roles;
+    custom = {
+      verb: 'mission.roles.accept',
+      message: 'Change roles request accept',
+      ...custom
+    };
   }
   if (activity.verb === 'mission.join.request') {
-    custom.verb = 'mission.join.accept';
-    custom.message = 'Join request accept';
-    custom.roles = activity.roles;
+    custom = {
+      verb: 'mission.join.accept',
+      message: 'Join request accept',
+      ...custom
+    };
   }
   return [
     createMissionActivity(context, userMission, custom),

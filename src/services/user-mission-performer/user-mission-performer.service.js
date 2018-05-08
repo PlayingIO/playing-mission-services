@@ -82,6 +82,7 @@ export class UserMissionPerformerService {
       }
       // send mission.join.request in notifier
     }
+
     params.locals = { userMission }; // for notifier
 
     return userMission.performers;
@@ -114,6 +115,7 @@ export class UserMissionPerformerService {
         'performers': { user: params.user.id }
       }
     }, params);
+
     params.locals = { userMission }; // for notifier
 
     return userMission.performers;
@@ -146,6 +148,7 @@ export class UserMissionPerformerService {
         'performers': { user: id }
       }
     }, params);
+
     params.locals = { userMission }; // for notifier
 
     return userMission.performers;

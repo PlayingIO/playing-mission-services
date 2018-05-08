@@ -156,6 +156,13 @@ export const performersNotifications = function (performers, excepts = []) {
   return fp.map(fp.concat('notification:'), users);
 };
 
+export const updateActivityState = async (app, primary, activity) => {
+  const svcFeedsActivities = app.service('feeds/activities');
+  return svcFeedsActivities.patch(activity.id, {
+    state: activity.state
+  }, { primary });
+};
+
 export const updateUserMissionRoles = async (app, userMission, user, roles, params = {}) => {
   const svcUserMissions = app.service('user-missions');
   params.query = fp.assign(params.query || {}, {

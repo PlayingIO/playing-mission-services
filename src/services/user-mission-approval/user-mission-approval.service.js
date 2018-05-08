@@ -4,7 +4,7 @@ import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 
 import defaultHooks from './user-mission-approval.hooks';
-import { updateUserMissionRoles } from '../../helpers';
+import { updateActivityState, updateUserMissionRoles } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions/approvals');
 
@@ -53,7 +53,7 @@ export class UserMissionApprovalService {
    * Approve mission join or role change request
    */
   async patch (id, data, params) {
-    const userMission = params.userMission;
+    let userMission = params.userMission;
     assert(userMission, 'User mission not exists.');
 
     // must be owner of the mission
@@ -72,34 +72,42 @@ export class UserMissionApprovalService {
       throw new Error('No pending request is found for this request id.');
     }
 
-    const svcUserMissions = this.app.service('user-missions');
+    // get values from activity
     const activity = requests.data[0];
     const user = helpers.getId(activity.actor);
     const roles = activity.roles;
-    params.locals = { activity }; // for notifier
     assert(user, 'actor not exists in request activity');
     assert(roles, 'roles not exists in request activity');
-    let result = null;
-    if (activity.verb === 'mission.join.request') {
-      const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
-      if (!performer) {
-        result = await svcUserMissions.patch(userMission.id, {
-          $addToSet: {
-            performers: { user: user, lanes: roles }
-          }
-        });
-      }
-    }
-    if (activity.verb === 'mission.roles.request') {
-      result = await updateUserMissionRoles(this.app, userMission, user, roles);
-    }
-    await svcFeedsActivities.patch(activity.id, {
-      state: 'ACCEPTED'
-    }, {
-      primary: notification
-    });
 
-    return result;
+    params.locals = { userMission }; // for notifier
+    switch (activity.verb) {
+      case 'mission.join.request': {
+        const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
+        if (!performer) {
+          const svcUserMissions = this.app.service('user-missions');
+          userMission = await svcUserMissions.patch(userMission.id, {
+            $addToSet: {
+              performers: { user: user, lanes: roles }
+            }
+          });
+          activity.state = 'ACCEPTED';
+          await updateActivityState(this.app, notification, activity);
+          params.locals.activity = activity;
+        }
+        break;
+      }
+      case 'mission.roles.request': {
+        userMission = await updateUserMissionRoles(this.app, userMission, user, roles);
+        activity.state = 'ACCEPTED';
+        await updateActivityState(this.app, notification, activity);
+        params.locals.activity = activity;
+        break;
+      }
+      default:
+        throw new Error(`Unkown activity verb: ${activity.verb}`);
+    }
+
+    return activity;
   }
 
 }
