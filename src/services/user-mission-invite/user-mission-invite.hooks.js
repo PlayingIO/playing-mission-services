@@ -6,6 +6,7 @@ import { sanitize, validate } from 'mostly-feathers-validate';
 import { entities as feedsEntities, hooks as feeds } from 'playing-feed-services';
 
 import accepts from './user-mission-invite.accepts';
+import notifiers from './user-mission-invite.notifiers';
 
 export default function (options = {}) {
   return {
@@ -18,6 +19,9 @@ export default function (options = {}) {
         hooks.addRouteObject('userMission', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),
+      ],
+      patch: [
+        hooks.addRouteObject('userMission', { service: 'user-missions' }),
       ]
     },
     after: {
@@ -29,6 +33,9 @@ export default function (options = {}) {
         cache(options.cache),
         hooks.presentEntity(feedsEntities.activity, options.entities),
         hooks.responder()
+      ],
+      patch: [
+        feeds.notify('mission.invite.accept', notifiers),
       ]
     }
   };

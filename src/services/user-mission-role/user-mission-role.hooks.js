@@ -17,7 +17,7 @@ export default function (options = {}) {
         hooks.addRouteObject('userMission', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),
-      ],
+      ]
     },
     after: {
       all: [
@@ -26,7 +26,7 @@ export default function (options = {}) {
       ],
       patch: [
         feeds.notify('mission.roles', notifiers),
-      ],
+      ]
     }
   };
 }
