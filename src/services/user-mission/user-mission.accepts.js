@@ -33,10 +33,7 @@ export default function accepts (context) {
     validates: { exists: helpers.idExists(svcUsers, 'player', 'Player is not exists') },
     required: true, description: 'Player' };
 
-  const requestId = { arg: 'requestId', type: 'string', required: true, description: 'Request id' };
-
   return {
-    approval: [ requestId ],
     create: [ mission, access, lane ],
     transfer: [ player, roles ]
   };
