@@ -156,6 +156,11 @@ export const performersNotifications = function (performers, excepts = []) {
   return fp.map(fp.concat('notification:'), users);
 };
 
+export const getPendingActivity = async (app, primary, id) => {
+  const svcFeedsActivities = app.service('feeds/activities');
+  return await svcFeedsActivities.get(id, { primary });
+};
+
 export const updateActivityState = async (app, primary, activity) => {
   const svcFeedsActivities = app.service('feeds/activities');
   return svcFeedsActivities.patch(activity.id, {

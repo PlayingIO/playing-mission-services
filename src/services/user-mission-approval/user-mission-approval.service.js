@@ -4,7 +4,7 @@ import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 
 import defaultHooks from './user-mission-approval.hooks';
-import { updateActivityState, addUserMissionRoles, updateUserMissionRoles } from '../../helpers';
+import { getPendingActivity, updateActivityState, addUserMissionRoles, updateUserMissionRoles } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions/approvals');
 
@@ -64,16 +64,12 @@ export class UserMissionApprovalService {
     // check for pending requests
     const svcFeedsActivities = this.app.service('feeds/activities');
     const notification = `notification:${params.user.id}`;
-    const requests = await svcFeedsActivities.find({
-      primary: notification,
-      query: { _id: id }
-    });
-    if (fp.isEmpty(requests.data) || requests.data[0].state !== 'PENDING') {
-      throw new Error('No pending request is found for this request id.');
+    const activity = await getPendingActivity(this.app, notification, id);
+    if (!activity || activity.state !== 'PENDING') {
+      throw new Error(`No pending request is found: ${id}.`);
     }
 
     // get values from activity
-    const activity = requests.data[0];
     const user = helpers.getId(activity.actor);
     const roles = activity.roles;
     assert(user, 'actor not exists in request activity');
