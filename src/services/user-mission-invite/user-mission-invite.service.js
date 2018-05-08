@@ -1,9 +1,11 @@
 import assert from 'assert';
 import makeDebug from 'debug';
 import fp from 'mostly-func';
+import { helpers } from 'mostly-feathers-mongoose';
 import { helpers as feeds } from 'playing-feed-services';
 
 import defaultHooks from './user-mission-invite.hooks';
+import { getPendingActivity, addUserMissionRoles, updateActivityState } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions/invites');
 
@@ -101,15 +103,14 @@ export class UserMissionInviteService {
     // check for pending invitation sent
     const svcFeedsActivities = this.app.service('feeds/activities');
     const primary = `user:${params.user.id}`;
-    const invitations = await svcFeedsActivities.find({ primary,
-      query: { id, state: 'PENDING' }
-    });
-    if (fp.isEmpty(invitations.data)) {
+    const activity = await getPendingActivity(this.app, primary, id);
+    if (!activity || activity.state !== 'PENDING') {
       throw new Error('No pending invitation is found for this invite id.');
     }
     // cancel from invitor's feed
-    const invitation = invitations.data[0];
-    return svcFeedsActivities.patch(invitation.id, { state: 'CANCELED' }, { primary });
+    activity.state = 'CANCELED';
+    await updateActivityState(this.app, primary, activity);
+    return activity;
   }
 }
 
