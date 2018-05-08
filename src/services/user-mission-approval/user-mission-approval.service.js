@@ -4,7 +4,7 @@ import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 
 import defaultHooks from './user-mission-approval.hooks';
-import { updateActivityState, updateUserMissionRoles } from '../../helpers';
+import { updateActivityState, addUserMissionRoles, updateUserMissionRoles } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions/approvals');
 
@@ -84,20 +84,19 @@ export class UserMissionApprovalService {
       case 'mission.join.request': {
         const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
         if (!performer) {
-          const svcUserMissions = this.app.service('user-missions');
-          userMission = await svcUserMissions.patch(userMission.id, {
-            $addToSet: {
-              performers: { user: user, lanes: roles }
-            }
-          });
+          await addUserMissionRoles(this.app, userMission, user, roles);
           activity.state = 'ACCEPTED';
+          await updateActivityState(this.app, notification, activity);
+          params.locals.activity = activity;
+        } else {
+          activity.state = 'ALREADY';
           await updateActivityState(this.app, notification, activity);
           params.locals.activity = activity;
         }
         break;
       }
       case 'mission.roles.request': {
-        userMission = await updateUserMissionRoles(this.app, userMission, user, roles);
+        await updateUserMissionRoles(this.app, userMission, user, roles);
         activity.state = 'ACCEPTED';
         await updateActivityState(this.app, notification, activity);
         params.locals.activity = activity;

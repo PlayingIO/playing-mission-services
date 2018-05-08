@@ -163,19 +163,28 @@ export const updateActivityState = async (app, primary, activity) => {
   }, { primary });
 };
 
-export const updateUserMissionRoles = async (app, userMission, user, roles, params = {}) => {
+export const addUserMissionRoles = async (app, userMission, user, lanes) => {
+  const svcUserMissions = app.service('user-missions');
+  await svcUserMissions.patch(userMission.id, {
+    $addToSet: {
+      performers: { user, lanes }
+    }
+  });
+};
+
+export const updateUserMissionRoles = async (app, userMission, user, lanes, params = {}) => {
   const svcUserMissions = app.service('user-missions');
   params.query = fp.assign(params.query || {}, {
     'performers.user': user
   });
   const updates = fp.reduce((acc, lane) => {
-    if (roles[lane] !== 'false') {
-      acc[`performers.$.lanes.${lane}`] = roles[lane];
+    if (lanes[lane] !== 'false') {
+      acc[`performers.$.lanes.${lane}`] = lanes[lane];
     } else {
       acc['$unset'] = acc['$unset'] || [];
       acc['$unset'].push({ [`performers.$.lanes.${lane}`]: '' });
     }
     return acc;
-  }, {}, fp.keys(roles));
+  }, {}, fp.keys(lanes));
   return svcUserMissions.patch(userMission.id, updates, params);
 };
