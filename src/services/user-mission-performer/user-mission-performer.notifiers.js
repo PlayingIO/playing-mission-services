@@ -57,7 +57,7 @@ const leaveMission = (context) => {
 
 // kick from mission activity
 const kickMission = (context) => {
-  const userMission = helpers.getHookData(context);
+  const { userMission } = context.params.locals;
   const actor = context.params.user.id;
   const player = context.id;
   const notifications = performersNotifications(userMission.performers);
