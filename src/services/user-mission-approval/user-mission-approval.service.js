@@ -76,14 +76,14 @@ export class UserMissionApprovalService {
     const user = helpers.getId(activity.actor);
     const roles = activity.roles;
     if (activity.verb === 'mission.join.request') {
-      await svcUserMissions.patch(userMission.id, {
-        $addToSet: {
-          performers: {
-            user: user,
-            lanes: roles
+      const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
+      if (!performer) {
+        await svcUserMissions.patch(userMission.id, {
+          $addToSet: {
+            performers: { user: user, lanes: roles }
           }
-        }
-      });
+        });
+      }
     }
     if (activity.verb === 'mission.roles.request') {
       await svcUserMissions.patch(userMission.id, {

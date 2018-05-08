@@ -39,10 +39,7 @@ export class UserMissionPerformerService {
     if (userMission.access === 'PUBLIC') {
       return svcUserMissions.patch(userMission.id, {
         $addToSet: {
-          performers: {
-            user: params.user.id,
-            lanes: data.roles
-          }
+          performers: { user: params.user.id, lanes: data.roles }
         }
       }, params);
     } else {
