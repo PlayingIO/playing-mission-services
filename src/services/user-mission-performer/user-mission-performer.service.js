@@ -91,7 +91,7 @@ export class UserMissionPerformerService {
    * Leave a mission.
    */
   async remove (id, params) {
-    const userMission = params.userMission;
+    let userMission = params.userMission;
     assert(userMission, 'User mission not exists.');
 
     // kick intead leave
@@ -109,11 +109,14 @@ export class UserMissionPerformerService {
     }
 
     const svcUserMissions = this.app.service('user-missions');
-    return svcUserMissions.patch(userMission.id, {
+    userMission = await svcUserMissions.patch(userMission.id, {
       $pull: {
         'performers': { user: params.user.id }
       }
     }, params);
+    params.locals = { userMission }; // for notifier
+
+    return userMission.performers;
   }
 
   /**

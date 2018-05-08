@@ -39,7 +39,7 @@ const joinMission = (context) => {
 
 // leave mission activity
 const leaveMission = (context) => {
-  const userMission = helpers.getHookData(context);
+  const { userMission } = context.params.locals;
   const actor = context.params.user.id;
   const notifications = performersNotifications(userMission.performers);
   const custom = {
