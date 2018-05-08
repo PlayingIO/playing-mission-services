@@ -49,6 +49,7 @@ export class UserMissionInviteService {
   async create (data, params) {
     const userMission = params.userMission;
     assert(userMission, 'User mission not exists.');
+    data.message = data.message || 'Invite you to join the mission';
 
     // must be owner of the mission
     if (!fp.idEquals(userMission.owner, data.user)) {
@@ -82,7 +83,7 @@ export class UserMissionInviteService {
       object: `userMission:${userMission.id}`,
       foreignId: `userMission:${userMission.id}`,
       mission: `mission:${userMission.mission}`,
-      message: 'Invite a player to join the mission',
+      message: data.message,
       invitee: `user:${data.player}`,
       roles: data.roles,
       state: 'PENDING'
