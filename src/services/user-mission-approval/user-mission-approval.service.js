@@ -4,6 +4,7 @@ import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 
 import defaultHooks from './user-mission-approval.hooks';
+import { updateUserMissionRoles } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions/approvals');
 
@@ -75,6 +76,8 @@ export class UserMissionApprovalService {
     const activity = requests.data[0];
     const user = helpers.getId(activity.actor);
     const roles = activity.roles;
+    assert(user, 'actor not exists in request activity');
+    assert(roles, 'roles not exists in request activity');
     if (activity.verb === 'mission.join.request') {
       const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
       if (!performer) {
@@ -86,11 +89,7 @@ export class UserMissionApprovalService {
       }
     }
     if (activity.verb === 'mission.roles.request') {
-      await svcUserMissions.patch(userMission.id, {
-        'performers.$.lanes': roles,
-      }, {
-        'performers.user': user
-      });
+      await updateUserMissionRoles(this.app, userMission, user, roles);
     }
     await svcFeedsActivities.patch(activity.id, {
       state: 'ACCEPTED'

@@ -29,7 +29,7 @@ const rolesMission = (context) => {
       actor: `user:${actor}`,
       verb: 'mission.roles.request',
       message: 'Request roles change in the mission',
-      role: context.data.roles,
+      roles: context.data.roles,
       state: 'PENDING',
       player: `user:${player}`
     };
