@@ -31,6 +31,20 @@ export class UserMissionPerformerService {
   }
 
   /**
+   * Get the profile of a mission performer
+   */
+  async get (id, params) {
+    const userMission = params.userMission;
+    assert(userMission, 'User mission not exists.');
+    const performer = fp.find(fp.idPropEq('user', id), userMission.performers || []);
+    if (performer) {
+      return this.app.service('users').get(performer.user, params);
+    } else {
+      return null;
+    }
+  }
+
+  /**
    * Join a mission with specified the role and lanes.
    */
   async create (data, params) {

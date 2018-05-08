@@ -17,6 +17,9 @@ export default function (options = {}) {
       find: [
         hooks.addRouteObject('userMission', { service: 'user-missions' }),
       ],
+      get: [
+        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+      ],
       create: [
         hooks.addRouteObject('userMission', { service: 'user-missions' }),
         sanitize(accepts),
