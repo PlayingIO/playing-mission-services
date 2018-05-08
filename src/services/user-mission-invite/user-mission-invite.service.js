@@ -52,7 +52,7 @@ export class UserMissionInviteService {
     data.message = data.message || 'Invite you to join the mission';
 
     // must be owner of the mission
-    if (!fp.idEquals(userMission.owner, data.user)) {
+    if (!fp.idEquals(userMission.owner, params.user.id)) {
       throw new Error('Only mission owner can send invites.');
     }
 
@@ -64,7 +64,7 @@ export class UserMissionInviteService {
     // check for pending invitation sent by current user
     const svcFeedsActivities = this.app.service('feeds/activities');
     const invitations = await svcFeedsActivities.find({
-      primary: `user:${data.user}`,
+      primary: `user:${params.user.id}`,
       query: {
         verb: 'mission.invite',
         object: `userMission:${userMission.id}`,
@@ -78,7 +78,7 @@ export class UserMissionInviteService {
 
     // create mission invite activity
     const activity = {
-      actor: `user:${data.user}`,
+      actor: `user:${params.user.id}`,
       verb: 'mission.invite',
       object: `userMission:${userMission.id}`,
       foreignId: `userMission:${userMission.id}`,
@@ -89,7 +89,7 @@ export class UserMissionInviteService {
       state: 'PENDING'
     };
     return feeds.addActivity(this.app, activity,
-      `user:${data.user}`,                 // add to actor's activity log
+      `user:${params.user.id}`,            // add to actor's activity log
       `notification:${data.player}`        // add to invited player's notification stream
     );
   }
@@ -100,8 +100,8 @@ export class UserMissionInviteService {
   async remove (id, params) {
     // check for pending invitation sent
     const svcFeedsActivities = this.app.service('feeds/activities');
-    const invitations = await svcFeedsActivities.find({
-      primary: `user:${params.user.id}`,
+    const primary = `user:${params.user.id}`;
+    const invitations = await svcFeedsActivities.find({ primary,
       query: { id, state: 'PENDING' }
     });
     if (fp.isEmpty(invitations.data)) {
@@ -109,11 +109,7 @@ export class UserMissionInviteService {
     }
     // cancel from invitor's feed
     const invitation = invitations.data[0];
-    return svcFeedsActivities.patch(invitation.id, {
-      state: 'CANCELED'
-    }, {
-      primary: `user:${params.user.id}`
-    });
+    return svcFeedsActivities.patch(invitation.id, { state: 'CANCELED' }, { primary });
   }
 }
 

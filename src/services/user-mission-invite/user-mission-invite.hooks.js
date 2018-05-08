@@ -15,25 +15,9 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       create: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' })),
         hooks.addRouteObject('userMission', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),
-      ],
-      update: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' })),
-        sanitize(accepts),
-        validate(accepts),
-        hooks.discardFields('owner', 'createdAt', 'updatedAt', 'destroyedAt')
-      ],
-      patch: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'user' })),
-        sanitize(accepts),
-        validate(accepts),
-        hooks.discardFields('owner', 'createdAt', 'updatedAt', 'destroyedAt')
       ]
     },
     after: {
@@ -45,12 +29,6 @@ export default function (options = {}) {
         cache(options.cache),
         hooks.presentEntity(feedsEntities.activity, options.entities),
         hooks.responder()
-      ],
-      create: [
-      ],
-      patch: [
-      ],
-      remove: [
       ]
     }
   };
