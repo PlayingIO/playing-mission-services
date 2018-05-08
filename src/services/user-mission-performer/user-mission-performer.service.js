@@ -22,6 +22,15 @@ export class UserMissionPerformerService {
   }
 
   /**
+   * List all performers of the user mission
+   */
+  async find (params) {
+    const userMission = params.userMission;
+    assert(userMission, 'User mission not exists.');
+    return userMission.performers;
+  }
+
+  /**
    * Join a mission with specified the role and lanes.
    */
   async create (data, params) {
