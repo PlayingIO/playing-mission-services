@@ -3,6 +3,7 @@ import makeDebug from 'debug';
 import fp from 'mostly-func';
 
 import defaultHooks from './user-mission-role.hooks';
+import { updateUserMissionRoles } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions/roles');
 
@@ -41,24 +42,10 @@ export class UserMissionRoleService {
       throw new Error('Performer id is not members of this mission, please join the mission first.');
     }
 
-    const svcUserMissions = this.app.service('user-missions');
-
     // process the change if owner or it's a public mission
     if (isOwner || userMission.access === 'PUBLIC') {
-      // remove a performer from the lane
-      params.query = fp.assign(params.query, {
-        'performers.user': id
-      });
-      const updates = fp.reduce((acc, lane) => {
-        if (data.roles[lane] !== 'false') {
-          acc[`performers.$.lanes.${lane}`] = data.roles[lane];
-        } else {
-          acc['$unset'] = acc['$unset'] || [];
-          acc['$unset'].push({ [`performers.$.lanes.${lane}`]: '' });
-        }
-        return acc;
-      }, {}, fp.keys(data.roles));
-      return svcUserMissions.patch(userMission.id, updates, params);
+      // udpate performer's roles
+      return updateUserMissionRoles(this.app, userMission, id, data.roles, params);
     } else {
       // check for pending roles request sent by current user
       const svcFeedsActivities = this.app.service('feeds/activities');

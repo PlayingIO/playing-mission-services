@@ -155,3 +155,20 @@ export const performersNotifications = function (performers, excepts = []) {
   const users = fp.without(excepts, fp.map(fp.prop('user'), performers || []));
   return fp.map(fp.concat('notification:'), users);
 };
+
+export const updateUserMissionRoles = async (app, userMission, user, roles, params = {}) => {
+  const svcUserMissions = app.service('user-missions');
+  params.query = fp.assign(params.query || {}, {
+    'performers.user': user
+  });
+  const updates = fp.reduce((acc, lane) => {
+    if (roles[lane] !== 'false') {
+      acc[`performers.$.lanes.${lane}`] = roles[lane];
+    } else {
+      acc['$unset'] = acc['$unset'] || [];
+      acc['$unset'].push({ [`performers.$.lanes.${lane}`]: '' });
+    }
+    return acc;
+  }, {}, fp.keys(roles));
+  return svcUserMissions.patch(userMission.id, updates, params);
+};
