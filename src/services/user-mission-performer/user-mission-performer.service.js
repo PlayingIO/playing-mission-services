@@ -48,7 +48,7 @@ export class UserMissionPerformerService {
    * Join a mission with specified the role and lanes.
    */
   async create (data, params) {
-    const userMission = params.userMission;
+    let userMission = params.userMission;
     assert(userMission, 'User mission not exists.');
     assert(userMission.access !== 'PRIVATE', 'The mission is private, cannot join.');
 
@@ -60,7 +60,7 @@ export class UserMissionPerformerService {
     // process the join for public mission
     const svcUserMissions = this.app.service('user-missions');
     if (userMission.access === 'PUBLIC') {
-      return svcUserMissions.patch(userMission.id, {
+      userMission = await svcUserMissions.patch(userMission.id, {
         $addToSet: {
           performers: { user: params.user.id, lanes: data.roles }
         }
@@ -81,8 +81,10 @@ export class UserMissionPerformerService {
         throw new Error('An join request is already pending for the current user.');
       }
       // send mission.join.request in notifier
-      return userMission;
     }
+    params.locals = { userMission }; // for notifier
+
+    return userMission.performers;
   }
 
   /**
