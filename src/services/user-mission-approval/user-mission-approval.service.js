@@ -76,12 +76,14 @@ export class UserMissionApprovalService {
     const activity = requests.data[0];
     const user = helpers.getId(activity.actor);
     const roles = activity.roles;
+    params.locals = { activity }; // for notifier
     assert(user, 'actor not exists in request activity');
     assert(roles, 'roles not exists in request activity');
+    let result = null;
     if (activity.verb === 'mission.join.request') {
       const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
       if (!performer) {
-        await svcUserMissions.patch(userMission.id, {
+        result = await svcUserMissions.patch(userMission.id, {
           $addToSet: {
             performers: { user: user, lanes: roles }
           }
@@ -89,7 +91,7 @@ export class UserMissionApprovalService {
       }
     }
     if (activity.verb === 'mission.roles.request') {
-      await updateUserMissionRoles(this.app, userMission, user, roles);
+      result = await updateUserMissionRoles(this.app, userMission, user, roles);
     }
     await svcFeedsActivities.patch(activity.id, {
       state: 'ACCEPTED'
@@ -97,7 +99,7 @@ export class UserMissionApprovalService {
       primary: notification
     });
 
-    return userMission;
+    return result;
   }
 
 }

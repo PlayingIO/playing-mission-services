@@ -1,5 +1,8 @@
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
+import { hooks as feeds } from 'playing-feed-services';
+
+import notifiers from './user-mission-approval.notifiers';
 
 export default function (options = {}) {
   return {
@@ -19,7 +22,10 @@ export default function (options = {}) {
       all: [
         cache(options.cache),
         hooks.responder()
-      ]
+      ],
+      patch: [
+        feeds.notify('mission.accept', notifiers)
+      ],
     }
   };
 }
