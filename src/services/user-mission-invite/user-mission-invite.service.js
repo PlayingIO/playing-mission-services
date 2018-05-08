@@ -97,6 +97,46 @@ export class UserMissionInviteService {
   }
 
   /**
+   * Accept an invite
+   */
+  async patch (id, data, params) {
+    let userMission = params.userMission;
+    assert(userMission, 'User mission not exists.');
+
+    // check for pending requests
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const primary = `user:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, primary, id);
+    if (!activity || activity.state !== 'PENDING') {
+      throw new Error('No pending invite is found for this invite id.');
+    }
+
+    // get values from activity
+    const user = helpers.getId(activity.invitee);
+    const roles = activity.roles;
+    assert(user, 'actor not exists in request activity');
+    assert(roles, 'roles not exists in request activity');
+    if (!fp.idEquals(user, params.user.id)) {
+      throw new Error('invitee is not current user');
+    }
+
+    params.locals = { userMission }; // for notifier
+    const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
+    if (!performer) {
+      await addUserMissionRoles(this.app, userMission, user, roles);
+      activity.state = 'ACCEPTED';
+      await updateActivityState(this.app, primary, activity);
+      params.locals.activity = activity;
+    } else {
+      activity.state = 'ALREADY';
+      await updateActivityState(this.app, primary, activity);
+      params.locals.activity = activity;
+    }
+
+    return activity;
+  }
+
+  /**
    * Cancel a pending invite sent out by the current user
    */
   async remove (id, params) {
