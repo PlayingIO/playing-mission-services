@@ -30,6 +30,7 @@ export default function (options = {}) {
     },
     after: {
       all: [
+        hooks.populate('user', { service: 'users'}),
         cache(options.cache),
         hooks.responder()
       ],
