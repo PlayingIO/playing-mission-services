@@ -21,6 +21,21 @@ export class UserApprovalService {
     this.app = app;
     this.hooks(defaultHooks(this.options));
   }
+
+  /**
+   * List pending pending approvals to join teams/missions for the player
+   */
+  async find (params) {
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const requests = ['mission.join.request', 'mission.roles.request'];
+    return svcFeedsActivities.find({
+      primary: `user:${params.user.id}`,
+      query: {
+        verb: { $in: requests },
+        state: 'PENDING'
+      }
+    });
+  }
 }
 
 export default function init (app, options, hooks) {
