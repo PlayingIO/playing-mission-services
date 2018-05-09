@@ -4,6 +4,7 @@ import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 
 import defaultHooks from './user-invite.hooks';
+import { getPendingActivity } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:users/invites');
 
@@ -36,6 +37,29 @@ export class UserInviteService {
         ...params.query
       }
     });
+  }
+
+  /**
+   * Accept an invite
+   */
+  async patch (id, data, params) {
+    // check for pending invitation in notification of current user
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const primary = `notification:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, primary, id);
+    if (!activity || activity.state !== 'PENDING') {
+      throw new Error('No pending invite is found for this invite id.');
+    }
+    switch (activity.verb) {
+      case 'mission.invite': {
+        return this.app.service('user-missions/invites').patch(activity.id, null, {
+          primary: helpers.getId(activity.object),
+          user: params.user
+        });
+      }
+      default:
+        throw new Error(`Unkown activity verb: ${activity.verb}`);
+    }
   }
 }
 
