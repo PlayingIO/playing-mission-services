@@ -103,6 +103,22 @@ export class UserMissionApprovalService {
     return activity;
   }
 
+  /**
+   * Cancel a pending request sent out by the current user
+   */
+  async remove (id, params) {
+    // check for pending request sent by current user
+    const primary = `user:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, primary, id);
+    if (!activity || activity.state !== 'PENDING') {
+      throw new Error('No pending invitation is found for this invite id.');
+    }
+    // cancel from reqester's feed
+    activity.state = 'CANCELED';
+    await updateActivityState(this.app, primary, activity);
+    return activity;
+  }
+
 }
 
 export default function init (app, options, hooks) {
