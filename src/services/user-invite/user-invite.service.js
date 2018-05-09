@@ -32,7 +32,8 @@ export class UserInviteService {
       primary: `notification:${params.user.id}`,
       query: {
         verb: { $in: invites },
-        state: 'PENDING'
+        state: 'PENDING',
+        ...params.query
       }
     });
   }

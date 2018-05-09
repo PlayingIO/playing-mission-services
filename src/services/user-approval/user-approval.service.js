@@ -32,7 +32,8 @@ export class UserApprovalService {
       primary: `user:${params.user.id}`,
       query: {
         verb: { $in: requests },
-        state: 'PENDING'
+        state: 'PENDING',
+        ...params.query
       }
     });
   }
