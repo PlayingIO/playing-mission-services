@@ -32,17 +32,16 @@ export class UserMissionInviteService {
 
     // Only invitations sent out by current user will be listed.
     const svcFeedsActivities = this.app.service('feeds/activities');
-    const invitations = await svcFeedsActivities.find({
+    return svcFeedsActivities.find({
       primary: `user:${params.user.id}`,
       query: {
         verb: 'mission.invite',
         actor: `user:${params.user.id}`,
         object: `userMission:${params.primary}`,
-        state: 'PENDING'
+        state: 'PENDING',
+        ...params.query
       }
     });
-
-    return invitations;
   }
 
   /**

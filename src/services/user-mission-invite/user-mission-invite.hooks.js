@@ -3,7 +3,7 @@ import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authenticat
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
-import { entities as feedsEntities, hooks as feeds } from 'playing-feed-services';
+import { hooks as feeds } from 'playing-feed-services';
 
 import accepts from './user-mission-invite.accepts';
 import notifiers from './user-mission-invite.notifiers';
@@ -26,12 +26,8 @@ export default function (options = {}) {
     },
     after: {
       all: [
-        hooks.populate('actor', { retained: false }),
         hooks.populate('mission', { retained: false }),
-        hooks.populate('object', { retained: false }),
-        hooks.populate('target', { retained: false }),
         cache(options.cache),
-        hooks.presentEntity(feedsEntities.activity, options.entities),
         hooks.responder()
       ],
       patch: [

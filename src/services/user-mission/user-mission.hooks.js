@@ -3,7 +3,7 @@ import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authenticat
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
-import { hooks as feeds, entities as feedsEntities } from 'playing-feed-services';
+import { hooks as feeds } from 'playing-feed-services';
 
 import UserMissionEntity from '../../entities/user-mission.entity';
 import notifiers from './user-mission.notifiers';
