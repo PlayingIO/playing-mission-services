@@ -145,6 +145,7 @@ export const createMissionActivity = (context, userMission, custom) => {
     actor: `user:${actor}`,
     object: `userMission:${userMission.id}`,
     foreignId: `userMission:${userMission.id}`,
+    time: new Date().toISOString(),
     mission: `mission:${mission}`,
     ...custom
   };
@@ -161,11 +162,12 @@ export const getPendingActivity = async (app, primary, id) => {
   return await svcFeedsActivities.get(id, { primary });
 };
 
-export const updateActivityState = async (app, primary, activity) => {
+export const updateActivityState = async (app, activity) => {
   const svcFeedsActivities = app.service('feeds/activities');
+  const ccFeeds = fp.reject(fp.isNil, [activity.source] || activity.cc);
   return svcFeedsActivities.patch(activity.id, {
     state: activity.state
-  }, { primary });
+  }, { primary: activity.feed });
 };
 
 export const addUserMissionRoles = async (app, userMission, user, lanes) => {
