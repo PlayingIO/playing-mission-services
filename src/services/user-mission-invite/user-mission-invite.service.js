@@ -139,6 +139,10 @@ export class UserMissionInviteService {
    * Cancel a pending invite sent out by the current user
    */
   async remove (id, params) {
+    // reject intead cancel
+    if (params.action === 'reject') {
+      return this.reject(id, params);
+    }
     // check for pending invitation sent by current user
     const svcFeedsActivities = this.app.service('feeds/activities');
     const primary = `user:${params.user.id}`;
@@ -148,6 +152,23 @@ export class UserMissionInviteService {
     }
     // cancel from invitor's feed
     activity.state = 'CANCELED';
+    await updateActivityState(this.app, primary, activity);
+    return activity;
+  }
+
+  /**
+   * Reject an invitation
+   */
+  async reject (id, params) {
+    // check for pending requests in notification of current user
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const primary = `notification:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, primary, id);
+    if (!activity || activity.state !== 'PENDING') {
+      throw new Error('No pending invitation is found for this invite id.');
+    }
+    // reject from invitee's feed
+    activity.state = 'REJECTED';
     await updateActivityState(this.app, primary, activity);
     return activity;
   }
