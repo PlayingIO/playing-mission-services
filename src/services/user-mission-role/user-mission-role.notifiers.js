@@ -35,6 +35,7 @@ const rolesMission = (context) => {
     };
     return [
       createMissionActivity(context, userMission, custom),
+      `user:${actor}`,                    // add to player's activity log
       `notification:${userMission.owner}` // notify owner of the mission to approve requests
     ];
   }

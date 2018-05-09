@@ -37,7 +37,7 @@ export class UserMissionApprovalService {
 
     // check for pending invitation
     const svcFeedsActivities = this.app.service('feeds/activities');
-    const invitations = await svcFeedsActivities.find({
+    return svcFeedsActivities.find({
       primary: `notification:${userMission.owner}`,
       query: {
         verb: { $in: ['mission.join.request', 'mission.roles.request'] },
@@ -45,8 +45,6 @@ export class UserMissionApprovalService {
         state: 'PENDING'
       }
     });
-
-    return invitations;
   }
 
   /**
