@@ -124,11 +124,11 @@ export class UserMissionInviteService {
     if (!performer) {
       await addUserMissionRoles(this.app, userMission, user, roles);
       activity.state = 'ACCEPTED';
-      await updateActivityState(this.app, primary, activity);
+      await updateActivityState(this.app, activity);
       params.locals.activity = activity;
     } else {
       activity.state = 'ALREADY';
-      await updateActivityState(this.app, primary, activity);
+      await updateActivityState(this.app, activity);
       params.locals.activity = activity;
     }
 
@@ -151,7 +151,7 @@ export class UserMissionInviteService {
     }
     // cancel from invitor's feed
     activity.state = 'CANCELED';
-    await updateActivityState(this.app, primary, activity);
+    await updateActivityState(this.app, activity);
     return activity;
   }
 
@@ -167,7 +167,7 @@ export class UserMissionInviteService {
     }
     // reject from invitee's feed
     activity.state = 'REJECTED';
-    await updateActivityState(this.app, primary, activity);
+    await updateActivityState(this.app, activity);
     return activity;
   }
 }

@@ -164,10 +164,16 @@ export const getPendingActivity = async (app, primary, id) => {
 
 export const updateActivityState = async (app, activity) => {
   const svcFeedsActivities = app.service('feeds/activities');
-  const ccFeeds = fp.reject(fp.isNil, [activity.source] || activity.cc);
-  return svcFeedsActivities.patch(activity.id, {
-    state: activity.state
-  }, { primary: activity.feed });
+  const feeds = fp.reject(fp.isNil, [activity.feed].concat(activity.source || activity.cc));
+  const updateAll = fp.map(feed => {
+    return svcFeedsActivities.patch(activity.id, {
+      state: activity.state
+    }, {
+      primary: feed,
+      query: { foreignId: activity.foreignId, time: activity.time }
+    });
+  });
+  return Promise.all(updateAll(feeds));
 };
 
 export const addUserMissionRoles = async (app, userMission, user, lanes) => {

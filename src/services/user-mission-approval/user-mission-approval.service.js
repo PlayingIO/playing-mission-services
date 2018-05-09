@@ -80,11 +80,11 @@ export class UserMissionApprovalService {
         if (!performer) {
           await addUserMissionRoles(this.app, userMission, user, roles);
           activity.state = 'ACCEPTED';
-          await updateActivityState(this.app, notification, activity);
+          await updateActivityState(this.app, activity);
           params.locals.activity = activity;
         } else {
           activity.state = 'ALREADY';
-          await updateActivityState(this.app, notification, activity);
+          await updateActivityState(this.app, activity);
           params.locals.activity = activity;
         }
         break;
@@ -92,7 +92,7 @@ export class UserMissionApprovalService {
       case 'mission.roles.request': {
         await updateUserMissionRoles(this.app, userMission, user, roles);
         activity.state = 'ACCEPTED';
-        await updateActivityState(this.app, notification, activity);
+        await updateActivityState(this.app, activity);
         params.locals.activity = activity;
         break;
       }
@@ -115,7 +115,7 @@ export class UserMissionApprovalService {
     }
     // cancel from reqester's feed
     activity.state = 'CANCELED';
-    await updateActivityState(this.app, primary, activity);
+    await updateActivityState(this.app, activity);
     return activity;
   }
 
