@@ -21,6 +21,21 @@ export class UserInviteService {
     this.app = app;
     this.hooks(defaultHooks(this.options));
   }
+
+  /**
+   * List pending invitations to join teams/missions for the player.
+   */
+  async find (params) {
+    const svcFeedsActivities = this.app.service('feeds/activities');
+    const invites = ['mission.invite'];
+    return svcFeedsActivities.find({
+      primary: `notification:${params.user.id}`,
+      query: {
+        verb: { $in: invites },
+        state: 'PENDING'
+      }
+    });
+  }
 }
 
 export default function init (app, options, hooks) {
