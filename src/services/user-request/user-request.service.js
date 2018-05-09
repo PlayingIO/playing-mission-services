@@ -4,6 +4,7 @@ import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 
 import defaultHooks from './user-request.hooks';
+import { getPendingActivity } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:users/requests');
 
@@ -35,6 +36,22 @@ export class UserRequestService {
         state: 'PENDING',
         ...params.query
       }
+    });
+  }
+
+  /**
+   * Cancel a request
+   */
+  async remove (id, params) {
+    // check for pending request sent by current user
+    const primary = `user:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, primary, id);
+    if (!activity || activity.state !== 'PENDING') {
+      throw new Error('No pending request is found for this request id.');
+    }
+    return this.app.service('user-missions/approvals').remove(activity.id, {
+      primary: helpers.getId(activity.object),
+      user: params.user
     });
   }
 }

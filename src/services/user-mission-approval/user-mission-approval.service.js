@@ -111,7 +111,7 @@ export class UserMissionApprovalService {
     const primary = `user:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
     if (!activity || activity.state !== 'PENDING') {
-      throw new Error('No pending invitation is found for this invite id.');
+      throw new Error('No pending request is found for this request id.');
     }
     // cancel from reqester's feed
     activity.state = 'CANCELED';
