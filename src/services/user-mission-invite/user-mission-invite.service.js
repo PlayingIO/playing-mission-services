@@ -103,7 +103,6 @@ export class UserMissionInviteService {
     assert(userMission, 'User mission not exists.');
 
     // check for pending invitation in notification of current user
-    const svcFeedsActivities = this.app.service('feeds/activities');
     const primary = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
     if (!activity || activity.state !== 'PENDING') {
@@ -144,7 +143,6 @@ export class UserMissionInviteService {
       return this.reject(id, params);
     }
     // check for pending invitation sent by current user
-    const svcFeedsActivities = this.app.service('feeds/activities');
     const primary = `user:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
     if (!activity || activity.state !== 'PENDING') {
@@ -161,7 +159,6 @@ export class UserMissionInviteService {
    */
   async reject (id, params) {
     // check for pending invitation in notification of current user
-    const svcFeedsActivities = this.app.service('feeds/activities');
     const primary = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
     if (!activity || activity.state !== 'PENDING') {
