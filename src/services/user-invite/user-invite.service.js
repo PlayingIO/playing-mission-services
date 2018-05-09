@@ -44,7 +44,6 @@ export class UserInviteService {
    */
   async patch (id, data, params) {
     // check for pending invitation in notification of current user
-    const svcFeedsActivities = this.app.service('feeds/activities');
     const primary = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
     if (!activity || activity.state !== 'PENDING') {
@@ -55,6 +54,29 @@ export class UserInviteService {
         return this.app.service('user-missions/invites').patch(activity.id, null, {
           primary: helpers.getId(activity.object),
           user: params.user
+        });
+      }
+      default:
+        throw new Error(`Unkown activity verb: ${activity.verb}`);
+    }
+  }
+
+  /**
+   * Reject an invite
+   */
+  async remove (id, params) {
+    // check for pending invitation in notification of current user
+    const primary = `notification:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, primary, id);
+    if (!activity || activity.state !== 'PENDING') {
+      throw new Error('No pending invite is found for this invite id.');
+    }
+    switch (activity.verb) {
+      case 'mission.invite': {
+        return this.app.service('user-missions/invites').remove(activity.id, {
+          primary: helpers.getId(activity.object),
+          user: params.user,
+          action: 'reject'
         });
       }
       default:
