@@ -107,14 +107,34 @@ export class UserMissionApprovalService {
    * Cancel a pending request sent out by the current user
    */
   async remove (id, params) {
+    // reject intead cancel
+    if (params.action === 'reject') {
+      return this.reject(id, params);
+    }
     // check for pending request sent by current user
     const primary = `user:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
     if (!activity || activity.state !== 'PENDING') {
       throw new Error('No pending request is found for this request id.');
     }
-    // cancel from reqester's feed
+    // cancel from requester's feed
     activity.state = 'CANCELED';
+    await updateActivityState(this.app, activity);
+    return activity;
+  }
+
+  /**
+   * Reject a pending request
+   */
+  async reject (id, params) {
+    // check for pending request in notification of current user
+    const primary = `notification:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, primary, id);
+    if (!activity || activity.state !== 'PENDING') {
+      throw new Error('No pending request is found for this request id.');
+    }
+    // reject from requester's feed
+    activity.state = 'REJECTED';
     await updateActivityState(this.app, activity);
     return activity;
   }
