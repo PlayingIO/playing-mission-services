@@ -165,8 +165,9 @@ export const getPendingActivity = async (app, primary, id) => {
 export const updateActivityState = async (app, activity) => {
   const svcFeedsActivities = app.service('feeds/activities');
   const feeds = fp.reject(fp.isNil, [activity.feed].concat(activity.source || activity.cc));
+  // update activity in all feeds by foreignId/time
   const updateAll = fp.map(feed => {
-    return svcFeedsActivities.patch(activity.id, {
+    return svcFeedsActivities.patch(null, {
       state: activity.state
     }, {
       primary: feed,
