@@ -24,7 +24,7 @@ export class MissionService extends Service {
 }
 
 export default function init (app, options, hooks) {
-  options = fp.assign({ ModelName: 'mission' }, options);
+  options = { ModelName: 'mission', ...options };
   return createService(app, MissionService, MissionModel, options);
 }
 
