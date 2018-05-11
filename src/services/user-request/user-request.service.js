@@ -14,7 +14,7 @@ const defaultOptions = {
 
 export class UserRequestService {
   constructor (options) {
-    this.options = fp.assign(defaultOptions, options);
+    this.options = fp.assignAll(defaultOptions, options);
     this.name = this.options.name;
   }
 

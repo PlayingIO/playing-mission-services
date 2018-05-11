@@ -19,7 +19,7 @@ const defaultOptions = {
 
 export class UserMissionService extends Service {
   constructor (options) {
-    options = fp.assign(defaultOptions, options);
+    options = fp.assignAll(defaultOptions, options);
     super(options);
   }
 
@@ -55,7 +55,7 @@ export class UserMissionService extends Service {
     const performer = fp.find(fp.idPropEq('user', data.player), userMission.performers || []);
 
     if (performer) {
-      params.query = fp.assign(params.query, {
+      params.query = fp.assignAll(params.query, {
         'performers.user': data.player
       });
       const updates = fp.reduce((acc, lane) => {

@@ -188,7 +188,7 @@ export const addUserMissionRoles = async (app, userMission, user, lanes) => {
 
 export const updateUserMissionRoles = async (app, userMission, user, lanes, params = {}) => {
   const svcUserMissions = app.service('user-missions');
-  params.query = fp.assign(params.query, {
+  params.query = fp.assignAll(params.query, {
     'performers.user': user
   });
   const updates = fp.reduce((acc, lane) => {
