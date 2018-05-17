@@ -113,8 +113,8 @@ export class UserMissionApprovalService {
       return this.reject(id, params);
     }
     // check for pending request sent by current user
-    const primary = `user:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, primary, id);
+    const feed = `user:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, feed, id);
     if (!activity) {
       throw new Error('No pending request is found for this request id.');
     }
@@ -137,8 +137,8 @@ export class UserMissionApprovalService {
     }
 
     // check for pending request in notification of current user
-    const primary = `notification:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, primary, id);
+    const notification = `notification:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, notification, id);
     if (!activity) {
       throw new Error('No pending request is found for this request id.');
     }

@@ -44,8 +44,8 @@ export class UserRequestService {
    */
   async remove (id, params) {
     // check for pending request sent by current user
-    const primary = `user:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, primary, id);
+    const feed = `user:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, feed, id);
     if (!activity) {
       throw new Error('No pending request is found for this request id.');
     }

@@ -44,8 +44,8 @@ export class UserInviteService {
    */
   async patch (id, data, params) {
     // check for pending invitation in notification of current user
-    const primary = `notification:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, primary, id);
+    const notification = `notification:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, notification, id);
     if (!activity) {
       throw new Error('No pending invite is found for this invite id.');
     }
@@ -66,8 +66,8 @@ export class UserInviteService {
    */
   async remove (id, params) {
     // check for pending invitation in notification of current user
-    const primary = `notification:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, primary, id);
+    const notification = `notification:${params.user.id}`;
+    const activity = await getPendingActivity(this.app, notification, id);
     if (!activity) {
       throw new Error('No pending invite is found for this invite id.');
     }
