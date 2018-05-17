@@ -47,7 +47,7 @@ const rejectMission = (context) => {
 
   const actor = context.params.user.id;
   const player = helpers.getId(activity.actor);
-  let custom = {
+  let custom = {  
     actor: `user:${actor}`,
     player: `user:${player}`,
     roles: activity.roles

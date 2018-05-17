@@ -17,6 +17,9 @@ export default function (options = {}) {
       ],
       patch: [
         hooks.addRouteObject('userMission', { service: 'user-missions' }),
+      ],
+      remove: [
+        hooks.addRouteObject('userMission', { service: 'user-missions' }),
       ]
     },
     after: {
@@ -25,12 +28,12 @@ export default function (options = {}) {
         hooks.responder()
       ],
       patch: [
-        iff(hooks.isAction('reject'),
-          feeds.notify('mission.reject', notifiers)
-        ).else(
-          feeds.notify('mission.accept', notifiers)
-        )
+        feeds.notify('mission.accept', notifiers)
       ],
+      remove: [
+        iff(hooks.isAction('reject'),
+          feeds.notify('mission.reject', notifiers))
+      ]
     }
   };
 }

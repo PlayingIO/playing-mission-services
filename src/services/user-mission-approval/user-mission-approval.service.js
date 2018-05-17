@@ -74,6 +74,7 @@ export class UserMissionApprovalService {
     assert(roles, 'roles not exists in request activity');
 
     params.locals = { userMission }; // for notifier
+
     switch (activity.verb) {
       case 'mission.join.request': {
         const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
@@ -144,6 +145,9 @@ export class UserMissionApprovalService {
     // reject from requester's feed
     activity.state = 'REJECTED';
     await updateActivityState(this.app, activity);
+
+    params.locals = { userMission, activity }; // for notifier
+
     return activity;
   }
 
