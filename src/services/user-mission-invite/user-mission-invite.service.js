@@ -120,6 +120,7 @@ export class UserMissionInviteService {
     }
 
     params.locals = { userMission }; // for notifier
+
     const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
     if (!performer) {
       await addUserMissionRoles(this.app, userMission, user, roles);
@@ -171,6 +172,9 @@ export class UserMissionInviteService {
     // reject from invitee's feed
     activity.state = 'REJECTED';
     await updateActivityState(this.app, activity);
+
+    params.locals = { userMission, activity }; // for notifier
+    
     return activity;
   }
 }

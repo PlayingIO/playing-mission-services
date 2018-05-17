@@ -3,8 +3,8 @@ import { helpers } from 'mostly-feathers-mongoose';
 
 import { createMissionActivity, performersNotifications } from '../../helpers';
 
-// request accept activity
-const acceptMission = (context) => {
+// invite accept activity
+const acceptInvite = (context) => {
   const { userMission, activity } = context.params.locals;
   if (!activity || activity.state !== 'ACCEPTED') return;
 
@@ -27,6 +27,28 @@ const acceptMission = (context) => {
   ];
 };
 
+// invite reject activity
+const rejectInvite = (context) => {
+  const { userMission, activity } = context.params.locals;
+  if (!activity || activity.state !== 'ACCEPTED') return;
+
+  const actor = context.params.user.id;
+  const inviter = helpers.getId(activity.actor);
+  let custom = {
+    actor: `user:${actor}`,
+    inviter: `user:${inviter}`,
+    verb: 'mission.invite.reject',
+    message: 'Invite join reject',
+    roles: activity.roles
+  };
+  return [
+    createMissionActivity(context, userMission, custom),
+    `notification:${actor}`,       // add to player's 
+    `user:${inviter}`              // add to inviter's notification stream
+  ];
+};
+
 export default {
-  'mission.invite.accept': acceptMission
+  'mission.invite.accept': acceptInvite,
+  'mission.invite.reject': rejectInvite
 };
