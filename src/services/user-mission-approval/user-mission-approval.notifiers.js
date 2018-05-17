@@ -40,6 +40,40 @@ const acceptMission = (context) => {
   ];
 };
 
+// request reject activity
+const rejectMission = (context) => {
+  const { userMission, activity } = context.params.locals;
+  if (!activity || activity.state !== 'REJECTED') return [];
+
+  const actor = context.params.user.id;
+  const player = helpers.getId(activity.actor);
+  let custom = {
+    actor: `user:${actor}`,
+    player: `user:${player}`,
+    roles: activity.roles
+  };
+  if (activity.verb === 'mission.roles.request') {
+    custom = {
+      verb: 'mission.roles.reject',
+      message: 'Change roles request reject',
+      ...custom
+    };
+  }
+  if (activity.verb === 'mission.join.request') {
+    custom = {
+      verb: 'mission.join.reject',
+      message: 'Join request reject',
+      ...custom
+    };
+  }
+  return [
+    createMissionActivity(context, userMission, custom),
+    `notification:${player}`,      // add to player's notification stream
+    `user:${userMission.owner}`,   // add to rejector's activity log
+  ];
+};
+
 export default {
-  'mission.accept': acceptMission
+  'mission.accept': acceptMission,
+  'mission.reject': rejectMission
 };

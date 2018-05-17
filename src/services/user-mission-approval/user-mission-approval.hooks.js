@@ -1,3 +1,4 @@
+import { iff } from 'feathers-hooks-common';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { hooks as feeds } from 'playing-feed-services';
@@ -24,7 +25,11 @@ export default function (options = {}) {
         hooks.responder()
       ],
       patch: [
-        feeds.notify('mission.accept', notifiers)
+        iff(hooks.isAction('reject'),
+          feeds.notify('mission.reject', notifiers)
+        ).else(
+          feeds.notify('mission.accept', notifiers)
+        )
       ],
     }
   };
