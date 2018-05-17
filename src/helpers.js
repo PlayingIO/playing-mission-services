@@ -159,7 +159,7 @@ export const performersNotifications = function (performers, excepts = []) {
 
 export const getPendingActivity = async (app, primary, id) => {
   const svcFeedsActivities = app.service('feeds/activities');
-  return await svcFeedsActivities.get(id, { primary });
+  return await svcFeedsActivities.get(id, { primary, query: { state: 'PENDING' } });
 };
 
 export const updateActivityState = async (app, activity) => {

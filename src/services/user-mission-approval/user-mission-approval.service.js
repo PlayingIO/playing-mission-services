@@ -63,7 +63,7 @@ export class UserMissionApprovalService {
     const svcFeedsActivities = this.app.service('feeds/activities');
     const notification = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, notification, id);
-    if (!activity || activity.state !== 'PENDING') {
+    if (!activity) {
       throw new Error(`No pending request is found: ${id}.`);
     }
 
@@ -115,7 +115,7 @@ export class UserMissionApprovalService {
     // check for pending request sent by current user
     const primary = `user:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
-    if (!activity || activity.state !== 'PENDING') {
+    if (!activity) {
       throw new Error('No pending request is found for this request id.');
     }
     // cancel from requester's feed
@@ -139,7 +139,7 @@ export class UserMissionApprovalService {
     // check for pending request in notification of current user
     const primary = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
-    if (!activity || activity.state !== 'PENDING') {
+    if (!activity) {
       throw new Error('No pending request is found for this request id.');
     }
     // reject from requester's feed

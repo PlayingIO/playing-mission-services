@@ -106,7 +106,7 @@ export class UserMissionInviteService {
     // check for pending invitation in notification of current user
     const primary = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
-    if (!activity || activity.state !== 'PENDING') {
+    if (!activity) {
       throw new Error('No pending invite is found for this invite id.');
     }
 
@@ -146,7 +146,7 @@ export class UserMissionInviteService {
     // check for pending invitation sent by current user
     const primary = `user:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
-    if (!activity || activity.state !== 'PENDING') {
+    if (!activity) {
       throw new Error('No pending invitation is found for this invite id.');
     }
     // cancel from invitor's feed
@@ -162,7 +162,7 @@ export class UserMissionInviteService {
     // check for pending invitation in notification of current user
     const primary = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
-    if (!activity || activity.state !== 'PENDING') {
+    if (!activity) {
       throw new Error('No pending invitation is found for this invite id.');
     }
     // reject from invitee's feed

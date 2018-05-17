@@ -46,7 +46,7 @@ export class UserInviteService {
     // check for pending invitation in notification of current user
     const primary = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
-    if (!activity || activity.state !== 'PENDING') {
+    if (!activity) {
       throw new Error('No pending invite is found for this invite id.');
     }
     switch (activity.verb) {
@@ -68,7 +68,7 @@ export class UserInviteService {
     // check for pending invitation in notification of current user
     const primary = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
-    if (!activity || activity.state !== 'PENDING') {
+    if (!activity) {
       throw new Error('No pending invite is found for this invite id.');
     }
     switch (activity.verb) {

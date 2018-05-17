@@ -46,7 +46,7 @@ export class UserRequestService {
     // check for pending request sent by current user
     const primary = `user:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
-    if (!activity || activity.state !== 'PENDING') {
+    if (!activity) {
       throw new Error('No pending request is found for this request id.');
     }
     return this.app.service('user-missions/approvals').remove(activity.id, {
