@@ -127,6 +127,14 @@ export class UserMissionApprovalService {
    * Reject a pending request
    */
   async reject (id, params) {
+    let userMission = params.userMission;
+    assert(userMission, 'User mission not exists.');
+
+    // must be owner of the mission
+    if (!fp.idEquals(userMission.owner, params.user.id)) {
+      throw new Error('Only owner of the mission can reject the request.');
+    }
+
     // check for pending request in notification of current user
     const primary = `notification:${params.user.id}`;
     const activity = await getPendingActivity(this.app, primary, id);
