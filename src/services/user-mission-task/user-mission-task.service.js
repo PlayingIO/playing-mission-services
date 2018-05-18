@@ -124,7 +124,7 @@ export class UserMissionTaskService {
     let rewards = [];
     if (state === 'COMPLETED') {
       rewards = await metrics.createUserMetrics(this.app, params.user.id, trigger.rewards || []);
-      // create delay rewards for this resolution task
+      // TODO: create delay rewards for this resolution task
     }
 
     params.locals = { userMission, trigger, activity, rewards }; // for notifier

@@ -16,9 +16,10 @@ export const fulfillActivityRewards = (activity, user) => {
 const getReadyTask = (user, tasks, keys, activity, previous) => {
   const key = keys.join('.');
   const task = fp.find(fp.propEq('key', key), tasks);
-  const rewards = fp.map(fp.pickPath([
-    'verb', 'value', 'item', 'metric', 'metric.id', 'metric.name', 'metric.type'
-  ]), activity.rewards || []);
+  const rewards = fp.map(reward => {
+    const metric = fp.pickPath(['metric', 'metric.id', 'metric.name', 'metric.type'], reward);
+    return fp.assoc('metric', metric.metric, reward);
+  }, activity.rewards || []);
 
   if (!previous || previous.state === 'COMPLETED') {
     if (task && task.name == activity.name) { // check name with key
