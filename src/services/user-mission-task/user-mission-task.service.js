@@ -61,7 +61,7 @@ export class UserMissionTaskService {
     // verify and get new tasks, TODO: task lane?
     const tasksReady = walkThroughTasksReady(params.user, userMission.tasks)(activities);
     const trigger = fp.find(fp.propEq('key', data.trigger), tasksReady);
-    const activity = fp.dotPath(data.trigger, activities);
+    const activity = fp.dotPath(fp.replace('\.', '.activities.', data.trigger), activities);
 
     // check the state of the corresponding task
     if (!trigger || !activity || trigger.name !== activity.name) {
