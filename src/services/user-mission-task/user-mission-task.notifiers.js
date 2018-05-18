@@ -12,8 +12,8 @@ const playMission = (context) => {
     actor: `user:${actor}`,
     verb: 'mission.play',
     message: 'Play a mission trigger',
-    task: trigger,
-    activity: activity,
+    task: fp.omit(['performers', 'rewards'], trigger),
+    activity: fp.omit(['rate', 'notify', 'requires', 'rewards'], activity),
     rewards: rewards
   };
   return [
