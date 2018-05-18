@@ -42,7 +42,7 @@ export class UserMissionTaskService {
    * Play a task of user mission causes its state to change.
    */
   async create (data, params) {
-    const userMission = params.userMission;
+    let userMission = params.userMission;
     assert(userMission, 'User mission not exists.');
 
     // whether the user is one of the performers
@@ -103,22 +103,29 @@ export class UserMissionTaskService {
     }
 
     // update task state and performers
-    const result = await svcUserMissions.patch(userMission.id, updateTask, {
+    userMission = await svcUserMissions.patch(userMission.id, updateTask, {
       query: {
         'tasks.key': trigger.key,
         $select: 'mission.activities.requires,mission.activities.rewards,*'
       }
     });
+    trigger.state = state;
 
     // find next available tasks
     const nextTasks = await this.find({
       user: params.user,
       primary: userMission.id,
-      userMission: result
+      userMission: userMission
     });
 
     // create reward for this task
-    const rewards = await metrics.createUserMetrics(this.app, params.user.id, trigger.rewards || []);
+    let rewards = [];
+    if (state === 'COMPLETED') {
+      rewards = await metrics.createUserMetrics(this.app, params.user.id, trigger.rewards || []);
+      // TODO create delay rewards for this resolution task
+    }
+
+    params.locals = { userMission, trigger, activity, rewards }; // for notifier
 
     return { tasks: nextTasks, rewards };
   }

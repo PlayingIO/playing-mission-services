@@ -5,15 +5,16 @@ import { createMissionActivity, performersNotifications } from '../../helpers';
 
 // play mission activity
 const playMission = (context) => {
-  const userMission = context.params.userMission;
+  const { userMission, trigger, activity, rewards } = context.params.locals;
   const actor = context.params.user.id;
   const notifications = performersNotifications(userMission.performers);
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.play',
     message: 'Play a mission trigger',
-    task: userMission.currentTask,
-    rewards: userMission.currentRewards
+    task: trigger,
+    activity: activity,
+    rewards: rewards
   };
   return [
     createMissionActivity(context, userMission, custom),
