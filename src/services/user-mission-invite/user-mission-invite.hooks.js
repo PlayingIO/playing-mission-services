@@ -38,7 +38,7 @@ export default function (options = {}) {
       ],
       remove: [
         iff(hooks.isAction('reject'),
-          feeds.notify('invite.reject', notifiers))
+          feeds.notify('mission.invite.reject', notifiers))
       ]
     }
   };

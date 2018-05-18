@@ -15,7 +15,7 @@ const acceptInvite = (context) => {
     actor: `user:${actor}`,
     inviter: `user:${inviter}`,
     verb: 'mission.invite.accept',
-    message: 'Invite join accept',
+    message: 'Invite request accept',
     roles: activity.roles
   };
   return [
@@ -30,7 +30,7 @@ const acceptInvite = (context) => {
 // invite reject activity
 const rejectInvite = (context) => {
   const { userMission, activity } = context.params.locals;
-  if (!activity || activity.state !== 'ACCEPTED') return;
+  if (!activity || activity.state !== 'REJECTED') return;
 
   const actor = context.params.user.id;
   const inviter = helpers.getId(activity.actor);
@@ -38,7 +38,7 @@ const rejectInvite = (context) => {
     actor: `user:${actor}`,
     inviter: `user:${inviter}`,
     verb: 'mission.invite.reject',
-    message: 'Invite join reject',
+    message: 'Invite request reject',
     roles: activity.roles
   };
   return [
