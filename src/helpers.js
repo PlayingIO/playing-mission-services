@@ -10,9 +10,10 @@ export const fulfillActivityRewards = (activity, user) => {
   return rules.fulfillCustomRewards(fp.pick(['requires', 'rewards'], activity), [], user);
 };
 
-// get a task of an activity at a given keys,
-// based by previous task state
-const getTask = (user, tasks, keys, activity, previous) => {
+/**
+ * get available task of an activity at a given keys, based by previous task state
+ */
+const getReadyTask = (user, tasks, keys, activity, previous) => {
   const key = keys.join('.');
   const task = fp.find(fp.propEq('key', key), tasks);
   const rewards = fp.map(fp.pickPath([
@@ -21,7 +22,9 @@ const getTask = (user, tasks, keys, activity, previous) => {
 
   if (!previous || previous.state === 'COMPLETED') {
     if (task && task.name == activity.name) { // check name with key
-      return fp.assoc('rewards', rewards, task);
+      if (task.state !== 'COMPLETED') {
+        return fp.assoc('rewards', rewards, task);
+      }
     } else if (fulfillActivityRequires(activity, user)) {
       return { key, name: activity.name, state: 'READY', rewards: rewards, loop: 0 };
     }
@@ -35,7 +38,7 @@ const getTask = (user, tasks, keys, activity, previous) => {
  */
 export const walkThroughTasksReady = (user, tasks = [], keys = [], previous = null, keepPrevious = false) => (activities) => {
   return fp.reduceIndexed((acc, activity, index) => {
-    const task = getTask(user, tasks, [...keys, index], activity, previous);
+    const task = getReadyTask(user, tasks, [...keys, index], activity, previous);
     if (!task) return acc; // break
 
     const subActivities = activity.activities || [];
