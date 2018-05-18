@@ -5,7 +5,6 @@ import fp from 'mostly-func';
 
 import UserMissionModel from '../../models/user-mission.model';
 import defaultHooks from './user-mission.hooks';
-import { walkThroughTasks } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions');
 

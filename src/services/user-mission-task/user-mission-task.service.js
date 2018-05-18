@@ -6,7 +6,7 @@ import { helpers as metrics } from 'playing-metric-services';
 import { helpers as rules } from 'playing-rule-services';
 
 import defaultHooks from './user-mission-task.hooks';
-import { walkThroughTasks } from '../../helpers';
+import { walkThroughTasksReady } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions/tasks');
 
@@ -32,7 +32,7 @@ export class UserMissionTaskService {
     const userMission = params.userMission;
     const mission = userMission.mission;
     if (mission && fp.isNotEmpty(mission.activities)) {
-      return walkThroughTasks(params.user, userMission.tasks)(mission.activities);
+      return walkThroughTasksReady(params.user, userMission.tasks)(mission.activities);
     } else {
       return [];
     }
@@ -58,20 +58,20 @@ export class UserMissionTaskService {
     }
 
     // verify and get new tasks, TODO: task lane?
-    const tasks = walkThroughTasks(params.user, userMission.tasks)(mission.activities);
-    const task = fp.find(fp.propEq('key', data.trigger), tasks);
+    const tasksReady = walkThroughTasksReady(params.user, userMission.tasks)(mission.activities);
+    const trigger = fp.find(fp.propEq('key', data.trigger), tasksReady);
     const activity = fp.dotPath(data.trigger, mission.activities);
 
     // check the state of the corresponding task
-    if (!task || !activity || task.name !== activity.name) {
+    if (!trigger || !activity || trigger.name !== activity.name) {
       throw new Error('Requirements not meet, You can not play the trigger yet.');
     }
-    if (task.state === 'COMPLETED') {
+    if (trigger.state === 'COMPLETED') {
       throw new Error('Task has already been completed.');
     }
     let state = 'COMPLETED';
     if (activity.loop) {
-      const loop = task.loop || 0;
+      const loop = trigger.loop || 0;
       if (loop >= activity.loop) {
         throw new Error(`Number of times exceeds, task can only performed ${activity.loop} times.`);
       } else {
@@ -82,9 +82,9 @@ export class UserMissionTaskService {
     // add task to the mission if not exists
     const svcUserMissions = this.app.service('user-missions');
     await svcUserMissions.patch(userMission.id, {
-      $push: { tasks: task }
+      $push: { tasks: trigger }
     }, {
-      query: { 'tasks.key': { $ne: task.key } }
+      query: { 'tasks.key': { $ne: trigger.key } }
     });
 
     let updateTask = {
@@ -95,7 +95,7 @@ export class UserMissionTaskService {
 
     // rate limiting the task
     if (activity.rate && activity.rate.frequency) {
-      let { count, firstRequest, lastRequest, expiredAt } = rules.checkRateLimit(activity.rate, task.limit || {});
+      let { count, firstRequest, lastRequest, expiredAt } = rules.checkRateLimit(activity.rate, trigger.limit || {});
       updateTask.$inc['tasks.$.limit.count'] = count;
       updateTask.$set['tasks.$.limit.firstRequest'] = firstRequest;
       updateTask.$set['tasks.$.limit.lastRequest'] = lastRequest;
@@ -105,7 +105,7 @@ export class UserMissionTaskService {
     // update task state and performers
     const result = await svcUserMissions.patch(userMission.id, updateTask, {
       query: {
-        'tasks.key': task.key,
+        'tasks.key': trigger.key,
         $select: 'mission.activities.requires,mission.activities.rewards,*'
       }
     });
@@ -118,7 +118,7 @@ export class UserMissionTaskService {
     });
 
     // create reward for this task
-    const rewards = await metrics.createUserMetrics(this.app, params.user.id, task.rewards || []);
+    const rewards = await metrics.createUserMetrics(this.app, params.user.id, trigger.rewards || []);
 
     return { tasks: nextTasks, rewards };
   }
