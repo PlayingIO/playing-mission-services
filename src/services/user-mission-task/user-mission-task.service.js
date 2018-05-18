@@ -71,6 +71,7 @@ export class UserMissionTaskService {
       throw new Error('Task has already been completed.');
     }
     let state = 'COMPLETED';
+    activity.loop = parseInt(activity.loop);
     if (activity.loop) {
       const loop = trigger.loop || 0;
       if (loop >= activity.loop) {
