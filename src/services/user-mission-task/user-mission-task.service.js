@@ -30,9 +30,10 @@ export class UserMissionTaskService {
    */
   async find (params) {
     const userMission = params.userMission;
-    const mission = userMission.mission;
-    if (mission && fp.isNotEmpty(mission.activities)) {
-      return walkThroughTasksReady(params.user, userMission.tasks)(mission.activities);
+    assert(userMission, 'User mission is not exists');
+    const activities = userMission.mission && userMission.mission.activities;
+    if (fp.isNotEmpty(activities)) {
+      return walkThroughTasksReady(params.user, userMission.tasks)(activities);
     } else {
       return [];
     }
@@ -43,24 +44,24 @@ export class UserMissionTaskService {
    */
   async create (data, params) {
     let userMission = params.userMission;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission, 'User mission is not exists.');
 
     // whether the user is one of the performers
     const performer = fp.find(fp.idPropEq('user', params.user.id), userMission.performers || []);
     if (!performer) {
-      throw new Error('data.user is not members of this mission, please join the mission first.');
+      throw new Error('User is not members of this mission, please join the mission first.');
     }
 
     // get mission activities
-    const mission = userMission.mission;
-    if (fp.isEmpty(mission && mission.activities)) {
+    const activities = userMission.mission && userMission.mission.activities;
+    if (fp.isEmpty(activities)) {
       return { tasks: [], rewards: [] };
     }
 
     // verify and get new tasks, TODO: task lane?
-    const tasksReady = walkThroughTasksReady(params.user, userMission.tasks)(mission.activities);
+    const tasksReady = walkThroughTasksReady(params.user, userMission.tasks)(activities);
     const trigger = fp.find(fp.propEq('key', data.trigger), tasksReady);
-    const activity = fp.dotPath(data.trigger, mission.activities);
+    const activity = fp.dotPath(data.trigger, activities);
 
     // check the state of the corresponding task
     if (!trigger || !activity || trigger.name !== activity.name) {
@@ -90,7 +91,7 @@ export class UserMissionTaskService {
     let updateTask = {
       $inc: { 'tasks.$.loop': 1 },
       $set: { 'tasks.$.state': state },
-      $addToSet: { 'tasks.$.performers': { user: data.user, scopes: data.scopes } }
+      $addToSet: { 'tasks.$.performers': { user: params.user.id, scopes: data.scopes } }
     };
 
     // rate limiting the task
@@ -122,7 +123,7 @@ export class UserMissionTaskService {
     let rewards = [];
     if (state === 'COMPLETED') {
       rewards = await metrics.createUserMetrics(this.app, params.user.id, trigger.rewards || []);
-      // TODO create delay rewards for this resolution task
+      // create delay rewards for this resolution task
     }
 
     params.locals = { userMission, trigger, activity, rewards }; // for notifier
