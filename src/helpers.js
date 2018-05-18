@@ -29,9 +29,13 @@ const getTask = (user, tasks, keys, activity, previous) => {
   return null;
 };
 
-export const walkThroughTasks = (user, tasks = [], keys = [], previous = null, keepPrevious = false) => (activities) => {
+/**
+ * Walk throught activities of mission to get ready activities,
+ * and update state of sequential/parallel/exclusive node.
+ */
+export const walkThroughTasksReady = (user, tasks = [], keys = [], previous = null, keepPrevious = false) => (activities) => {
   return fp.reduceIndexed((acc, activity, index) => {
-    const task = getTask(user, tasks, [...keys,index], activity, previous);
+    const task = getTask(user, tasks, [...keys, index], activity, previous);
     if (!task) return acc; // break
 
     const subActivities = activity.activities || [];
@@ -42,7 +46,7 @@ export const walkThroughTasks = (user, tasks = [], keys = [], previous = null, k
         break;
       }
       case 'sequential': {
-        const subTasks = walkThroughTasks(user, tasks, [...keys,index], previous)(subActivities);
+        const subTasks = walkThroughTasksReady(user, tasks, [...keys, index], previous)(subActivities);
         const completed = fp.filter(fp.propEq('state', 'COMPLETED'), subTasks);
         if (completed.length == subActivities.length) { // all completed
           task.state = 'COMPLETED';
@@ -54,7 +58,7 @@ export const walkThroughTasks = (user, tasks = [], keys = [], previous = null, k
         break;
       }
       case 'parallel': {
-        const subTasks = walkThroughTasks(user, tasks, [...keys,index], previous, true)(subActivities);
+        const subTasks = walkThroughTasksReady(user, tasks, [...keys, index], previous, true)(subActivities);
         const completed = fp.filter(fp.propEq('state', 'COMPLETED'), subTasks);
         if (completed.length == subActivities.length) { // all completed
           task.state = 'COMPLETED';
@@ -66,7 +70,7 @@ export const walkThroughTasks = (user, tasks = [], keys = [], previous = null, k
         break;
       }
       case 'exclusive': {
-        const subTasks = walkThroughTasks(user, tasks, [...keys,index], previous, true)(subActivities);
+        const subTasks = walkThroughTasksReady(user, tasks, [...keys, index], previous, true)(subActivities);
         const completed = fp.filter(fp.propEq('state', 'COMPLETED'), subTasks);
         if (completed.length > 0) { // any completed
           task.state = 'COMPLETED';
