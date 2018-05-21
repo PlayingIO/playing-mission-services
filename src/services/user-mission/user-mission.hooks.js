@@ -42,7 +42,7 @@ export default function (options = {}) {
     },
     after: {
       all: [
-        hooks.populate('mission', { service: 'missions' }),
+        hooks.populate('definition', { service: 'mission-designs' }),
         hooks.populate('owner', { service: 'users' }),
         hooks.populate('performers.user', { service: 'users' }),
         cache(options.cache),
