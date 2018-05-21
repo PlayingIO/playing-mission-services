@@ -23,6 +23,7 @@ const createMission = (context) => {
 // delete mission activity
 const deleteMission = (context) => {
   const userMission = helpers.getHookData(context);
+  if (!userMission) return;
   const actor = context.params.user.id;
   const notifications = performersNotifications(userMission.performers);
   const custom = {
@@ -40,6 +41,7 @@ const deleteMission = (context) => {
 // transfer ownership of mission activity
 const transferMission = (context) => {
   const userMission = helpers.getHookData(context);
+  if (!userMission) return;
   const actor = context.params.user.id;
   const owner = context.data.player;
   const notifications = performersNotifications(userMission.performers);
@@ -61,6 +63,6 @@ const transferMission = (context) => {
 
 export default {
   'mission.create': createMission,
-  'mission.remove': deleteMission,
+  'mission.delete': deleteMission,
   'mission.transfer': transferMission
 };

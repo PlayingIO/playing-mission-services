@@ -56,7 +56,7 @@ export default function (options = {}) {
         iff(hooks.isAction('transfer'), feeds.notify('mission.transfer', notifiers))
       ],
       remove: [
-        feeds.notify('mission.delete')
+        feeds.notify('mission.delete', notifiers)
       ]
     }
   };
