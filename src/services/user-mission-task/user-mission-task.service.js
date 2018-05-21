@@ -31,7 +31,7 @@ export class UserMissionTaskService {
   async find (params) {
     const userMission = params.userMission;
     assert(userMission, 'User mission is not exists');
-    const activities = userMission.mission && userMission.mission.activities;
+    const activities = userMission.definition && userMission.definition.activities;
     if (fp.isNotEmpty(activities)) {
       return walkThroughTasksReady(params.user, userMission.tasks)(activities);
     } else {
@@ -53,7 +53,7 @@ export class UserMissionTaskService {
     }
 
     // get mission activities
-    const activities = userMission.mission && userMission.mission.activities;
+    const activities = userMission.definition && userMission.definition.activities;
     if (fp.isEmpty(activities)) {
       return { tasks: [], rewards: [] };
     }

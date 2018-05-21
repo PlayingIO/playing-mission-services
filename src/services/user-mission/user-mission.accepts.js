@@ -3,13 +3,13 @@ import { helpers } from 'mostly-feathers-validate';
 import { defaultLane, defaultRoles, rolesExists } from '../../helpers';
 
 export default function accepts (context) {
-  const svcMissions = context.app.service('missions');
+  const svcMissionDesigns = context.app.service('mission-designs');
   const svcUserMissions = context.app.service('user-missions');
   const svcUsers = context.app.service('users');
 
   // validation rules
-  const mission = { arg: 'mission', type: 'string',
-    validates: { exists: helpers.idExists(svcMissions, 'mission', 'Mission is not exists') },
+  const definition = { arg: 'definition', type: 'string',
+    validates: { exists: helpers.idExists(svcMissionDesigns, 'definition', 'Mission definition is not exists') },
     required: true, description: 'Mission definition' };
 
   const access = { arg: 'access', type: 'string',
@@ -19,10 +19,10 @@ export default function accepts (context) {
 
   const lane = { arg: 'lane', type: 'string',
     validates: {
-      exists: helpers.propExists(svcMissions, {
-        id: 'mission', path: 'lanes', prop: 'name'
+      exists: helpers.propExists(svcMissionDesigns, {
+        id: 'definition', path: 'lanes', prop: 'name'
       }, 'Lane is not exists') },
-    default: defaultLane(svcMissions, 'mission'),
+    default: defaultLane(svcMissionDesigns, 'definition'),
     required: true, description: 'Lane of the mission' };
   const roles = { arg: 'roles', type: 'object',
     validates: { exists: rolesExists(svcUserMissions, 'id', 'Roles is invalid') },
@@ -34,7 +34,7 @@ export default function accepts (context) {
     required: true, description: 'Player' };
 
   return {
-    create: [ mission, access, lane ],
+    create: [ definition, access, lane ],
     transfer: [ player, roles ]
   };
 }

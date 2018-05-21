@@ -124,10 +124,10 @@ export const defaultLane = (service, id) => async (params) => {
 
 // validator for roles
 export const rolesExists = (service, id, message) => async (val, params) => {
-  const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
+  const userMission = await service.get(params[id], { query: { $select: 'definition,*' } });
   const lanes = fp.keys(val), roles = fp.values(val);
-  if (userMission && userMission.mission && userMission.mission.lanes) {
-    if (fp.includesAll(lanes, fp.map(fp.prop('name'), userMission.mission.lanes))
+  if (userMission && userMission.definition && userMission.definition.lanes) {
+    if (fp.includesAll(lanes, fp.map(fp.prop('name'), userMission.definition.lanes))
       && fp.includesAll(roles, ['player', 'observer'])) return;
   } else {
     message = 'User mission is not exists';
@@ -137,9 +137,9 @@ export const rolesExists = (service, id, message) => async (val, params) => {
 
 // default roles
 export const defaultRoles = (service, id) => async (params) => {
-  const userMission = await service.get(params[id], { query: { $select: 'mission,*' } });
-  if (userMission && userMission.mission && userMission.mission.lanes) {
-    const lane = fp.find(fp.propEq('default', true), userMission.mission.lanes);
+  const userMission = await service.get(params[id], { query: { $select: 'definition,*' } });
+  if (userMission && userMission.definition && userMission.definition.lanes) {
+    const lane = fp.find(fp.propEq('default', true), userMission.definition.lanes);
     return lane? { [lane.name] : 'player' } : null;
   }
   return null;
@@ -148,13 +148,13 @@ export const defaultRoles = (service, id) => async (params) => {
 // create a user mission activity
 export const createMissionActivity = (context, userMission, custom) => {
   const actor = helpers.getId(userMission.owner);
-  const mission = helpers.getId(userMission.mission);
+  const definition = helpers.getId(userMission.definition);
   return {
     actor: `user:${actor}`,
     object: `userMission:${userMission.id}`,
     foreignId: `userMission:${userMission.id}`,
     time: new Date().toISOString(),
-    mission: `mission:${mission}`,
+    mission: `mission-design:${definition}`,
     ...custom
   };
 };

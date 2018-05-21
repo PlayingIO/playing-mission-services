@@ -84,7 +84,7 @@ export class UserMissionInviteService {
       object: `userMission:${userMission.id}`,
       foreignId: `userMission:${userMission.id}`,
       time: new Date().toISOString(),
-      mission: `mission:${userMission.mission}`,
+      mission: `mission-design:${userMission.definition}`,
       message: data.message,
       invitee: `user:${data.player}`,
       roles: data.roles,
