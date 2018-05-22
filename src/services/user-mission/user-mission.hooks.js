@@ -34,7 +34,7 @@ export default function (options = {}) {
         iff(isProvider('external'),
           associateCurrentUser({ idField: 'id', as: 'user' })),
         iff(hooks.isAction('transfer'),
-          hooks.addRouteObject('userMission', { service: 'user-missions', field: 'id' })),
+          hooks.addRouteObject('primary', { service: 'user-missions', field: 'id' })),
         sanitize(accepts),
         validate(accepts),
         hooks.discardFields('owner', 'tasks', 'createdAt', 'updatedAt', 'destroyedAt')

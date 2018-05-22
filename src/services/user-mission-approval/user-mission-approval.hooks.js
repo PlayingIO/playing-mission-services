@@ -13,13 +13,13 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       find: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
       ],
       patch: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
       ],
       remove: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
       ]
     },
     after: {

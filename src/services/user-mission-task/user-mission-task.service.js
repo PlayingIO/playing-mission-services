@@ -29,7 +29,7 @@ export class UserMissionTaskService {
    * Get a list of all available tasks a player can play in a user mission
    */
   async find (params) {
-    const userMission = params.userMission;
+    const userMission = params.primary;
     assert(userMission, 'User mission is not exists');
     const activities = userMission.definition && userMission.definition.activities;
     if (fp.isNotEmpty(activities)) {
@@ -43,7 +43,7 @@ export class UserMissionTaskService {
    * Play a task of user mission causes its state to change.
    */
   async create (data, params) {
-    let userMission = params.userMission;
+    let userMission = params.primary;
     assert(userMission, 'User mission is not exists.');
 
     // whether the user is one of the performers

@@ -26,7 +26,7 @@ export class UserMissionRoleService {
    * Change own roles in mission.
    */
   async patch (id, data, params) {
-    const userMission = params.userMission;
+    const userMission = params.primary;
     assert(userMission, 'User mission not exists.');
 
     const isOwner = fp.idEquals(userMission.owner, params.user.id);

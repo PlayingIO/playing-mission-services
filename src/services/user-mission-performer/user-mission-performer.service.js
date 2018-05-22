@@ -25,7 +25,7 @@ export class UserMissionPerformerService {
    * List all performers of the user mission
    */
   async find (params) {
-    const userMission = params.userMission;
+    const userMission = params.primary;
     assert(userMission, 'User mission not exists.');
     return userMission.performers;
   }
@@ -34,7 +34,7 @@ export class UserMissionPerformerService {
    * Get the profile of a mission performer
    */
   async get (id, params) {
-    const userMission = params.userMission;
+    const userMission = params.primary;
     assert(userMission, 'User mission not exists.');
     const performer = fp.find(fp.idPropEq('user', id), userMission.performers || []);
     if (performer) {
@@ -48,7 +48,7 @@ export class UserMissionPerformerService {
    * Join a mission with specified the role and lanes.
    */
   async create (data, params) {
-    let userMission = params.userMission;
+    let userMission = params.primary;
     assert(userMission, 'User mission not exists.');
     assert(userMission.access !== 'PRIVATE', 'The mission is private, cannot join.');
 
@@ -92,7 +92,7 @@ export class UserMissionPerformerService {
    * Leave a mission.
    */
   async remove (id, params) {
-    let userMission = params.userMission;
+    let userMission = params.primary;
     assert(userMission, 'User mission not exists.');
 
     // kick intead leave
@@ -125,7 +125,7 @@ export class UserMissionPerformerService {
    * Kick out a performer from the mission.
    */
   async kick (id, params) {
-    let userMission = params.userMission;
+    let userMission = params.primary;
     assert(userMission, 'User mission not exists');
 
     // must be owner of the mission

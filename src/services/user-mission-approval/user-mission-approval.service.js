@@ -27,7 +27,7 @@ export class UserMissionApprovalService {
    * List pending mission join or role change requests
    */
   async find (params) {
-    const userMission = params.userMission;
+    const userMission = params.primary;
     assert(userMission, 'User mission not exists.');
 
     // must be owner of the mission
@@ -51,7 +51,7 @@ export class UserMissionApprovalService {
    * Approve mission join or role change request
    */
   async patch (id, data, params) {
-    let userMission = params.userMission;
+    let userMission = params.primary;
     assert(userMission, 'User mission not exists.');
 
     // must be owner of the mission
@@ -128,7 +128,7 @@ export class UserMissionApprovalService {
    * Reject a pending request
    */
   async reject (id, params) {
-    let userMission = params.userMission;
+    let userMission = params.primary;
     assert(userMission, 'User mission not exists.');
 
     // must be owner of the mission

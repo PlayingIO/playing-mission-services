@@ -41,7 +41,7 @@ export class UserMissionService extends Service {
    * Transfer mission ownership to existing performer or any other player
    */
   async transfer (id, data, params) {
-    const userMission = params.userMission;
+    const userMission = params.primary;
     assert(userMission, 'User mission is not exists.');
 
     // must be owner of the mission

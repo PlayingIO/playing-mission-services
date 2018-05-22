@@ -15,18 +15,18 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       find: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
       ],
       get: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
       ],
       create: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),
       ],
       remove: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),
       ]

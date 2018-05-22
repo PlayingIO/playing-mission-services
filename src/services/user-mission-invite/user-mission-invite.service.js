@@ -48,7 +48,7 @@ export class UserMissionInviteService {
    * Invite a player to join a mission
    */
   async create (data, params) {
-    const userMission = params.userMission;
+    const userMission = params.primary;
     assert(userMission, 'User mission not exists.');
     data.message = data.message || 'Invite you to join the mission';
 
@@ -100,7 +100,7 @@ export class UserMissionInviteService {
    * Accept an invite
    */
   async patch (id, data, params) {
-    let userMission = params.userMission;
+    let userMission = params.primary;
     assert(userMission, 'User mission not exists.');
 
     // check for pending invitation in notification of current user
@@ -160,7 +160,7 @@ export class UserMissionInviteService {
    * Reject an invitation
    */
   async reject (id, params) {
-    let userMission = params.userMission;
+    let userMission = params.primary;
     assert(userMission, 'User mission not exists.');
 
     // check for pending invitation in notification of current user

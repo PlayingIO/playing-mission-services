@@ -16,15 +16,15 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       create: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
         sanitize(accepts),
         validate(accepts),
       ],
       patch: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
       ],
       remove: [
-        hooks.addRouteObject('userMission', { service: 'user-missions' }),
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
       ]
     },
     after: {
