@@ -1,3 +1,4 @@
+import assert from 'assert';
 import fp from 'mostly-func';
 import { helpers } from 'mostly-feathers-mongoose';
 import { helpers as rules } from 'playing-rule-services';
@@ -124,7 +125,9 @@ export const defaultLane = (service, id) => async (params) => {
 
 // validator for roles
 export const rolesExists = (service, id, message) => async (val, params) => {
-  const userMission = await service.get(params[id], { query: { $select: 'definition,*' } });
+  assert(params[id], `rolesExists '${id}' is not exists in validation params`);
+  const userMission = fp.isIdLike(params[id])?
+    await service.get(params[id], { query: { $select: 'definition,*' } }) : params[id];
   const lanes = fp.keys(val), roles = fp.values(val);
   if (userMission && userMission.definition && userMission.definition.lanes) {
     if (fp.includesAll(lanes, fp.map(fp.prop('name'), userMission.definition.lanes))
