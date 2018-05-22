@@ -6,6 +6,7 @@ import { createMissionActivity, performersNotifications } from '../../helpers';
 // create mission actvitiy
 const createMission = (context) => {
   const userMission = helpers.getHookData(context);
+  if (!userMission) return;
   const actor = context.params.user.id;
   const notifications = performersNotifications(userMission.performers);
   const custom = {
