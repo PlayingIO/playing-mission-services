@@ -26,7 +26,7 @@ const joinMission = (context) => {
     const custom = {
       actor: `user:${actor}`,
       verb: 'mission.join.request',
-      message: 'Request joining the mission',
+      message: 'Request join the mission',
       roles: context.data.roles,
       state: 'PENDING'
     };
@@ -80,5 +80,5 @@ const kickMission = (context) => {
 export default {
   'mission.join': joinMission,
   'mission.leave': leaveMission,
-  'mission.kick': kickMission,
+  'mission.kick': kickMission
 };

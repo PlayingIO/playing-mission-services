@@ -33,7 +33,6 @@ export default function (options = {}) {
     },
     after: {
       all: [
-        hooks.populate('mission', { retained: false }),
         cache(options.cache),
         hooks.responder()
       ],
