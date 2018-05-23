@@ -21,7 +21,7 @@ export default function (options = {}) {
         hooks.addRouteObject('primary', { service: 'user-missions',
           select: 'mission.activities.requires,mission.activities.rewards,*' }),
         sanitize(accepts),
-        validate(accepts),
+        validate(accepts)
       ]
     },
     after: {

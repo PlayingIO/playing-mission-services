@@ -16,7 +16,7 @@ export default function (options = {}) {
       patch: [
         hooks.addRouteObject('primary', { service: 'user-missions' }),
         sanitize(accepts),
-        validate(accepts),
+        validate(accepts)
       ]
     },
     after: {

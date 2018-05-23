@@ -18,13 +18,17 @@ export default function (options = {}) {
       create: [
         hooks.addRouteObject('primary', { service: 'user-missions' }),
         sanitize(accepts),
-        validate(accepts),
+        validate(accepts)
       ],
       patch: [
         hooks.addRouteObject('primary', { service: 'user-missions' }),
+        sanitize(accepts),
+        validate(accepts)
       ],
       remove: [
         hooks.addRouteObject('primary', { service: 'user-missions' }),
+        sanitize(accepts),
+        validate(accepts)
       ]
     },
     after: {
