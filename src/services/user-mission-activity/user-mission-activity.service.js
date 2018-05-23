@@ -25,10 +25,19 @@ export class UserMissionActivityService {
    * Get a user mission's activity feed
    */
   async find (params) {
-    assert(params.primary !== null, 'User mission id not provided.');
-    params.primary = `mission:${params.primary}`;
+    const userMission = params.primary;
+    assert(userMission, 'User mission is not exists');
+
+    const performer = fp.find(fp.idPropEq('user', params.user.id), userMission.performers || []);
+    if (!performer) {
+      throw new Error('Only performers of the user mission can get the activity feed.');
+    }
+
     const svcFeedsActivities = this.app.service('feeds/activities');
-    return svcFeedsActivities.find(params);
+    return svcFeedsActivities.find({
+      ...params,
+      primary: `mission:${userMission.id}`
+    });
   }
 }
 

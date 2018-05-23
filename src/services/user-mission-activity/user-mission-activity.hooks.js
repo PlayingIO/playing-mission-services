@@ -7,6 +7,9 @@ export default function (options = {}) {
       all: [
         hooks.authenticate('jwt', options.auth),
         cache(options.cache)
+      ],
+      find: [
+        hooks.addRouteObject('primary', { service: 'user-missions' }),
       ]
     },
     after: {
