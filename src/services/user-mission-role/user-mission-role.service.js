@@ -39,7 +39,7 @@ export class UserMissionRoleService {
     // whether the id is one of the performers
     const performer = fp.find(fp.idPropEq('user', id), userMission.performers || []);
     if (!performer) {
-      throw new Error('Performer id is not members of this mission, please join the mission first.');
+      throw new Error('Not performers of this mission, please join the mission first.');
     }
 
     // process the change if owner or it's a public mission
@@ -59,7 +59,7 @@ export class UserMissionRoleService {
         }
       });
       if (fp.isNotEmpty(invitations.data)) {
-        throw new Error('An roles change request is already pending for the current user.');
+        throw new Error('An roles change request is already pending for the user.');
       }
 
       // send mission.role in notifier

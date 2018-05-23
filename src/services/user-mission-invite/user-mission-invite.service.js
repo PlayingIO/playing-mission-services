@@ -5,7 +5,7 @@ import { helpers } from 'mostly-feathers-mongoose';
 import { helpers as feeds } from 'playing-feed-services';
 
 import defaultHooks from './user-mission-invite.hooks';
-import { getPendingActivity, addUserMissionRoles, updateActivityState } from '../../helpers';
+import { addUserMissionRoles } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions/invites');
 
@@ -105,7 +105,7 @@ export class UserMissionInviteService {
 
     // check for pending invitation in notification of current user
     const notification = `notification:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, notification, id);
+    const activity = await feeds.getPendingActivity(this.app, notification, id);
     if (!activity) {
       throw new Error('No pending invite is found for this invite id.');
     }
@@ -125,11 +125,11 @@ export class UserMissionInviteService {
     if (!performer) {
       await addUserMissionRoles(this.app, userMission, user, roles);
       activity.state = 'ACCEPTED';
-      await updateActivityState(this.app, activity);
+      await feeds.updateActivityState(this.app, activity);
       params.locals.activity = activity;
     } else {
       activity.state = 'ALREADY';
-      await updateActivityState(this.app, activity);
+      await feeds.updateActivityState(this.app, activity);
       params.locals.activity = activity;
     }
 
@@ -146,13 +146,13 @@ export class UserMissionInviteService {
     }
     // check for pending invitation sent by current user
     const feed = `user:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, feed, id);
+    const activity = await feeds.getPendingActivity(this.app, feed, id);
     if (!activity) {
       throw new Error('No pending invitation is found for this invite id.');
     }
     // cancel from invitor's feed
     activity.state = 'CANCELED';
-    await updateActivityState(this.app, activity);
+    await feeds.updateActivityState(this.app, activity);
     return activity;
   }
 
@@ -165,13 +165,13 @@ export class UserMissionInviteService {
 
     // check for pending invitation in notification of current user
     const notification = `notification:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, notification, id);
+    const activity = await feeds.getPendingActivity(this.app, notification, id);
     if (!activity) {
       throw new Error('No pending invitation is found for this invite id.');
     }
     // reject from invitee's feed
     activity.state = 'REJECTED';
-    await updateActivityState(this.app, activity);
+    await feeds.updateActivityState(this.app, activity);
 
     params.locals = { userMission, activity }; // for notifier
     

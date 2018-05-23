@@ -1,10 +1,10 @@
 import assert from 'assert';
 import makeDebug from 'debug';
-import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
+import { helpers } from 'mostly-feathers-mongoose';
+import { helpers as feeds } from 'playing-feed-services';
 
 import defaultHooks from './user-invite.hooks';
-import { getPendingActivity } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:users/invites');
 
@@ -45,7 +45,7 @@ export class UserInviteService {
   async patch (id, data, params) {
     // check for pending invitation in notification of current user
     const notification = `notification:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, notification, id);
+    const activity = await feeds.getPendingActivity(this.app, notification, id);
     if (!activity) {
       throw new Error('No pending invite is found for this invite id.');
     }
@@ -67,7 +67,7 @@ export class UserInviteService {
   async remove (id, params) {
     // check for pending invitation in notification of current user
     const notification = `notification:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, notification, id);
+    const activity = await feeds.getPendingActivity(this.app, notification, id);
     if (!activity) {
       throw new Error('No pending invite is found for this invite id.');
     }

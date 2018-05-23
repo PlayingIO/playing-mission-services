@@ -1,10 +1,11 @@
 import assert from 'assert';
 import makeDebug from 'debug';
-import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
+import { helpers } from 'mostly-feathers-mongoose';
+import { helpers as feeds } from 'playing-feed-services';
 
 import defaultHooks from './user-mission-approval.hooks';
-import { getPendingActivity, updateActivityState, addUserMissionRoles, updateUserMissionRoles } from '../../helpers';
+import { addUserMissionRoles, updateUserMissionRoles } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:user-missions/approvals');
 
@@ -62,7 +63,7 @@ export class UserMissionApprovalService {
     // check for pending requests
     const svcFeedsActivities = this.app.service('feeds/activities');
     const notification = `notification:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, notification, id);
+    const activity = await feeds.getPendingActivity(this.app, notification, id);
     if (!activity) {
       throw new Error(`No pending request is found: ${id}.`);
     }
@@ -81,11 +82,11 @@ export class UserMissionApprovalService {
         if (!performer) {
           await addUserMissionRoles(this.app, userMission, user, roles);
           activity.state = 'ACCEPTED';
-          await updateActivityState(this.app, activity);
+          await feeds.updateActivityState(this.app, activity);
           params.locals.activity = activity;
         } else {
           activity.state = 'ALREADY';
-          await updateActivityState(this.app, activity);
+          await feeds.updateActivityState(this.app, activity);
           params.locals.activity = activity;
         }
         break;
@@ -93,7 +94,7 @@ export class UserMissionApprovalService {
       case 'mission.roles.request': {
         await updateUserMissionRoles(this.app, userMission, user, roles);
         activity.state = 'ACCEPTED';
-        await updateActivityState(this.app, activity);
+        await feeds.updateActivityState(this.app, activity);
         params.locals.activity = activity;
         break;
       }
@@ -114,13 +115,13 @@ export class UserMissionApprovalService {
     }
     // check for pending request sent by current user
     const feed = `user:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, feed, id);
+    const activity = await feeds.getPendingActivity(this.app, feed, id);
     if (!activity) {
       throw new Error('No pending request is found for this request id.');
     }
     // cancel from requester's feed
     activity.state = 'CANCELED';
-    await updateActivityState(this.app, activity);
+    await feeds.updateActivityState(this.app, activity);
     return activity;
   }
 
@@ -138,13 +139,13 @@ export class UserMissionApprovalService {
 
     // check for pending request in notification of current user
     const notification = `notification:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, notification, id);
+    const activity = await feeds.getPendingActivity(this.app, notification, id);
     if (!activity) {
       throw new Error('No pending request is found for this request id.');
     }
     // reject from requester's feed
     activity.state = 'REJECTED';
-    await updateActivityState(this.app, activity);
+    await feeds.updateActivityState(this.app, activity);
 
     params.locals = { userMission, activity }; // for notifier
 

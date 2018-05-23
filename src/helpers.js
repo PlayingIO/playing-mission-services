@@ -168,6 +168,9 @@ export const performersNotifications = function (performers, excepts = []) {
   return fp.map(fp.concat('notification:'), users);
 };
 
+/**
+ * Add roles of performer
+ */
 export const addUserMissionRoles = async (app, userMission, user, lanes) => {
   const svcUserMissions = app.service('user-missions');
   await svcUserMissions.patch(userMission.id, {
@@ -177,6 +180,9 @@ export const addUserMissionRoles = async (app, userMission, user, lanes) => {
   });
 };
 
+/**
+ * Update roles of performer
+ */
 export const updateUserMissionRoles = async (app, userMission, user, lanes, params = {}) => {
   const svcUserMissions = app.service('user-missions');
   params.query = fp.assignAll(params.query, {

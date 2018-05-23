@@ -1,10 +1,10 @@
 import assert from 'assert';
 import makeDebug from 'debug';
-import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
+import { helpers } from 'mostly-feathers-mongoose';
+import { helpers as feeds } from 'playing-feed-services';
 
 import defaultHooks from './user-request.hooks';
-import { getPendingActivity } from '../../helpers';
 
 const debug = makeDebug('playing:mission-services:users/requests');
 
@@ -45,7 +45,7 @@ export class UserRequestService {
   async remove (id, params) {
     // check for pending request sent by current user
     const feed = `user:${params.user.id}`;
-    const activity = await getPendingActivity(this.app, feed, id);
+    const activity = await feeds.getPendingActivity(this.app, feed, id);
     if (!activity) {
       throw new Error('No pending request is found for this request id.');
     }
