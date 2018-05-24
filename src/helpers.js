@@ -157,7 +157,7 @@ export const createMissionActivity = (context, userMission, custom) => {
     object: `userMission:${userMission.id}`,
     foreignId: `userMission:${userMission.id}`,
     time: new Date().toISOString(),
-    mission: `mission-design:${definition}`,
+    definition: `mission-design:${definition}`,
     ...custom
   };
 };
