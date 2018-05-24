@@ -9,7 +9,13 @@ import defaultHooks from './user-request.hooks';
 const debug = makeDebug('playing:mission-services:users/requests');
 
 const defaultOptions = {
-  name: 'users/requests'
+  name: 'users/requests',
+  requests: [
+    'mission.join.request',
+    'mission.roles.request',
+    'team.join.request',
+    'team.roles.request'
+  ]
 };
 
 export class UserRequestService {
@@ -28,7 +34,7 @@ export class UserRequestService {
    */
   async find (params) {
     const svcFeedsActivities = this.app.service('feeds/activities');
-    const requests = ['mission.join.request', 'mission.roles.request'];
+    const requests = this.options.requests;
     return svcFeedsActivities.find({
       primary: `user:${params.user.id}`,
       query: {
