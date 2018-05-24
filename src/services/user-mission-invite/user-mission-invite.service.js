@@ -28,7 +28,8 @@ export class UserMissionInviteService {
    * List invitations sent out for a mission
    */
   async find (params) {
-    assert(params.primary, 'User mission id not provided.');
+    const userMission = params.primary;
+    assert(userMission && userMission.id, 'User mission is not exists.');
 
     // Only invitations sent out by current user will be listed.
     const svcFeedsActivities = this.app.service('feeds/activities');
@@ -37,7 +38,7 @@ export class UserMissionInviteService {
       query: {
         verb: 'mission.invite',
         actor: `user:${params.user.id}`,
-        object: `userMission:${params.primary}`,
+        object: `userMission:${userMission.id}`,
         state: 'PENDING',
         ...params.query
       }
