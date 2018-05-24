@@ -9,7 +9,11 @@ import defaultHooks from './user-invite.hooks';
 const debug = makeDebug('playing:mission-services:users/invites');
 
 const defaultOptions = {
-  name: 'users/invites'
+  name: 'users/invites',
+  invites: [
+    'mission.invite',
+    'team.invite'
+  ]
 };
 
 export class UserInviteService {
@@ -28,7 +32,7 @@ export class UserInviteService {
    */
   async find (params) {
     const svcFeedsActivities = this.app.service('feeds/activities');
-    const invites = ['mission.invite'];
+    const invites = this.options.invites;
     return svcFeedsActivities.find({
       primary: `notification:${params.user.id}`,
       query: {
