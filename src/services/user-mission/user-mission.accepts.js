@@ -13,8 +13,7 @@ export default function accepts (context) {
     required: true, description: 'Mission definition' };
 
   const access = { arg: 'access', type: 'string',
-    validates: {
-      isIn: helpers.isIn('access', ['PUBLIC', 'PROTECTED', 'PRIVATE']) },
+    validates: { isIn: helpers.isIn('access', ['PUBLIC', 'PROTECTED', 'PRIVATE']) },
     required: true, description: 'Access of the mission' };
 
   const lane = { arg: 'lane', type: 'string',
