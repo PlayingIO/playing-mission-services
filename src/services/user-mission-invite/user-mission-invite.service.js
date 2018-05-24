@@ -161,7 +161,7 @@ export class UserMissionInviteService {
    * Reject an invitation
    */
   async reject (id, params) {
-    let userMission = params.primary;
+    const userMission = params.primary;
     assert(userMission && userMission.id, 'User mission is not exists.');
 
     // check for pending invitation in notification of current user
