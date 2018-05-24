@@ -26,7 +26,7 @@ export class UserMissionPerformerService {
    */
   async find (params) {
     const userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
     return userMission.performers;
   }
 
@@ -35,7 +35,7 @@ export class UserMissionPerformerService {
    */
   async get (id, params) {
     const userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
     const performer = fp.find(fp.idPropEq('user', id), userMission.performers || []);
     if (performer) {
       return this.app.service('users').get(performer.user, params);
@@ -49,7 +49,7 @@ export class UserMissionPerformerService {
    */
   async create (data, params) {
     let userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
     assert(userMission.access !== 'PRIVATE', 'The mission is private, cannot join.');
 
     const performer = fp.find(fp.idPropEq('user', params.user.id), userMission.performers || []);
@@ -93,7 +93,7 @@ export class UserMissionPerformerService {
    */
   async remove (id, params) {
     let userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
 
     // kick intead leave
     if (params.action === 'kick') {
@@ -126,7 +126,7 @@ export class UserMissionPerformerService {
    */
   async kick (id, params) {
     let userMission = params.primary;
-    assert(userMission, 'User mission not exists');
+    assert(userMission && userMission.id, 'User mission is not exists');
 
     // must be owner of the mission
     if (!fp.idEquals(userMission.owner, params.user.id)) {

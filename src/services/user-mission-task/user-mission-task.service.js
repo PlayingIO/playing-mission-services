@@ -30,7 +30,7 @@ export class UserMissionTaskService {
    */
   async find (params) {
     const userMission = params.primary;
-    assert(userMission, 'User mission is not exists');
+    assert(userMission && userMission.id, 'User mission is not exists');
     const activities = userMission.definition && userMission.definition.activities;
     if (fp.isNotEmpty(activities)) {
       return walkThroughTasksReady(params.user, userMission.tasks)(activities);
@@ -44,7 +44,7 @@ export class UserMissionTaskService {
    */
   async create (data, params) {
     let userMission = params.primary;
-    assert(userMission, 'User mission is not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
 
     // whether the user is one of the performers
     const performer = fp.find(fp.idPropEq('user', params.user.id), userMission.performers || []);

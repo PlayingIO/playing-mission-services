@@ -29,7 +29,7 @@ export class UserMissionApprovalService {
    */
   async find (params) {
     const userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
 
     // must be owner of the mission
     if (!fp.idEquals(userMission.owner, params.user.id)) {
@@ -53,7 +53,7 @@ export class UserMissionApprovalService {
    */
   async patch (id, data, params) {
     let userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
 
     // must be owner of the mission
     if (!fp.idEquals(userMission.owner, params.user.id)) {
@@ -130,7 +130,7 @@ export class UserMissionApprovalService {
    */
   async reject (id, params) {
     let userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
 
     // must be owner of the mission
     if (!fp.idEquals(userMission.owner, params.user.id)) {

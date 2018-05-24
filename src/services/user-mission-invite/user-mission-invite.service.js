@@ -49,7 +49,7 @@ export class UserMissionInviteService {
    */
   async create (data, params) {
     const userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
     data.message = data.message || 'Invite you to join the mission';
 
     // must be owner of the mission
@@ -101,7 +101,7 @@ export class UserMissionInviteService {
    */
   async patch (id, data, params) {
     let userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
 
     // check for pending invitation in notification of current user
     const notification = `notification:${params.user.id}`;
@@ -161,7 +161,7 @@ export class UserMissionInviteService {
    */
   async reject (id, params) {
     let userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
 
     // check for pending invitation in notification of current user
     const notification = `notification:${params.user.id}`;

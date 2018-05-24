@@ -26,7 +26,7 @@ export class UserMissionActivityService {
    */
   async find (params) {
     const userMission = params.primary;
-    assert(userMission, 'User mission is not exists');
+    assert(userMission && userMission.id, 'User mission is not exists');
 
     const performer = fp.find(fp.idPropEq('user', params.user.id), userMission.performers || []);
     if (!performer) {

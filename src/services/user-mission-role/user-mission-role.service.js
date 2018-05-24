@@ -27,7 +27,7 @@ export class UserMissionRoleService {
    */
   async patch (id, data, params) {
     const userMission = params.primary;
-    assert(userMission, 'User mission not exists.');
+    assert(userMission && userMission.id, 'User mission is not exists.');
 
     const isOwner = fp.idEquals(userMission.owner, params.user.id);
     if (!fp.idEquals(id, params.user.id)) { // change roles by owner
@@ -44,7 +44,7 @@ export class UserMissionRoleService {
 
     // process the change if owner or it's a public mission
     if (isOwner || userMission.access === 'PUBLIC') {
-      // udpate performer's roles
+      // update performer's roles
       return updateUserMissionRoles(this.app, userMission, id, data.roles, params);
     } else {
       // check for pending roles request sent by current user
