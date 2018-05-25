@@ -16,7 +16,7 @@ export default function accepts (context) {
     validates: { exists: helpers.idExists(svcUsers, 'player', 'Player is not exists') },
     required: true, description: 'Player' };
 
-  const invite = { arg: 'invite', type: 'string', required: true, description: 'Invite id' };
+  const invite = { arg: 'id', type: 'string', required: true, description: 'Invite id' };
 
   return {
     create: [ player, roles ],
