@@ -20,6 +20,7 @@ export default function accepts (context) {
 
   return {
     create: [ player, roles ],
-    remove: [ invite ]
+    remove: [ invite ],
+    reject: [ invite ]
   };
 }

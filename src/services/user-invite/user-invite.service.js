@@ -28,7 +28,7 @@ export class UserInviteService {
   }
 
   /**
-   * List pending invitations to join teams/missions for the player.
+   * List pending invitations to join teams/missions for current user
    */
   async find (params) {
     const svcFeedsActivities = this.app.service('feeds/activities');

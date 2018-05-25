@@ -4,6 +4,7 @@ export default function accepts (context) {
 
   return {
     patch: [ request ],
-    remove: [ request ]
+    remove: [ request ],
+    reject: [ request ]
   };
 }
