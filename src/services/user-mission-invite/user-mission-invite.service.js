@@ -112,19 +112,19 @@ export class UserMissionInviteService {
     }
 
     // get values from activity
-    const user = helpers.getId(activity.invitee);
+    const invitee = helpers.getId(activity.invitee);
     const roles = activity.roles;
-    assert(user, 'actor not exists in request activity');
-    assert(roles, 'roles not exists in request activity');
-    if (!fp.idEquals(user, params.user.id)) {
+    assert(invitee, 'actor is not exists in request activity');
+    assert(roles, 'roles is not exists in request activity');
+    if (!fp.idEquals(invitee, params.user.id)) {
       throw new Error('invitee is not current user');
     }
 
     params.locals = { userMission }; // for notifier
 
-    const performer = fp.find(fp.idPropEq('user', user), userMission.performers || []);
+    const performer = fp.find(fp.idPropEq('user', invitee), userMission.performers || []);
     if (!performer) {
-      await addUserMissionRoles(this.app, userMission, user, roles);
+      await addUserMissionRoles(this.app, userMission, invitee, roles);
       activity.state = 'ACCEPTED';
       await feeds.updateActivityState(this.app, activity);
       params.locals.activity = activity;
