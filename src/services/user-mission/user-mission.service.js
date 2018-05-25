@@ -45,7 +45,7 @@ export class UserMissionService extends Service {
     assert(userMission && userMission.id, 'User mission is not exists.');
 
     // must be owner of the mission
-    if (!fp.idEquals(userMission.owner, data.user)) {
+    if (!fp.idEquals(userMission.owner, params.user.id)) {
       throw new Error('Only owner of the mission can transfer ownership.');
     }
     if (fp.idEquals(userMission.owner, data.player)) {
@@ -53,16 +53,7 @@ export class UserMissionService extends Service {
     }
     const performer = fp.find(fp.idPropEq('user', data.player), userMission.performers || []);
 
-    if (performer) {
-      params.query = fp.assignAll(params.query, {
-        'performers.user': data.player
-      });
-      const updates = fp.reduce((acc, lane) => {
-        return fp.assoc(`performers.$.lanes.${lane}`, data.roles[lane]);
-      }, {}, fp.keys(data.roles));
-      updates.owner = data.player;
-      return super.patch(id, updates, params);
-    } else {
+    if (!performer) {
       return super.patch(id, {
         owner: data.player,
         $addToSet: {
@@ -72,6 +63,15 @@ export class UserMissionService extends Service {
           }
         }
       }, params);
+    } else {
+      params.query = fp.assignAll(params.query, {
+        'performers.user': data.player
+      });
+      const updates = fp.reduce((acc, lane) => {
+        return fp.assoc(`performers.$.lanes.${lane}`, data.roles[lane]);
+      }, {}, fp.keys(data.roles));
+      updates.owner = data.player;
+      return super.patch(id, updates, params);
     }
   }
 }
