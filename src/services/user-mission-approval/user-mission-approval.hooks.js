@@ -1,8 +1,10 @@
 import { iff } from 'feathers-hooks-common';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
+import { sanitize, validate } from 'mostly-feathers-validate';
 import { hooks as feeds } from 'playing-feed-services';
 
+import accepts from './user-mission-approval.accepts';
 import notifiers from './user-mission-approval.notifiers';
 
 export default function (options = {}) {
@@ -17,9 +19,13 @@ export default function (options = {}) {
       ],
       patch: [
         hooks.addRouteObject('primary', { service: 'user-missions' }),
+        sanitize(accepts),
+        validate(accepts)
       ],
       remove: [
         hooks.addRouteObject('primary', { service: 'user-missions' }),
+        sanitize(accepts),
+        validate(accepts)
       ]
     },
     after: {
