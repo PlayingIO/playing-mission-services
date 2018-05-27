@@ -44,19 +44,19 @@ const transferMission = (context) => {
   const userMission = helpers.getHookData(context);
   if (!userMission) return;
   const actor = context.params.user.id;
-  const owner = context.data.player;
+  const newOwner = context.data.player;
   const notifications = performersNotifications(userMission.performers);
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.transfer',
     message: 'Transfer the ownership of the mission',
     roles: context.data.roles,
-    owner: `user:${owner}`
+    newOwner: `user:${newOwner}`
   };
   return [
     createMissionActivity(context, userMission, custom),
     `user:${actor}`,               // add to old owner's activity log
-    `user:${owner}`,               // add to new owner's activity log
+    `user:${newOwner}`,            // add to new owner's activity log
     `mission:${userMission.id}`,   // add to mission's activity log
     notifications                  // add to all performers' notification stream
   ];
