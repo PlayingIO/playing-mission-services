@@ -19,14 +19,14 @@ const acceptMission = (context) => {
   if (activity.verb === 'mission.roles.request') {
     custom = {
       verb: 'mission.roles.accept',
-      message: 'Change roles request accept',
+      message: 'Roles change request of ${actor} was accepted',
       ...custom
     };
   }
   if (activity.verb === 'mission.join.request') {
     custom = {
       verb: 'mission.join.accept',
-      message: 'Join request accept',
+      message: 'Join request of ${actor} was accepted',
       ...custom
     };
   }
@@ -55,14 +55,14 @@ const rejectMission = (context) => {
   if (activity.verb === 'mission.roles.request') {
     custom = {
       verb: 'mission.roles.reject',
-      message: 'Change roles request reject',
+      message: 'Roles change request of ${acotr} was rejected',
       ...custom
     };
   }
   if (activity.verb === 'mission.join.request') {
     custom = {
       verb: 'mission.join.reject',
-      message: 'Join request reject',
+      message: 'Join request of ${actor} was rejected',
       ...custom
     };
   }
