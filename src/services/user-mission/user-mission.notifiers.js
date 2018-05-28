@@ -12,7 +12,7 @@ const createMission = (context) => {
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.create',
-    message: 'Create a mission'
+    message: 'Mission was created by ${actor}'
   };
   return [
     createMissionActivity(context, userMission, custom),
@@ -30,7 +30,7 @@ const deleteMission = (context) => {
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.delete',
-    message: 'Delete the mission'
+    message: 'Mission was deleted by ${actor}'
   };
   return [
     createMissionActivity(context, userMission, custom),
@@ -49,7 +49,7 @@ const transferMission = (context) => {
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.transfer',
-    message: 'Transfer the ownership of the mission',
+    message: 'Ownership of the mission has been transfered to ${newOwner}',
     roles: context.data.roles,
     newOwner: `user:${newOwner}`
   };
