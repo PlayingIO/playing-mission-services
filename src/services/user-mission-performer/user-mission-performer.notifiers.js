@@ -12,7 +12,7 @@ const joinMission = (context) => {
     const custom = {
       actor: `user:${actor}`,
       verb: 'mission.join',
-      message: 'Join the mission',
+      message: '${actor} has joined the mission',
       roles: context.data.roles
     };
     return [
@@ -26,7 +26,7 @@ const joinMission = (context) => {
     const custom = {
       actor: `user:${actor}`,
       verb: 'mission.join.request',
-      message: 'Request join the mission',
+      message: '${actor} requests to join the mission',
       roles: context.data.roles,
       state: 'PENDING'
     };
@@ -46,7 +46,7 @@ const leaveMission = (context) => {
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.leave',
-    message: 'Leave the mission'
+    message: '${actor} has left the mission'
   };
   return [
     createMissionActivity(context, userMission, custom),
@@ -65,7 +65,7 @@ const kickMission = (context) => {
   const custom = {
     actor: `user:${actor}`,
     verb: 'mission.kick',
-    message: 'Join the mission',
+    message: '${player} was kicked out of the mission',
     roles: context.data.roles
   };
   return [
