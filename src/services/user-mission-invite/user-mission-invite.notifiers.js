@@ -15,7 +15,7 @@ const acceptInvite = (context) => {
     actor: `user:${actor}`,
     inviter: `user:${inviter}`,
     verb: 'mission.invite.accept',
-    message: 'Invite request accept',
+    message: '${actor} has accepted the invite request',
     roles: activity.roles
   };
   return [
@@ -38,7 +38,7 @@ const rejectInvite = (context) => {
     actor: `user:${actor}`,
     inviter: `user:${inviter}`,
     verb: 'mission.invite.reject',
-    message: 'Invite request reject',
+    message: '${actor} has rejected the invite request',
     roles: activity.roles
   };
   return [
