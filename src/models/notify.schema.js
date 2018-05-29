@@ -1,4 +1,4 @@
-import { models as rules } from 'playing-rule-services';
+import { schemas as rules } from 'playing-rule-common';
 
 const notify = {
   subject: { type: String },               // notify subject when task is completed

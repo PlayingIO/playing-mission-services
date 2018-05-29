@@ -1,4 +1,4 @@
-import { models as rules } from 'playing-rule-services';
+import { schemas as rules } from 'playing-rule-common';
 
 import { notify } from './notify.schema';
 

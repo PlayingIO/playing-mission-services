@@ -1,6 +1,6 @@
 import { plugins } from 'mostly-feathers-mongoose';
 import { models as contents } from 'playing-content-services';
-import { models as rules } from 'playing-rule-services';
+import { schemas as rules } from 'playing-rule-common';
 import { models as actions } from 'playing-action-services';
 
 import { activity } from './activity.schema';
