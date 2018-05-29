@@ -16,7 +16,6 @@
     "test": "npm run lint && npm run coverage"
   },
   "dependencies": {
-    "bluebird": "^3.5.0",
     "date-fns": "^v2.0.0-alpha.7",
     "esm": "^3.0.14",
     "feathers-authentication": "^1.2.3",
