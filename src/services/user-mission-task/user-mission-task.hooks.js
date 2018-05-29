@@ -1,7 +1,7 @@
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
 import { sanitize, validate } from 'mostly-feathers-validate';
-import { hooks as feeds } from 'playing-feed-services';
+import feeds from 'playing-feed-common';
 
 import accepts from './user-mission-task.accepts';
 import notifiers from './user-mission-task.notifiers';

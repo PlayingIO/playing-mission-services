@@ -2,7 +2,7 @@ import assert from 'assert';
 import makeDebug from 'debug';
 import fp from 'mostly-func';
 import { helpers } from 'mostly-feathers-mongoose';
-import { helpers as feeds } from 'playing-feed-services';
+import feeds from 'playing-feed-common';
 
 import defaultHooks from './user-mission-approval.hooks';
 import { addUserMissionRoles, updateUserMissionRoles } from '../../helpers';
