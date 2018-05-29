@@ -3,7 +3,7 @@ import makeDebug from 'debug';
 import { helpers } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 import { helpers as metrics } from 'playing-metric-services';
-import { helpers as rules } from 'playing-rule-services';
+import rules from 'playing-rule-common';
 
 import defaultHooks from './user-mission-task.hooks';
 import { walkThroughTasksReady } from '../../helpers';

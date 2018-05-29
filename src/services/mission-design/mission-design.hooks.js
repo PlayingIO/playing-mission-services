@@ -1,7 +1,7 @@
 import { hooks } from 'mostly-feathers-mongoose';
 import fp from 'mostly-func';
 import { cache } from 'mostly-feathers-cache';
-import { hooks as rules } from 'playing-rule-services';
+import rules from 'playing-rule-common';
 
 import MissionDesignEntity from '../../entities/mission-design.entity';
 import { getRecursiveRequires, getRecursiveRewards } from '../../helpers';

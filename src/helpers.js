@@ -1,7 +1,7 @@
 import assert from 'assert';
 import fp from 'mostly-func';
 import { helpers } from 'mostly-feathers-mongoose';
-import { helpers as rules } from 'playing-rule-services';
+import rules from 'playing-rule-common';
 
 export const fulfillActivityRequires = (activity, user) => {
   return rules.fulfillRequires(user, [], activity.requires);
