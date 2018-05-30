@@ -1,9 +1,9 @@
 import Entity, { utils } from 'mostly-entity';
 import fp from 'mostly-func';
-import { entities as contents } from 'playing-content-services';
+import { BlobEntity } from 'playing-content-common';
 
 const UserMissionEntity = new Entity('UserMission', {
-  image: { using: contents.BlobEntity }
+  image: { using: BlobEntity }
 });
 
 // show tasks not completed as triggers
