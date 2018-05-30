@@ -1,5 +1,5 @@
 import { plugins } from 'mostly-feathers-mongoose';
-import { models as contents } from 'playing-content-services';
+import { schemas as contents } from 'playing-content-common';
 import { schemas as rules } from 'playing-rule-common';
 
 import { activity } from './activity.schema';
