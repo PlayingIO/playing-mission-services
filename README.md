@@ -1,7 +1,7 @@
 Playing Game Missions Services
 ==============================
 
-Game missions management microservices for playful applications.
+Game missions management microservices for building playful applications.
 
 # Usage
 
