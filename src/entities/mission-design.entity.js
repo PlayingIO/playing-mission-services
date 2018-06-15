@@ -5,6 +5,6 @@ const MissionEntity = new Entity('Mission', {
   image: { using: BlobEntity }
 });
 
-MissionEntity.excepts('updatedAt', 'destroyedAt');
+MissionEntity.excepts('_id');
 
 export default MissionEntity.asImmutable();
