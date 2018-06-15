@@ -11,6 +11,6 @@ UserMissionEntity.expose('triggers', { if: utils.isPresent('tasks') }, obj => {
   return fp.reject(fp.propEq('state', 'COMPLETED'), obj.tasks);
 });
 
-UserMissionEntity.excepts('_id');
+UserMissionEntity.discard('_id');
 
 export default UserMissionEntity.asImmutable();
