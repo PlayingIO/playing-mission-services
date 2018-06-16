@@ -1,6 +1,6 @@
 {
   "name": "playing-mission-services",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Game missions management microservices for building playful applications",
   "author": "Forafish",
   "license": "MIT",
