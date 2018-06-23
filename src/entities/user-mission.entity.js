@@ -13,4 +13,4 @@ UserMissionEntity.expose('triggers', { if: utils.isPresent('tasks') }, obj => {
 
 UserMissionEntity.discard('_id');
 
-export default UserMissionEntity.asImmutable();
+export default UserMissionEntity.freeze();

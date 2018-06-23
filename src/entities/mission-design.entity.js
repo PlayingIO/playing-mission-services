@@ -7,4 +7,4 @@ const MissionEntity = new Entity('Mission', {
 
 MissionEntity.discard('_id');
 
-export default MissionEntity.asImmutable();
+export default MissionEntity.freeze();
