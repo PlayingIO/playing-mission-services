@@ -1,4 +1,4 @@
-import { iff, isProvider } from 'feathers-hooks-common';
+import { iff } from 'feathers-hooks-common';
 import { associateCurrentUser, queryWithCurrentUser } from 'feathers-authentication-hooks';
 import { hooks } from 'mostly-feathers-mongoose';
 import { cache } from 'mostly-feathers-cache';
@@ -17,8 +17,7 @@ export default function (options = {}) {
         cache(options.cache)
       ],
       create: [
-        iff(isProvider('external'),
-          associateCurrentUser({ idField: 'id', as: 'owner' })),
+        associateCurrentUser({ idField: 'id', as: 'owner' }),
         sanitize(accepts),
         validate(accepts),
         hooks.discardFields('tasks')
