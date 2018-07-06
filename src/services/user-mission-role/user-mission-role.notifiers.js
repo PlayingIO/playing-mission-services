@@ -7,7 +7,7 @@ import { createMissionActivity, performersNotifications } from '../../helpers';
 const rolesMission = (context) => {
   const userMission = helpers.getHookData(context);
   if (!userMission) return;
-  const actor = context.params.user.id;
+  const actor = helpers.getCurrentUser(context);
   const player = context.id;
   if (userMission.access === 'PUBLIC') {
     const notifications = performersNotifications(userMission.performers);

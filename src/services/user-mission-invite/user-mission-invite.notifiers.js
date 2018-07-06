@@ -8,7 +8,7 @@ const acceptInvite = (context) => {
   const { userMission, activity } = context.params.locals;
   if (!activity || activity.state !== 'ACCEPTED') return;
 
-  const actor = context.params.user.id;
+  const actor = helpers.getCurrentUser(context);
   const inviter = helpers.getId(activity.actor);
   const notifications = performersNotifications(userMission.performers);
   let custom = {
@@ -32,7 +32,7 @@ const rejectInvite = (context) => {
   const { userMission, activity } = context.params.locals;
   if (!activity || activity.state !== 'REJECTED') return;
 
-  const actor = context.params.user.id;
+  const actor = helpers.getCurrentUser(context);
   const inviter = helpers.getId(activity.actor);
   let custom = {
     actor: `user:${actor}`,

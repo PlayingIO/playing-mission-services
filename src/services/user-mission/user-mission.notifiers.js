@@ -7,7 +7,7 @@ import { createMissionActivity, performersNotifications } from '../../helpers';
 const createMission = (context) => {
   const userMission = helpers.getHookData(context);
   if (!userMission) return;
-  const actor = context.params.user.id;
+  const actor = helpers.getCurrentUser(context);
   const notifications = performersNotifications(userMission.performers);
   const custom = {
     actor: `user:${actor}`,
@@ -25,7 +25,7 @@ const createMission = (context) => {
 const deleteMission = (context) => {
   const userMission = helpers.getHookData(context);
   if (!userMission) return;
-  const actor = context.params.user.id;
+  const actor = helpers.getCurrentUser(context);
   const notifications = performersNotifications(userMission.performers);
   const custom = {
     actor: `user:${actor}`,
@@ -43,7 +43,7 @@ const deleteMission = (context) => {
 const transferMission = (context) => {
   const userMission = helpers.getHookData(context);
   if (!userMission) return;
-  const actor = context.params.user.id;
+  const actor = helpers.getCurrentUser(context);
   const newOwner = context.data.player;
   const notifications = performersNotifications(userMission.performers);
   const custom = {
