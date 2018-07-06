@@ -6,9 +6,9 @@ import { createMissionActivity, performersNotifications } from '../../helpers';
 // invite accept activity
 const acceptInvite = (context) => {
   const { userMission, activity } = context.params.locals;
-  if (!activity || activity.state !== 'ACCEPTED') return;
-
   const actor = helpers.getCurrentUser(context);
+  if (!activity || activity.state !== 'ACCEPTED' || !actor) return;
+
   const inviter = helpers.getId(activity.actor);
   const notifications = performersNotifications(userMission.performers);
   let custom = {
@@ -30,9 +30,9 @@ const acceptInvite = (context) => {
 // invite reject activity
 const rejectInvite = (context) => {
   const { userMission, activity } = context.params.locals;
-  if (!activity || activity.state !== 'REJECTED') return;
-
   const actor = helpers.getCurrentUser(context);
+  if (!activity || activity.state !== 'REJECTED' || !actor) return;
+
   const inviter = helpers.getId(activity.actor);
   let custom = {
     actor: `user:${actor}`,
@@ -43,7 +43,7 @@ const rejectInvite = (context) => {
   };
   return [
     createMissionActivity(context, userMission, custom),
-    `notification:${actor}`,       // add to player's 
+    `notification:${actor}`,       // add to player's
     `user:${inviter}`              // add to inviter's notification stream
   ];
 };

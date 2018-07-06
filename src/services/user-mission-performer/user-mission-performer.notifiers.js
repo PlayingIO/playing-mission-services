@@ -7,6 +7,8 @@ import { createMissionActivity, performersNotifications } from '../../helpers';
 const joinMission = (context) => {
   const { userMission } = context.params.locals;
   const actor = helpers.getCurrentUser(context);
+  if (!userMission || !actor) return;
+
   if (userMission.access === 'PUBLIC') {
     const notifications = performersNotifications(userMission.performers);
     const custom = {
@@ -42,6 +44,8 @@ const joinMission = (context) => {
 const leaveMission = (context) => {
   const { userMission } = context.params.locals;
   const actor = helpers.getCurrentUser(context);
+  if (!userMission || !actor) return;
+
   const notifications = performersNotifications(userMission.performers);
   const custom = {
     actor: `user:${actor}`,
@@ -60,6 +64,8 @@ const leaveMission = (context) => {
 const kickMission = (context) => {
   const { userMission } = context.params.locals;
   const actor = helpers.getCurrentUser(context);
+  if (!userMission || !actor) return;
+
   const player = context.id;
   const notifications = performersNotifications(userMission.performers);
   const custom = {

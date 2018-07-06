@@ -6,9 +6,9 @@ import { createMissionActivity, performersNotifications } from '../../helpers';
 // request accept activity
 const acceptMission = (context) => {
   const { userMission, activity } = context.params.locals;
-  if (!activity || activity.state !== 'ACCEPTED') return [];
-
   const actor = helpers.getCurrentUser(context);
+  if (!activity || activity.state !== 'ACCEPTED' || !actor) return;
+
   const player = helpers.getId(activity.actor);
   const notifications = performersNotifications(userMission.performers);
   let custom = {
@@ -43,9 +43,9 @@ const acceptMission = (context) => {
 // request reject activity
 const rejectMission = (context) => {
   const { userMission, activity } = context.params.locals;
-  if (!activity || activity.state !== 'REJECTED') return [];
-
   const actor = helpers.getCurrentUser(context);
+  if (!activity || activity.state !== 'REJECTED' || !actor) return;
+
   const player = helpers.getId(activity.actor);
   let custom = {
     actor: `user:${actor}`,

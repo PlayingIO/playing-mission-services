@@ -7,6 +7,8 @@ import { createMissionActivity, performersNotifications } from '../../helpers';
 const playMission = (context) => {
   const { userMission, trigger, activity, rewards } = context.params.locals;
   const actor = helpers.getCurrentUser(context);
+  if (!userMission || !actor) return;
+
   const notifications = performersNotifications(userMission.performers);
   const custom = {
     actor: `user:${actor}`,
