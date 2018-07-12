@@ -1,11 +1,11 @@
-import assert from 'assert';
-import makeDebug from 'debug';
-import fp from 'mostly-func';
-import { helpers } from 'mostly-feathers-mongoose';
-import feeds from 'playing-feed-common';
+const assert = require('assert');
+const makeDebug = require('debug');
+const fp = require('mostly-func');
+const { helpers } = require('mostly-feathers-mongoose');
+const feeds = require('playing-feed-common');
 
-import defaultHooks from './user-mission-approval.hooks';
-import { addUserMissionRoles, updateUserMissionRoles } from '../../helpers';
+const defaultHooks = require('./user-mission-approval.hooks');
+const { addUserMissionRoles, updateUserMissionRoles } = require('../../helpers');
 
 const debug = makeDebug('playing:mission-services:user-missions/approvals');
 
@@ -13,7 +13,7 @@ const defaultOptions = {
   name: 'user-missions/approvals'
 };
 
-export class UserMissionApprovalService {
+class UserMissionApprovalService {
   constructor (options) {
     this.options = fp.assignAll(defaultOptions, options);
     this.name = this.options.name;
@@ -154,8 +154,7 @@ export class UserMissionApprovalService {
 
 }
 
-export default function init (app, options, hooks) {
+module.exports = function init (app, options, hooks) {
   return new UserMissionApprovalService(options);
-}
-
-init.Service = UserMissionApprovalService;
+};
+module.exports.Service = UserMissionApprovalService;

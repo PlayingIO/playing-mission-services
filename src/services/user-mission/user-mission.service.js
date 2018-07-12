@@ -1,10 +1,10 @@
-import assert from 'assert';
-import makeDebug from 'debug';
-import { Service, helpers, createService } from 'mostly-feathers-mongoose';
-import fp from 'mostly-func';
+const assert = require('assert');
+const makeDebug = require('debug');
+const { Service, createService } = require('mostly-feathers-mongoose');
+const fp = require('mostly-func');
 
-import UserMissionModel from '../../models/user-mission.model';
-import defaultHooks from './user-mission.hooks';
+const UserMissionModel = require('../../models/user-mission.model');
+const defaultHooks = require('./user-mission.hooks');
 
 const debug = makeDebug('playing:mission-services:user-missions');
 
@@ -16,7 +16,7 @@ const defaultOptions = {
   }
 };
 
-export class UserMissionService extends Service {
+class UserMissionService extends Service {
   constructor (options) {
     options = fp.assignAll(defaultOptions, options);
     super(options);
@@ -76,9 +76,8 @@ export class UserMissionService extends Service {
   }
 }
 
-export default function init (app, options, hooks) {
+module.exports = function init (app, options, hooks) {
   options = { ModelName: 'user-mission', ...options };
   return createService(app, UserMissionService, UserMissionModel, options);
-}
-
-init.Service = UserMissionService;
+};
+module.exports.Service = UserMissionService;

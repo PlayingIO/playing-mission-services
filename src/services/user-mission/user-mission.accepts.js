@@ -1,8 +1,8 @@
-import fp from 'mostly-func';
-import { helpers } from 'mostly-feathers-validate';
-import { defaultLane, defaultRoles, rolesExists } from '../../helpers';
+const fp = require('mostly-func');
+const { helpers } = require('mostly-feathers-validate');
+const { defaultLane, defaultRoles, rolesExists } = require('../../helpers');
 
-export default function accepts (context) {
+module.exports = function accepts (context) {
   const svcMissionDesigns = context.app.service('mission-designs');
   const svcUserMissions = context.app.service('user-missions');
   const svcUsers = context.app.service('users');
@@ -36,4 +36,4 @@ export default function accepts (context) {
     create: [ definition, access, lane ],
     transfer: [ player, roles ]
   };
-}
+};

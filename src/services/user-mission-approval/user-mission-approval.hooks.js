@@ -1,13 +1,13 @@
-import { iff } from 'feathers-hooks-common';
-import { hooks } from 'mostly-feathers-mongoose';
-import { cache } from 'mostly-feathers-cache';
-import { sanitize, validate } from 'mostly-feathers-validate';
-import feeds from 'playing-feed-common';
+const { iff } = require('feathers-hooks-common');
+const { hooks } = require('mostly-feathers-mongoose');
+const { cache } = require('mostly-feathers-cache');
+const { sanitize, validate } = require('mostly-feathers-validate');
+const feeds = require('playing-feed-common');
 
-import accepts from './user-mission-approval.accepts';
-import notifiers from './user-mission-approval.notifiers';
+const accepts = require('./user-mission-approval.accepts');
+const notifiers = require('./user-mission-approval.notifiers');
 
-export default function (options = {}) {
+module.exports = function (options = {}) {
   return {
     before: {
       all: [
@@ -42,4 +42,4 @@ export default function (options = {}) {
       ]
     }
   };
-}
+};

@@ -1,8 +1,8 @@
-import fp from 'mostly-func';
-import { helpers } from 'mostly-feathers-validate';
-import { defaultRoles, rolesExists } from '../../helpers';
+const fp = require('mostly-func');
+const { helpers } = require('mostly-feathers-validate');
+const { defaultRoles, rolesExists } = require('../../helpers');
 
-export default function accepts (context) {
+module.exports = function accepts (context) {
   const svcUserMissions = context.app.service('user-missions');
   const svcUsers = context.app.service('users');
 
@@ -21,4 +21,4 @@ export default function accepts (context) {
   return {
     patch: [ performer, roles, scopes ]
   };
-}
+};

@@ -1,12 +1,12 @@
-import { hooks } from 'mostly-feathers-mongoose';
-import { cache } from 'mostly-feathers-cache';
-import { sanitize, validate } from 'mostly-feathers-validate';
-import feeds from 'playing-feed-common';
+const { hooks } = require('mostly-feathers-mongoose');
+const { cache } = require('mostly-feathers-cache');
+const { sanitize, validate } = require('mostly-feathers-validate');
+const feeds = require('playing-feed-common');
 
-import accepts from './user-mission-role.accepts';
-import notifiers from './user-mission-role.notifiers';
+const accepts = require('./user-mission-role.accepts');
+const notifiers = require('./user-mission-role.notifiers');
 
-export default function (options = {}) {
+module.exports = function (options = {}) {
   return {
     before: {
       all: [
@@ -29,4 +29,4 @@ export default function (options = {}) {
       ]
     }
   };
-}
+};

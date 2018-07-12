@@ -1,7 +1,7 @@
-import fp from 'mostly-func';
-import { helpers } from 'mostly-feathers-mongoose';
+const fp = require('mostly-func');
+const { helpers } = require('mostly-feathers-mongoose');
 
-import { createMissionActivity, performersNotifications } from '../../helpers';
+const { createMissionActivity, performersNotifications } = require('../../helpers');
 
 // create mission actvitiy
 const createMission = (context) => {
@@ -65,7 +65,7 @@ const transferMission = (context) => {
   ];
 };
 
-export default {
+module.exports = {
   'mission.create': createMission,
   'mission.delete': deleteMission,
   'mission.transfer': transferMission

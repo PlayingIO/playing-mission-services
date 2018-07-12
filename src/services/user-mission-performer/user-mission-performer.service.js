@@ -1,8 +1,8 @@
-import assert from 'assert';
-import makeDebug from 'debug';
-import fp from 'mostly-func';
+const assert = require('assert');
+const makeDebug = require('debug');
+const fp = require('mostly-func');
 
-import defaultHooks from './user-mission-performer.hooks';
+const defaultHooks = require('./user-mission-performer.hooks');
 
 const debug = makeDebug('playing:mission-services:user-missions/performers');
 
@@ -10,7 +10,7 @@ const defaultOptions = {
   name: 'user-missions/performers'
 };
 
-export class UserMissionPerformerService {
+class UserMissionPerformerService {
   constructor (options) {
     this.options = fp.assignAll(defaultOptions, options);
     this.name = this.options.name;
@@ -156,8 +156,7 @@ export class UserMissionPerformerService {
 
 }
 
-export default function init (app, options, hooks) {
+module.exports = function init (app, options, hooks) {
   return new UserMissionPerformerService(options);
-}
-
-init.Service = UserMissionPerformerService;
+};
+module.exports.Service = UserMissionPerformerService;

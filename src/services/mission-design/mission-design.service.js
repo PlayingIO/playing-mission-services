@@ -1,9 +1,8 @@
-import assert from 'assert';
-import makeDebug from 'debug';
-import { Service, createService } from 'mostly-feathers-mongoose';
-import fp from 'mostly-func';
-import MissionDesignModel from '../../models/mission-design.model';
-import defaultHooks from './mission-design.hooks';
+const makeDebug = require('debug');
+const { Service, createService } = require('mostly-feathers-mongoose');
+const fp = require('mostly-func');
+const MissionDesignModel = require('../../models/mission-design.model');
+const defaultHooks = require('./mission-design.hooks');
 
 const debug = makeDebug('playing:mission-services:mission-designs');
 
@@ -11,7 +10,7 @@ const defaultOptions = {
   name: 'mission-designs'
 };
 
-export class MissionDesignService extends Service {
+class MissionDesignService extends Service {
   constructor (options) {
     options = fp.assignAll(defaultOptions, options);
     super(options);
@@ -23,9 +22,8 @@ export class MissionDesignService extends Service {
   }
 }
 
-export default function init (app, options, hooks) {
+module.exports = function init (app, options, hooks) {
   options = { ModelName: 'mission-design', ...options };
   return createService(app, MissionDesignService, MissionDesignModel, options);
-}
-
-init.Service = MissionDesignService;
+};
+module.exports.Service = MissionDesignService;

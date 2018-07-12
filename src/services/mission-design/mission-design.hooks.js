@@ -1,10 +1,10 @@
-import { hooks } from 'mostly-feathers-mongoose';
-import fp from 'mostly-func';
-import { cache } from 'mostly-feathers-cache';
-import rules from 'playing-rule-common';
+const { hooks } = require('mostly-feathers-mongoose');
+const fp = require('mostly-func');
+const { cache } = require('mostly-feathers-cache');
+const rules = require('playing-rule-common');
 
-import MissionDesignEntity from '../../entities/mission-design.entity';
-import { getRecursiveRequires, getRecursiveRewards } from '../../helpers';
+const MissionDesignEntity = require('../../entities/mission-design.entity');
+const { getRecursiveRequires, getRecursiveRewards } = require('../../helpers');
 
 const getActivityRequires = fp.reduce((arr, mission) => {
   return arr.concat(getRecursiveRequires('requires')(mission.activities || []));
@@ -18,7 +18,7 @@ const getActivityRewards = fp.reduce((arr, mission) => {
   return arr.concat(getRecursiveRewards('rewards')(mission.activities || []));
 }, []);
 
-export default function (options = {}) {
+module.exports = function (options = {}) {
   return {
     before: {
       all: [
@@ -44,4 +44,4 @@ export default function (options = {}) {
       ]
     }
   };
-}
+};

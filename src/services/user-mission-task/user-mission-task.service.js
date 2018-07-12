@@ -1,12 +1,12 @@
-import assert from 'assert';
-import makeDebug from 'debug';
-import { helpers } from 'mostly-feathers-mongoose';
-import fp from 'mostly-func';
-import metrics from 'playing-metric-common';
-import rules from 'playing-rule-common';
+const assert = require('assert');
+const makeDebug = require('debug');
+const { helpers } = require('mostly-feathers-mongoose');
+const fp = require('mostly-func');
+const metrics = require('playing-metric-common');
+const rules = require('playing-rule-common');
 
-import defaultHooks from './user-mission-task.hooks';
-import { walkThroughTasksReady } from '../../helpers';
+const defaultHooks = require('./user-mission-task.hooks');
+const { walkThroughTasksReady } = require('../../helpers');
 
 const debug = makeDebug('playing:mission-services:user-missions/tasks');
 
@@ -14,7 +14,7 @@ const defaultOptions = {
   name: 'user-missions/tasks'
 };
 
-export class UserMissionTaskService {
+class UserMissionTaskService {
   constructor (options) {
     this.options = fp.assignAll(defaultOptions, options);
     this.name = this.options.name;
@@ -133,8 +133,7 @@ export class UserMissionTaskService {
   }
 }
 
-export default function init (app, options, hooks) {
+module.exports = function init (app, options, hooks) {
   return new UserMissionTaskService(options);
-}
-
-init.Service = UserMissionTaskService;
+};
+module.exports.Service = UserMissionTaskService;
