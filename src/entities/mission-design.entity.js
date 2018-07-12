@@ -1,5 +1,5 @@
-import Entity from 'mostly-entity';
-import { BlobEntity } from 'playing-content-common';
+const Entity = require('mostly-entity');
+const { BlobEntity } = require('playing-content-common');
 
 const MissionEntity = new Entity('Mission', {
   image: { using: BlobEntity }
@@ -7,4 +7,4 @@ const MissionEntity = new Entity('Mission', {
 
 MissionEntity.discard('_id');
 
-export default MissionEntity.freeze();
+module.exports = MissionEntity.freeze();

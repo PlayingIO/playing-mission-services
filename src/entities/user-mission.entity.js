@@ -1,6 +1,6 @@
-import Entity from 'mostly-entity';
-import fp from 'mostly-func';
-import { BlobEntity } from 'playing-content-common';
+const Entity = require('mostly-entity');
+const fp = require('mostly-func');
+const { BlobEntity } = require('playing-content-common');
 
 const UserMissionEntity = new Entity('UserMission', {
   image: { using: BlobEntity }
@@ -13,4 +13,4 @@ UserMissionEntity.expose('triggers', { if: Entity.isPresent('tasks') }, obj => {
 
 UserMissionEntity.discard('_id');
 
-export default UserMissionEntity.freeze();
+module.exports = UserMissionEntity.freeze();
