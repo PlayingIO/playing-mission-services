@@ -1,6 +1,6 @@
-import { schemas as rules } from 'playing-rule-common';
+const { schemas: rules } = require('playing-rule-common');
 
-import { notify } from './notify.schema';
+const { notify } = require('./notify.schema');
 
 // activity structure
 const activity = {
@@ -20,4 +20,4 @@ const activity = {
   retry: { type: Boolean, default: false } // whether the player can retry a task if he fails
 };
 
-export { activity };
+module.exports = { activity };

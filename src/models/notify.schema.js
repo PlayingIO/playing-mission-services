@@ -1,4 +1,4 @@
-import { schemas as rules } from 'playing-rule-common';
+const { schemas: rules } = require('playing-rule-common');
 
 const notify = {
   subject: { type: String },               // notify subject when task is completed
@@ -17,4 +17,4 @@ const notify = {
   }
 };
 
-export { notify };
+module.exports = { notify };
