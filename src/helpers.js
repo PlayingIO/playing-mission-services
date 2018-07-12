@@ -1,13 +1,13 @@
-import assert from 'assert';
-import fp from 'mostly-func';
-import { helpers } from 'mostly-feathers-mongoose';
-import rules from 'playing-rule-common';
+const assert = require('assert');
+const fp = require('mostly-func');
+const { helpers } = require('mostly-feathers-mongoose');
+const rules = require('playing-rule-common');
 
-export const fulfillActivityRequires = (activity, user) => {
+const fulfillActivityRequires = (activity, user) => {
   return rules.fulfillRequires(user, [], activity.requires);
 };
 
-export const fulfillActivityRewards = (activity, user) => {
+const fulfillActivityRewards = (activity, user) => {
   return rules.fulfillCustomRewards(fp.pick(['requires', 'rewards'], activity), [], user);
 };
 
@@ -38,7 +38,7 @@ const getReadyTask = (user, tasks, keys, activity, previous) => {
  * Walk throught activities of mission to get ready activities,
  * and update state of sequential/parallel/exclusive node.
  */
-export const walkThroughTasksReady = (user, tasks = [], keys = [], previous = null, keepPrevious = false) => (activities) => {
+const walkThroughTasksReady = (user, tasks = [], keys = [], previous = null, keepPrevious = false) => (activities) => {
   return fp.reduceIndexed((acc, activity, index) => {
     const task = getReadyTask(user, tasks, [...keys, index], activity, previous);
     if (!task) return acc; // break
@@ -92,7 +92,7 @@ export const walkThroughTasksReady = (user, tasks = [], keys = [], previous = nu
   }, [], activities);
 };
 
-export const getRecursiveRequires = (path) => (activities) => {
+const getRecursiveRequires = (path) => (activities) => {
   return fp.reduce((arr, activity) => {
     if (activity.type === 'single') {
       arr.push(fp.dotPath(path, activity) || []);
@@ -103,7 +103,7 @@ export const getRecursiveRequires = (path) => (activities) => {
   }, [], activities);
 };
 
-export const getRecursiveRewards = (path) => (activities) => {
+const getRecursiveRewards = (path) => (activities) => {
   return fp.reduce((arr, activity) => {
     if (activity.type === 'single') {
       return arr.concat(fp.dotPath(path, activity) || []);
@@ -114,7 +114,7 @@ export const getRecursiveRewards = (path) => (activities) => {
 };
 
 // default mission lanes
-export const defaultLane = (service, id) => async (params) => {
+const defaultLane = (service, id) => async (params) => {
   const mission = await service.get(params[id]);
   if (mission && mission.lanes) {
     const lane = fp.find(fp.propEq('default', true), mission.lanes);
@@ -124,7 +124,7 @@ export const defaultLane = (service, id) => async (params) => {
 };
 
 // validator for roles
-export const rolesExists = (service, id, message) => async (val, params) => {
+const rolesExists = (service, id, message) => async (val, params) => {
   assert(params[id], `rolesExists '${id}' is not exists in validation params`);
   const userMission = fp.isIdLike(params[id])?
     await service.get(params[id], { query: { $select: 'definition,*' } }) : params[id];
@@ -139,7 +139,7 @@ export const rolesExists = (service, id, message) => async (val, params) => {
 };
 
 // default roles
-export const defaultRoles = (service, id) => async (params) => {
+const defaultRoles = (service, id) => async (params) => {
   const userMission = await service.get(params[id], { query: { $select: 'definition,*' } });
   if (userMission && userMission.definition && userMission.definition.lanes) {
     const lane = fp.find(fp.propEq('default', true), userMission.definition.lanes);
@@ -149,7 +149,7 @@ export const defaultRoles = (service, id) => async (params) => {
 };
 
 // create a user mission activity
-export const createMissionActivity = (context, userMission, custom) => {
+const createMissionActivity = (context, userMission, custom) => {
   const actor = helpers.getId(userMission.owner);
   const definition = helpers.getId(userMission.definition);
   return {
@@ -163,7 +163,7 @@ export const createMissionActivity = (context, userMission, custom) => {
 };
 
 // notification feeds of all performers
-export const performersNotifications = function (performers, excepts = []) {
+const performersNotifications = function (performers, excepts = []) {
   const users = fp.without(excepts, fp.map(fp.prop('user'), performers || []));
   return fp.map(fp.concat('notification:'), users);
 };
@@ -171,7 +171,7 @@ export const performersNotifications = function (performers, excepts = []) {
 /**
  * Add roles of performer
  */
-export const addUserMissionRoles = async (app, userMission, user, lanes) => {
+const addUserMissionRoles = async (app, userMission, user, lanes) => {
   const svcUserMissions = app.service('user-missions');
   await svcUserMissions.patch(userMission.id, {
     $addToSet: {
@@ -183,7 +183,7 @@ export const addUserMissionRoles = async (app, userMission, user, lanes) => {
 /**
  * Update roles of performer
  */
-export const updateUserMissionRoles = async (app, userMission, user, lanes, params = {}) => {
+const updateUserMissionRoles = async (app, userMission, user, lanes, params = {}) => {
   const svcUserMissions = app.service('user-missions');
   params.query = fp.assignAll(params.query, {
     'performers.user': user
@@ -198,4 +198,19 @@ export const updateUserMissionRoles = async (app, userMission, user, lanes, para
     return acc;
   }, {}, fp.keys(lanes));
   return svcUserMissions.patch(userMission.id, updates, params);
+};
+
+module.exports = {
+  addUserMissionRoles,
+  createMissionActivity,
+  defaultLane,
+  defaultRoles,
+  getRecursiveRequires,
+  getRecursiveRewards,
+  fulfillActivityRequires,
+  fulfillActivityRewards,
+  performersNotifications,
+  rolesExists,
+  updateUserMissionRoles,
+  walkThroughTasksReady
 };
