@@ -2747,11 +2747,11 @@ natives@^1.1.0:
   version "1.1.4"
   resolved "https://registry.npmjs.org/natives/-/natives-1.1.4.tgz#2f0f224fc9a7dd53407c7667c84cf8dbe773de58"
 
-nats@^0.7.20:
-  version "0.7.29"
-  resolved "https://registry.npmjs.org/nats/-/nats-0.7.29.tgz#23b203a1102887a42cc378f521cb3dc182c31327"
+nats@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/nats/-/nats-1.0.0.tgz#6b1681c46ec08ea0b92dfed1abe413692b44c35f"
   dependencies:
-    nuid ">=0.6.8"
+    nuid "^1.0.0"
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -2850,7 +2850,7 @@ npmlog@^4.0.2:
     gauge "~2.7.3"
     set-blocking "~2.0.0"
 
-nuid@>=0.6.8:
+nuid@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/nuid/-/nuid-1.0.0.tgz#04ecc21be41cc321940a9089984382f3bdc61638"
 
