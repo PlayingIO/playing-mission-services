@@ -11,7 +11,7 @@ module.exports = function accepts (context) {
     validates: { exists: rolesExists(svcUserMissions, 'primary', 'Roles is invalid') },
     default: defaultRoles(svcUserMissions, 'primary'),
     required: true, description: 'Role and lanes ' };
-  
+
   const performer = { arg: 'id', type: 'string',
     validates: { exists: helpers.idExists(svcUsers, 'id', 'Performer is not exists') },
     required: true, description: 'Performer Id' };

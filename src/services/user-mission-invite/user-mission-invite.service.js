@@ -175,7 +175,7 @@ class UserMissionInviteService {
     await feeds.updateActivityState(this.app, activity);
 
     params.locals = { userMission, activity }; // for notifier
-    
+
     return activity;
   }
 }
