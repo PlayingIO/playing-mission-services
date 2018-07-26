@@ -2,7 +2,11 @@
   "name": "playing-mission-services",
   "version": "1.1.1",
   "description": "Game missions management microservices for building playful applications",
-  "author": "Forafish",
+  "author": {
+    "name": "playingio",
+    "email": "hello@playingio.com",
+    "url": "https://playingio.com"
+  },
   "license": "MIT",
   "main": "index.js",
   "scripts": {
